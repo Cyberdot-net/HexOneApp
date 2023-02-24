@@ -1,0 +1,160 @@
+@charset "utf-8";
+
+/* ----------------------------------------
+ナビーメニュー
+----------------------------------------*/
+
+.nav-wrapper {
+    @include flex-center;
+}
+
+.nav {
+    list-style: none;
+
+    > li {
+	    display: inline-block;
+	    vertical-align: middle;
+	    margin: 0 30px;
+
+	    @media screen and (max-width: 1280px) {
+	    	margin: 0 10px;
+	    }
+
+	    > a {
+	    	display: block;
+			padding: 25px 0;
+			font-size: 15px;
+			font-weight: bold;
+			color: inherit;
+	    }
+
+	    &:hover {
+	    	> a {
+		    	color: #0075a9;
+		    }
+		}
+	}
+}
+
+.page-header {
+    &.header-sticky {
+	    .nav {
+	    	color: #000;
+	    }
+	}
+}
+
+.nav-wrapper {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	display: block;
+	padding: 0 45px;
+	overflow-y: auto;
+	opacity: 0;
+	background-color: $color-gray-2;
+	z-index: -1;
+	@include transition-all;
+	display: none;
+}
+
+.nav-open {
+	min-width: 62px;
+	height: 74px;
+	@media screen and (max-width: 640px) {
+		min-width: 52px;
+		height: 64px;
+	}
+	background-color: #4B5866;
+	color: #fff;
+	@include flex-center;
+
+	span {
+		position: relative;
+		display: block;
+		height: 5px;
+		width: 36px;
+		border-top: 5px solid;
+
+		&:before, &:after {
+			content: '';
+			display: block;
+			position: absolute;
+			width: 36px;
+			height: 5px;
+			border-top: 5px solid;
+			left: 0;
+			top: -18px;
+		}
+
+		&:after {
+			top: 8px;
+		}
+	}
+}
+
+.nav-opened {
+	.page-header {
+		&, &.header-sticky {
+			background-color: $color-gray-2;
+		}
+	}
+
+	.nav-wrapper {
+		opacity: 1;
+	}
+}
+
+.nav {
+	li {
+		display: block;
+		position: relative;
+		color: $color-black;
+		font-size: 15px;
+		margin: 0;
+
+		&:hover > a {
+			color: #fff;
+		}
+	}
+
+	> li > a {
+		display: inline-block;
+		vertical-align: middle;
+		padding: 10px 0;
+		color: inherit;
+	}
+}
+
+.nav-open span {
+	&, &:after, &:before {
+		@include transition-all;
+	}
+}
+
+body.nav-opened {
+	.nav-open span {
+		border-color: transparent;
+		display: block;
+	
+		&:after {
+			// transform: rotate(-45deg);
+			@include transform(rotate(-45deg));
+			top: -4px;
+			left: 2px;
+		}
+	
+		&:before {
+			// -webkit-transform: rotate(45deg);
+			// -ms-transform: rotate(45deg);
+			// transform: rotate(45deg);
+			@include transform(rotate(45deg));
+			top: -4px;
+			left: -1px;
+		}
+	}
+
+	.nav-wrapper {
+		display: block;
+	}
+}

@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/static/css/main.e4d8bff8.css",
+    "main.js": "/static/js/main.c8fe82ca.js",
+    "static/media/square4.png": "/static/media/square4.b0072563cab16ef45d81.png",
+    "static/media/square1.png": "/static/media/square1.082ea17aaf44aed9868a.png",
+    "static/media/square3.png": "/static/media/square3.235ea41b7cee0696448d.png",
+    "static/media/square2.png": "/static/media/square2.8ce0f9b6a9f216ada045.png",
+    "static/media/square5.png": "/static/media/square5.16283001f5a086113265.png",
+    "static/media/darken-night-sky-full-of-stars-fantasy-animation-made-of-magical-sparkly-light-particles-flickering-on-a-purple-blue-gradient-background_bajacpz7x_thumbnail-full01.png": "/static/media/darken-night-sky.png",
+    "static/media/night-sky-full-of-stars-fantasy-animation-made-of-magical-sparkly-light-particles-flickering-on-a-purple-blue-gradient-background_bajacpz7x_thumbnail-full01.png": "/static/media/night-sky.png",
+    "static/media/dots.png": "/static/media/dots.1e305f981d41a2c30adb.png",
+    "static/media/logo.png": "/static/media/logo.bf57cf9aea240eb2f576.png",
+    "static/media/path3.png": "/static/media/path3.3f66cc18d0e5e2526eb2.png",
+    "static/media/nucleo.eot": "/static/media/nucleo.bd5cce8bf40be5947637.eot",
+    "static/media/nucleo.ttf": "/static/media/nucleo.35b08447277ca7bf9f09.ttf",
+    "static/media/nucleo.woff": "/static/media/nucleo.5c65ef4d6434bb8062a3.woff",
+    "static/media/nucleo.woff2": "/static/media/nucleo.6dfb4833e3a0132fd1fc.woff2",
+    "index.html": "/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.e4d8bff8.css",
+    "static/js/main.c8fe82ca.js"
+  ]
+}

@@ -1,0 +1,212 @@
+@charset "utf-8";
+
+/* 基礎のスタイル */
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+JP:400,500,700|Noto+Serif+JP:400,500,600,700|Roboto:400,400i,500,500i,700,700i&display=swap&subset=japanese');
+
+/* latin */
+@font-face {
+    font-family: 'B612 Mono';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/b612mono/v12/kmK5Zq85QVWbN1eW6lJV1T7fguA.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  /* latin */
+  @font-face {
+    font-family: 'B612 Mono';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/b612mono/v12/kmKkZq85QVWbN1eW6lJV1TZkp_VMl7Y.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  /* latin */
+  @font-face {
+    font-family: 'B612 Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/b612mono/v12/kmK_Zq85QVWbN1eW6lJV0A7d.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  /* latin */
+  
+  @font-face {
+    font-family: 'B612 Mono';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/b612mono/v12/kmK6Zq85QVWbN1eW6lJdayvIpcVO.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    position: relative;
+    font-family: 'B612 Mono', monospace !important;
+    font-size: 24px;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+body:before {
+    background-attachment: scroll;
+    content: "";
+    display: block;
+    height: 100vh;
+    left: 0;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    transform: scale(1);
+    width: 100vw;
+    z-index: 0;
+    background-image: url(../img/background.svg),
+      linear-gradient(0deg, #000000 0%, #000000 37%);
+    background-size: cover, auto;
+    background-position: center, 0% 0%;
+    background-repeat: no-repeat, repeat;
+}
+
+a {
+    text-decoration: none !important;
+    @include transition-all;
+}
+
+* a {
+    text-decoration: none !important;
+    color: unset;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    line-height: 1.0;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+:focus {
+    outline: 0;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+
+.effect {
+    overflow: hidden;
+}
+
+.effect img {
+    @include transition(transform, .5s, ease);
+}
+
+.background-zoom:hover img {
+    // -webkit-transform: scale(1.05);
+    // -mstransform: scale(1.05);
+    // transform: scale(1.05);
+    @include transform(scale(1.05));
+}
+
+.pc, .tb, .sp {
+    display: none;
+}
+
+@media screen and (min-width: 1025px) {
+    .pc {
+        display: block;
+    }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .tb {
+        display: block;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .sp {
+        display: block;
+    }
+}
+
+.checkbox-label {
+    display: block;
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.checkbox-label input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.checkbox-mark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 17px;
+    width: 17px;
+    background-color: white;
+    border: 2px solid $color-border-2;
+    border-radius: 2px;
+}
+
+/* On mouse-over, add a grey background color */
+.checkbox-label:hover input ~ .checkbox-mark {
+    background-color: white;
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkbox-label input:checked ~ .checkbox-mark {
+    background-color: $color-border-2;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkbox-mark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox-label input:checked ~ .checkbox-mark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkbox-label .checkbox-mark:after {
+    left: 3px;
+    top: 0px;
+    width: 4px;
+    height: 7px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    // -webkit-transform: rotate(45deg);
+    // -ms-transform: rotate(45deg);
+    // transform: rotate(45deg);
+    @include transform(rotate(45deg));
+}

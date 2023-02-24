@@ -1,0 +1,101 @@
+
+$asset-base-path: "../../../assets" !default;
+
+// Core
+
+@import "custom/functions";
+@import "../../../node_modules/bootstrap/scss/functions";
+
+@import "custom/variables";
+@import "../../../node_modules/bootstrap/scss/variables";
+
+@import "custom/mixins";
+@import "../../../node_modules/bootstrap/scss/mixins";
+
+// Bootstrap components
+
+@import "../../../node_modules/bootstrap/scss/root";
+@import "../../../node_modules/bootstrap/scss/reboot";
+@import "../../../node_modules/bootstrap/scss/type";
+@import "../../../node_modules/bootstrap/scss/images";
+@import "../../../node_modules/bootstrap/scss/code";
+@import "../../../node_modules/bootstrap/scss/grid";
+@import "../../../node_modules/bootstrap/scss/tables";
+@import "../../../node_modules/bootstrap/scss/forms";
+@import "../../../node_modules/bootstrap/scss/buttons";
+@import "../../../node_modules/bootstrap/scss/transitions";
+@import "../../../node_modules/bootstrap/scss/dropdown";
+@import "../../../node_modules/bootstrap/scss/button-group";
+@import "../../../node_modules/bootstrap/scss/input-group";
+@import "../../../node_modules/bootstrap/scss/custom-forms";
+@import "../../../node_modules/bootstrap/scss/nav";
+@import "../../../node_modules/bootstrap/scss/navbar";
+@import "../../../node_modules/bootstrap/scss/card";
+@import "../../../node_modules/bootstrap/scss/breadcrumb";
+@import "../../../node_modules/bootstrap/scss/pagination";
+@import "../../../node_modules/bootstrap/scss/badge";
+@import "../../../node_modules/bootstrap/scss/jumbotron";
+@import "../../../node_modules/bootstrap/scss/alert";
+@import "../../../node_modules/bootstrap/scss/progress";
+@import "../../../node_modules/bootstrap/scss/media";
+@import "../../../node_modules/bootstrap/scss/list-group";
+@import "../../../node_modules/bootstrap/scss/close";
+@import "../../../node_modules/bootstrap/scss/modal";
+@import "../../../node_modules/bootstrap/scss/tooltip";
+@import "../../../node_modules/bootstrap/scss/popover";
+@import "../../../node_modules/bootstrap/scss/carousel";
+@import "../../../node_modules/bootstrap/scss/utilities";
+@import "../../../node_modules/bootstrap/scss/print";
+
+// Custom components
+
+@import "custom/alerts.scss";
+@import "custom/buttons.scss";
+@import "custom/dropdown.scss";
+@import "custom/footer.scss";
+@import "custom/forms.scss";
+@import "custom/images.scss";
+@import "custom/modal.scss";
+@import "custom/navbar.scss";
+@import "custom/type.scss";
+@import "custom/icons.scss";
+@import "custom/tables";
+@import "custom/checkboxes-radio";
+@import "custom/fixed-plugin";
+@import "custom/pagination.scss";
+@import "custom/misc.scss";
+@import "custom/rtl.scss";
+@import "custom/input-group.scss";
+@import "custom/example-pages.scss";
+@import "custom/progress.scss";
+@import "custom/badge.scss";
+@import "custom/pills.scss";
+@import "custom/tabs.scss";
+@import "custom/info-areas.scss";
+
+// Sections
+@import "custom/sections.scss";
+
+// Vendor / Plugins
+
+@import "custom/vendor/plugin-perfect-scrollbar.scss";
+@import "custom/vendor/plugin-animate-bootstrap-notify.scss";
+@import "custom/vendor/plugin-bootstrap-switch.scss";
+@import "custom/vendor/plugin-nouislider.scss";
+@import "custom/vendor/plugin-datetimepicker.scss";
+
+// Cards
+
+@import "custom/card";
+@import "custom/cards/card-chart";
+@import "custom/cards/card-map";
+@import "custom/cards/card-user";
+@import "custom/cards/card-task";
+@import "custom/cards/card-plain";
+@import "custom/cards/card-register";
+@import "custom/cards/card-stats";
+@import "custom/cards/card-chart";
+
+// React Differences
+
+@import "react/react-differences";
