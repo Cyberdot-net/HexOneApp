@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import moment from "moment";
 import {
   Button,
   ListGroupItem,
@@ -14,15 +13,15 @@ import {
 import Navbar from "components/Navbars/Navbar.js";
 import Footer from "components/Footer/Footer.js";
 
-const colors = [
-  '#2dce89',
-  '#5ca081',
-  '#839878',
-  '#a08170',
-  '#be6568',
-  '#d94e60',
-  '#fe365c',
-];
+// const colors = [
+//   '#2dce89',
+//   '#5ca081',
+//   '#839878',
+//   '#a08170',
+//   '#be6568',
+//   '#d94e60',
+//   '#fe365c',
+// ];
 
 export default function Overview() {
 
