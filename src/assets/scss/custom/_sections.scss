@@ -1,5 +1,5 @@
 .section {
-    padding: 70px 0;
+    margin: 70px 0;
     position: relative;
 
     .row + .category {
@@ -380,6 +380,25 @@
   h1 {
     margin-bottom: 150px;
   }
+}
+
+.section-titles {
+    margin-top: 160px;
+    padding-bottom: 0;
+
+    .list-group {
+        margin: 0 auto;
+
+        .list-group-item {
+            background-color: transparent;
+            border: none;
+            padding: .4rem 1rem;
+        }
+    }
+}
+
+.section-tables {
+    padding-bottom: 0;
 }
 
 .section-nucleo-icons {
@@ -837,16 +856,20 @@
     }
   }
 
-  .landing-page .section:nth-of-type(3) {
-      padding-top: 100px;
-  }
-
   .section-safe img.img-fluid{
     display: none;
   }
 
   .section-coins {
     margin-top: 100px;
+  }
+
+  .section-titles {
+    margin-top: 100px;
+  }
+
+  .section-tables {
+    margin-top: 40px;
   }
 
   #carouselExampleIndicators{
@@ -870,10 +893,22 @@
   .section-coins {
     margin-top: 50px;
   }
+
+  .section-tables {
+    margin-top: 20px;
+  }
 }
 @media screen and (max-width: 576px){
   .section-coins {
     margin-top: 30px;
+  }
+
+  .section-titles {
+    margin-top: 30px;
+  }
+
+  .section-tables {
+    margin-top: 20px;
   }
 }
 

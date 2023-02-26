@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import moment from "moment";
 import {
   Button,
-  Card,
-  CardBody,
-  CardFooter,
   ListGroupItem,
   ListGroup,
+  Container,
   Row,
-  Col
+  Col,
+  UncontrolledTooltip
 } from "reactstrap";
 
 // core components
@@ -27,15 +26,21 @@ const colors = [
 
 export default function Overview() {
 
-  const [ liquidate, setLiquidate ] = useState({});
+  const [ overviews, setOverviews ] = useState([]);
+  const [ liquidates, setLiquidates ] = useState([]);
 
   React.useEffect(() => {
-    setLiquidate({
-      stakeid: 3,
-      maturityDate: new Date(),
-      grace: (Math.round((Math.random() * 1000)) % 7 + 1),
-      owedHex1: 122636
-    });
+
+    setOverviews([
+      { startDay: 1001, endDay: 5001, stakeid: 123, collateralAmt: 100000, borrowedAmt: 100000, initialAmt: 0.1, currentHex: 0.2, ratio: 100 },
+      { startDay: 1123, endDay: 2353, stakeid: 512, collateralAmt: 2500, borrowedAmt: 3000, initialAmt: 0.4, currentHex: 0.1, ratio: 50 },
+      { startDay: 1123, endDay: 3255, stakeid: 256, collateralAmt: 2000, borrowedAmt: 2550, initialAmt: 0.0003, currentHex: 0.1, ratio: 5000 },
+    ]);
+
+    setLiquidates([
+      { startDay: 1001, endDay: 5001, currentDay: 3000, stakeid: 123, grace: 100, borrowedAmt: 100000, initialAmt: 0.1, currentHex: 0.2, currentValue: 250000, ratio: 100, totalHex: 50000 },
+    ]);
+
     document.body.classList.toggle("landing-page");
     // Specify how to clean up after this effect:
     return function cleanup() {
@@ -47,145 +52,154 @@ export default function Overview() {
     <>
       <Navbar />
       <div className="wrapper" style={{minHeight: 'calc(100vh - 293px)'}}>
-        <section className="section section-lg section-coins">
+        <section className="section section-lg section-titles">
           <img
             alt="..."
             className="path"
             src={require("assets/img/path3.png")}
           />
-          <Row gutter="10" className="pl-4 pr-4">
-            <Col lg="3" md="6" className="mb-2">
-              <Card className="card-coin card-plain p-2 h-100">
-                <CardBody>
-                  <Row>
-                    <Col className="text-center" md="12">
-                      <h4 className="text-uppercase">Borrow</h4>
-                      <hr className="line-primary" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <ListGroup>
-                      <ListGroupItem>Mint $HEX1 by creating a stake and borrowing against your stake wich becomes collateral for the Hex One Protocol.</ListGroupItem>
-                    </ListGroup>
-                  </Row>
-                </CardBody>
-                <CardFooter className="text-center">
-                  <Button className="btn-simple" color="primary">
-                    MINT $HEX1
-                  </Button>
-                </CardFooter>
-              </Card>
-            </Col>
-            <Col lg="3" md="6" className="mb-2">
-              <Card className="card-coin card-plain p-2 h-100">
-                <CardBody>
-                  <Row>
-                    <Col className="text-center" md="12">
-                      <h4 className="text-uppercase">Claim</h4>
-                      <hr className="line-success" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <ListGroup>
-                      <ListGroupItem>Claim your $HEX stake by burning the borrowed amount of $HEX1</ListGroupItem>
-                    </ListGroup>
-                  </Row>
-                </CardBody>
-                <CardFooter className="text-center">
-                  <Button className="btn-simple" color="success">
-                    CLAIM $HEX1
-                  </Button>
-                </CardFooter>
-              </Card>
-            </Col>
-            <Col lg="3" md="6" className="mb-2">
-              <Card className="card-coin card-plain p-2 h-100">
-                <CardBody>
-                  <Row>
-                    <Col className="text-center" md="12">
-                      <h4 className="text-uppercase">Re-borrow</h4>
-                      <hr className="line-info" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <ListGroup>
-                      <ListGroupItem>Has the price of $HEX gone up since you initially borrowed? You can borrow more $HEX1 against the collateral already deposited!</ListGroupItem>
-                    </ListGroup>
-                  </Row>
-                </CardBody>
-                <CardFooter className="text-center">
-                  <Button className="btn-simple" color="info">
-                    MORE $HEX1
-                  </Button>
-                </CardFooter>
-              </Card>
-            </Col>
-            <Col lg="3" md="6" className="mb-2">
-              <Card className="card-coin card-plain p-2 h-100">
-                <CardBody>
-                  <Row>
-                    <Col className="text-center" md="12">
-                      <h4 className="text-uppercase">Bright Coin</h4>
-                      <hr className="line-info" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <ListGroup>
-                      <ListGroupItem>Has the price of $HEX gone down since you initially borrowed? You may want to add additional collateral to protect your position from liquidation 7 days after maturity!</ListGroupItem>
-                    </ListGroup>
-                  </Row>
-                </CardBody>
-                <CardFooter className="text-center">
-                  <Button className="btn-simple" color="info">
-                    ADD $HEX
-                  </Button>
-                </CardFooter>
-              </Card>
-            </Col>
-            <Col lg={{ size: '6', offset: '3'}} md="12" className="mb-2 mt-2">
-              <Card className="card-coin card-plain p-2 h-100">
-                <CardBody>
-                  <Row>
-                    <Col className="text-center" md="12">
-                      <h4 className="text-uppercase">Liquidate</h4>
-                      <hr className="line-info" />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <ListGroup>
-                      <ListGroupItem>Has the price of $HEX gone down since you initially borrowed? You may want to add additional collateral to protect your position from liquidation 7 days after maturity!</ListGroupItem>
-                    </ListGroup>
-                  </Row>
-                </CardBody>
-                <CardFooter className="text-center">
-                  <table className="table">
-                    <thead>
-                        <tr>
-                          <th className="text-center">StakeId</th>
-                          <th>Maturity date</th>
-                          <th>Grace (7 days)</th>
-                          <th>Owed $HEX1</th>
-                          <th className="text-center">Liquidate</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+          <Container>
+            <Row gutter="10" className="pl-4 pr-4">
+              <Col lg="3" md="6" className="mb-2">
+                <Button className="btn-simple" color="info">
+                  BORROW
+                </Button>
+              </Col>
+              <Col lg="8" md="6" className="mb-2">
+                <ListGroup>
+                  <ListGroupItem>Stake HEX and Mint $HEX1</ListGroupItem>
+                  <ListGroupItem>Borrow up to 100% against your T-shares</ListGroupItem>
+                  <ListGroupItem>Each $HEX1 = 1 dollar value of collateralized HEX (T-share)</ListGroupItem>
+                  <ListGroupItem>*a 5% fee applies to each deposit</ListGroupItem>
+                </ListGroup>
+              </Col>
+            </Row>
+          </Container>
+        </section>
+        <section className="section section-lg section-tables">
+          <img
+            alt="..."
+            className="path"
+            src={require("assets/img/path3.png")}
+          />
+          <Container>
+            <Row>
+              <Col md="4">
+                <hr className="line-info" />
+                <h2>
+                  OVERVIEW TABLE
+                </h2>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="12">
+                <table className="table">
+                  <thead>
                       <tr>
-                        <td className="text-center">{liquidate.stakeid}</td>
-                        <td>{moment(liquidate.maturityDate).format('DD/MM/YY')}</td>
-                        <td style={{color: colors[liquidate.grace - 1]}}>{liquidate.grace}</td>
-                        <td>{liquidate.owedHex1}</td>
+                        <th className="text-center">Start</th>
+                        <th className="text-center">End</th>
+                        <th>Collateral</th>
+                        <th>Borrowed Amt</th>
+                        <th className="text-center">StakeId</th>
+                        <th>Initial HEX/USDC</th>
+                        <th>Current HEX/USDC</th>
+                        <th>Health Ratio</th>
+                        <th className="text-center"></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    {overviews.map((r, idx) => 
+                      <tr key={idx}>
+                        <td className="text-center">{r.startDay}</td>
+                        <td className="text-center">{r.endDay}</td>
+                        <td>{r.collateralAmt.toLocaleString()} HEX</td>
+                        <td>{r.borrowedAmt.toLocaleString()} HEX1</td>
+                        <td className="text-center">{r.stakeid}</td>
+                        <td>${r.initialAmt.toLocaleString()}</td>
+                        <td>${r.currentHex.toLocaleString()}</td>
+                        <td>{r.ratio.toLocaleString()}%</td>
                         <td className="td-actions">
-                          <button type="button" rel="tooltip" className="btn btn-success btn-sm btn-icon">
-                            <i className="tim-icons icon-cart"></i>
+                          <button type="button" rel="tooltip"  id="claim" className="btn btn-primary btn-sm">
+                            Claim
                           </button>
+                          <UncontrolledTooltip placement="bottom" target="claim">
+                            Mint $HEX1 by depositing HEX
+                          </UncontrolledTooltip>
+                          <button type="button" rel="tooltip"  id="mintHex1" className="btn btn-success btn-sm">
+                            Re-Borrow
+                          </button>
+                          <UncontrolledTooltip placement="bottom" target="mintHex1">
+                            Mint more $HEX1 without adding any collateral
+                          </UncontrolledTooltip>
+                          <button type="button" rel="tooltip"  id="addCollateral" className="btn btn-info btn-sm">
+                            Re-Charge
+                          </button>
+                          <UncontrolledTooltip placement="bottom" target="addCollateral">
+                            Add more collateral (HEX) without borrowing more $HEX1
+                          </UncontrolledTooltip>
                         </td>
                       </tr>
-                    </tbody>
-                  </table>
-                </CardFooter>
-              </Card>
-            </Col>
-          </Row>
+                    )}
+                  </tbody>
+                </table>
+              </Col>
+            </Row>
+          </Container>
+        </section>
+        <section className="section section-lg section-tables">
+          <Container>
+            <Row>
+              <Col md="4">
+                <hr className="line-info" />
+                <h2>
+                  LIQUIDATIONS TABLE
+                </h2>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="12">
+                <table className="table">
+                  <thead>
+                      <tr>
+                        <th className="text-center">StakeId</th>
+                        <th className="text-center">End</th>
+                        <th className="text-center">Current Day</th>
+                        <th>Grace</th>
+                        <th>Borrowed $HEX1</th>
+                        <th>Current HEX/USDC</th>
+                        <th>Total Hex</th>
+                        <th>Current Value</th>
+                        <th>Profit/Loss</th>
+                        <th className="text-center"></th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    {liquidates.map((r, idx) => 
+                      <tr key={idx}>
+                        <td className="text-center">{r.stakeid}</td>
+                        <td className="text-center">{r.endDay}</td>
+                        <td className="text-center">{r.currentDay}</td>
+                        <td>{r.grace}</td>
+                        <td>{r.borrowedAmt.toLocaleString()} HEX1</td>
+                        <td>${r.currentHex.toLocaleString()}</td>
+                        <td>${r.totalHex.toLocaleString()}</td>
+                        <td>${r.currentValue.toLocaleString()}</td>
+                        <td>{(r.currentValue - r.borrowedAmt).toLocaleString()}</td>
+                        <td className="td-actions">
+                          <button type="button" rel="tooltip"  id="liquidate" className="btn btn-success btn-sm">
+                            Liquidate
+                          </button>
+                          <UncontrolledTooltip placement="bottom" target="liquidate">
+                            Liquidate the position by paying the debt ($HEX1) and the fee (ETH) to claim and receive the T-shares (HEX)
+                          </UncontrolledTooltip>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </Col>
+            </Row>
+          </Container>
         </section>
       </div>
       <Footer />
