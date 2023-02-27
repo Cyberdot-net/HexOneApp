@@ -343,7 +343,7 @@ export default function Overview() {
                         <td>${r.currentHex.toLocaleString()}</td>
                         <td>{r.totalHex.toLocaleString()}</td>
                         <td>${r.currentValue.toLocaleString()}</td>
-                        <td>${r.profitloss.toLocaleString()}</td>
+                        <td>${(r.currentValue - r.borrowedAmt).toLocaleString()} (%{r.borrowedAmt ? Math.round(r.currentValue / r.borrowedAmt * 100) : 0})</td>
                         <td className="td-actions">
                           <button
                             type="button"
