@@ -130,9 +130,15 @@ export default function Overview() {
           <Container>
             <Row gutter="10" className="pl-4 pr-4">
               <Col lg="12" className="mb-4">
-                <Button className="btn-simple" color="info grow btn-lg">
+                <Button className="btn-simple" color="info grow btn-lg" id="borrow">
                   BORROW
                 </Button>
+                <UncontrolledTooltip
+                  placement="bottom"
+                  target="borrow"
+                >
+                  Borrow HEX1 by depositing HEX (T-shares)
+                </UncontrolledTooltip>
               </Col>
             </Row>
             <Row gutter="10" className="pl-4 pr-4">
@@ -203,7 +209,7 @@ export default function Overview() {
                             placement="bottom"
                             target="claim"
                           >
-                            Mint $HEX1 by depositing HEX
+                            Claim HEX by burning HEX1
                           </UncontrolledTooltip>
                           <button
                             type="button"
@@ -343,7 +349,7 @@ export default function Overview() {
                         <td>${r.currentHex.toLocaleString()}</td>
                         <td>{r.totalHex.toLocaleString()}</td>
                         <td>${r.currentValue.toLocaleString()}</td>
-                        <td>${r.profitloss.toLocaleString()}</td>
+                        <td>${(r.currentValue - r.borrowedAmt).toLocaleString()} (%{r.borrowedAmt ? Math.round(r.currentValue / r.borrowedAmt * 100) : 0})</td>
                         <td className="td-actions">
                           <button
                             type="button"

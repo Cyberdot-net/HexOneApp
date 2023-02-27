@@ -66,7 +66,7 @@ export default function IndexNavbar() {
               alt="logo"
               src={require("assets/img/logo.png")}
               width="auto"
-              height="50"
+              height="55"
             />
             {/* <span className="ml-2">HEX ONE</span> */}
           </NavbarBrand>
