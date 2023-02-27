@@ -59,12 +59,14 @@ export default function Overview() {
           />
           <Container>
             <Row gutter="10" className="pl-4 pr-4">
-              <Col lg="3" md="6" className="mb-2">
-                <Button className="btn-simple" color="info">
+              <Col lg="12" className="mb-4">
+                <Button className="btn-simple" color="info grow btn-lg">
                   BORROW
                 </Button>
               </Col>
-              <Col lg="8" md="6" className="mb-2">
+            </Row>
+            <Row gutter="10" className="pl-4 pr-4">
+              <Col lg="12" className="mb-2">
                 <ListGroup>
                   <ListGroupItem>Stake HEX and Mint $HEX1</ListGroupItem>
                   <ListGroupItem>Borrow up to 100% against your T-shares</ListGroupItem>
