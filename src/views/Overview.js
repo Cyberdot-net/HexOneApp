@@ -88,7 +88,7 @@ export default function Overview() {
               <Col md="4">
                 <hr className="line-info" />
                 <h2>
-                  OVERVIEW TABLE
+                  OVERVIEW
                 </h2>
               </Col>
             </Row>
@@ -153,7 +153,7 @@ export default function Overview() {
               <Col md="4">
                 <hr className="line-info" />
                 <h2>
-                  LIQUIDATIONS TABLE
+                  LIQUIDATIONS
                 </h2>
               </Col>
             </Row>
