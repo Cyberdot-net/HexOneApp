@@ -76,6 +76,9 @@ $asset-base-path: "../../../assets" !default;
 // Sections
 @import "custom/sections.scss";
 
+// Colors
+@import "custom/colors.scss";
+
 // Vendor / Plugins
 
 @import "custom/vendor/plugin-perfect-scrollbar.scss";
