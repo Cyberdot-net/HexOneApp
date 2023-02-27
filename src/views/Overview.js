@@ -15,16 +15,6 @@ import {
 import Navbar from "components/Navbars/Navbar.js";
 import Footer from "components/Footer/Footer.js";
 
-// const colors = [
-//   '#2dce89',
-//   '#5ca081',
-//   '#839878',
-//   '#a08170',
-//   '#be6568',
-//   '#d94e60',
-//   '#fe365c',
-// ];
-
 export default function Overview() {
   const [overviews, setOverviews] = useState([]);
   const [liquidates, setLiquidates] = useState([]);
@@ -83,18 +73,40 @@ export default function Overview() {
 
     setLiquidates([
       {
+        stakeid: 123,
         startDay: 1001,
-        endDay: 5001,
+        endDay: 2993,
         currentDay: 3000,
-        stakeid: 222,
-        grace: 100,
-        collateralAmt: 50000,
-        borrowedAmt: 10000,
-        initialAmt: 0.1,
+        grace: 8,
+        borrowedAmt: 100000,
         currentHex: 0.2,
-        currentValue: 250000,
-        ratio: 100,
         totalHex: 50000,
+        currentValue: 10000,
+        profitloss: 2000
+      },
+      {
+        stakeid: 726,
+        startDay: 1001,
+        endDay: 3002,
+        currentDay: 3000,
+        grace: 5,
+        borrowedAmt: 500000,
+        currentHex: 0.2,
+        totalHex: 100000,
+        currentValue: 20000,
+        profitloss: -200000
+      },
+      {
+        stakeid: 435,
+        startDay: 1001,
+        endDay: 3000,
+        currentDay: 3000,
+        grace: 7,
+        borrowedAmt: 1000000,
+        currentHex: 0.2,
+        totalHex: 4000000,
+        currentValue: 800000,
+        profitloss: -200000
       },
     ]);
 
@@ -127,15 +139,9 @@ export default function Overview() {
               <Col lg="12" className="mb-2">
                 <ListGroup>
                   <ListGroupItem>Stake HEX and Mint $HEX1</ListGroupItem>
-                  <ListGroupItem>
-                    Borrow up to 100% against your T-shares
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    Each $HEX1 = 1 dollar value of collateralized HEX (T-share)
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    *a 5% fee applies to each deposit
-                  </ListGroupItem>
+                  <ListGroupItem>Borrow up to 100% against your T-shares</ListGroupItem>
+                  <ListGroupItem>Each $HEX1 = 1 dollar value of collateralized HEX (T-share)</ListGroupItem>
+                  <ListGroupItem>*a 5% fee applies to each deposit</ListGroupItem>
                 </ListGroup>
               </Col>
             </Row>
@@ -237,11 +243,7 @@ export default function Overview() {
                 </table>
               </Col>
             </Row>
-          </Container>
-        </section>
-        <section className="section section-lg">
-          <Container>
-            <Row gutter="10" className="pl-4 pr-4">
+            <Row gutter="10" className="pl-4 pr-4 mt-2">
               <Col md="4" className="mb-2">
                 <Card className="card-coin card-plain p-2 h-100">
                   <CardBody>
@@ -336,20 +338,19 @@ export default function Overview() {
                         <td className="text-center">{r.stakeid}</td>
                         <td className="text-center">{r.endDay}</td>
                         <td className="text-center">{r.currentDay}</td>
-                        <td>{r.grace}</td>
+                        <td className={r.grace <= 5 ? "green" : (r.grace <= 7 ? "yellow" : "red")}>{r.grace}</td>
                         <td>{r.borrowedAmt.toLocaleString()} HEX1</td>
                         <td>${r.currentHex.toLocaleString()}</td>
-                        <td>${r.totalHex.toLocaleString()}</td>
+                        <td>{r.totalHex.toLocaleString()}</td>
                         <td>${r.currentValue.toLocaleString()}</td>
-                        <td>
-                          {(r.currentValue - r.borrowedAmt).toLocaleString()}
-                        </td>
+                        <td>${r.profitloss.toLocaleString()}</td>
                         <td className="td-actions">
                           <button
                             type="button"
                             rel="tooltip"
                             id="liquidate"
                             className="btn btn-success btn-sm"
+                            disabled={r.grace <= 7}
                           >
                             Liquidate
                           </button>
@@ -366,6 +367,26 @@ export default function Overview() {
                     ))}
                   </tbody>
                 </table>
+              </Col>
+            </Row>
+            <Row gutter="10" className="pl-4 pr-4 mt-2 justify-content-md-center">
+              <Col md="4" className="mb-2">
+                <Card className="card-coin card-plain p-2 h-100">
+                  <CardBody>
+                    <Row>
+                      <Col className="text-center" md="12">
+                        <h4 className="text-uppercase">LIQUIDATE</h4>
+                        <hr className="line-primary" />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <ListGroup>
+                        <ListGroupItem>Repay borrowed HEX1</ListGroupItem>
+                        <ListGroupItem>claim the collateral (HEX)</ListGroupItem>
+                      </ListGroup>
+                    </Row>
+                  </CardBody>
+                </Card>
               </Col>
             </Row>
           </Container>
