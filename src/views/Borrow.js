@@ -34,7 +34,7 @@ export default function Borrow() {
       totalHex: 2500,
       collateral: "",
       hex_usdc_feed: 1.02,
-      borrow_amount: 2500 * 1.02,
+      borrow_amount: "",
       days: ""
     });
 
@@ -63,7 +63,11 @@ export default function Borrow() {
 
   const changeWallet = (key, value) => {
     setWallet(prevWallet => {
-      return { ...prevWallet, [key]: value };
+      if (key === 'collateral') {
+        return { ...prevWallet, [key]: value, borrow_amount: (value * prevWallet.hex_usdc_feed) || ""};
+      } else {
+        return { ...prevWallet, [key]: value };
+      }
     });
   }
 
