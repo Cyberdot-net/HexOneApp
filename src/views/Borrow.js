@@ -90,7 +90,7 @@ export default function Borrow() {
                           <InputGroup>
                             <Input
                               type="text"
-                              placeholder={`Stake Amount in HEX (${(wallet.totalHex || 0).toLocaleString()} HEX available)`}
+                              placeholder={`Collateral Amount in HEX (${(wallet.totalHex || 0).toLocaleString()} HEX available)`}
                               value={wallet.collateral}
                               onChange={e => changeWallet('collateral', e.target.value)} 
                               className={wallet.totalHex < wallet.collateral && "form-control-danger"}
