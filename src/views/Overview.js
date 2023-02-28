@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   ListGroupItem,
@@ -11,15 +11,11 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-// core components
-import Navbar from "components/Navbars/Navbar.js";
-import Footer from "components/Footer/Footer.js";
-
-export default function Overview() {
+export default function Overview(props) {
   const [overviews, setOverviews] = useState([]);
   const [liquidates, setLiquidates] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setOverviews([
       {
         startDay: 1001,
@@ -109,18 +105,15 @@ export default function Overview() {
         profitloss: -200000
       },
     ]);
-
-    document.body.classList.toggle("landing-page");
-    // Specify how to clean up after this effect:
-    return function cleanup() {
-      document.body.classList.toggle("landing-page");
-    };
   }, []);
+
+  const gotoBorrow = e => {
+    props.history.push('/borrow');
+  }
 
   return (
     <>
-      <Navbar />
-      <div className="wrapper" style={{ minHeight: "calc(100vh - 293px)" }}>
+      <div className="wrapper">
         <section className="section section-lg section-titles">
           <img
             alt="..."
@@ -130,7 +123,11 @@ export default function Overview() {
           <Container>
             <Row gutter="10" className="pl-4 pr-4">
               <Col lg="12" className="mb-4">
-                <Button className="btn-simple" color="info grow btn-lg" id="borrow">
+                <Button
+                  className="btn-simple grow"
+                  color="info btn-lg"
+                  id="borrow"
+                  onClick={gotoBorrow}>
                   BORROW
                 </Button>
                 <UncontrolledTooltip
@@ -398,7 +395,6 @@ export default function Overview() {
           </Container>
         </section>
       </div>
-      <Footer />
     </>
   );
 }

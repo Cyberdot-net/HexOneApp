@@ -71,12 +71,13 @@
     .has-danger.input-group-focus &{
         background-color: $transparent-bg;
     }
-
+      
     .has-success &{
         background-color: $transparent-bg;
     }
     .has-danger .form-control:focus + &{
         color: $danger-states;
+        border-color: lighten($danger-states,5%);
     }
     .has-success .form-control:focus + &{
         color: $success;
@@ -335,9 +336,17 @@ textarea.form-control{
 .input-group-prepend{
   margin-right: 0;
 }
+.input-group-append{
+  margin-left: 0;
+}
 .input-group-prepend,
 .input-group-append {
   .tim-icons {
     font-size: $font-paragraph;
+    transition: all .3s ease 0s;
+
+    &:hover {
+        box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.7);
+    }
   }
 }

@@ -82,16 +82,16 @@
 
 .has-success,
 .has-danger{
-    &:after{
-        font-family: 'nucleo';
-        content: "\ea1b";
-        display: inline-block;
-        position: absolute;
-        right: 20px;
-        top: 13px;
-        color: $success;
-        font-size: 11px;
-    }
+    // &:after{
+    //     font-family: 'nucleo';
+    //     content: "\ea1b";
+    //     display: inline-block;
+    //     position: absolute;
+    //     right: 20px;
+    //     top: 13px;
+    //     color: $success;
+    //     font-size: 11px;
+    // }
 
     &.form-control-lg{
       &:after{
@@ -117,10 +117,10 @@
 }
 
 .has-danger{
-  &:after{
-    content: "\ea48";
-    color: $danger-states;
-  }
+  // &:after{
+  //   content: "\ea48";
+  //   color: $danger-states;
+  // }
 
   &.form-check .form-check-label{
     color: $danger-states;

@@ -1,18 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
 
 import "assets/css/nucleo-icons.css";
 import "assets/scss/index.scss";
 
-import Overview from "views/Overview";
+import App from "App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
-    <Switch>
-      <Route path="/" render={(props) => <Overview {...props} />} />
-    </Switch>
+    <App></App>
   </BrowserRouter>
 );

@@ -1,4 +1,14 @@
 // style for the landing page
+.wrapper {
+  min-height: calc(100vh - 254px);
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+
+
 .index-page {
     .page-header {
         height: 100vh;
