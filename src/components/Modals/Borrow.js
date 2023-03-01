@@ -12,6 +12,7 @@ import {
   InputGroupText,
   UncontrolledTooltip,
 } from "reactstrap";
+import { roundNumber } from "common/utilities";
 
 export default function Borrow(props) {
 
@@ -48,10 +49,11 @@ export default function Borrow(props) {
   }
 
   const selectDays = (ranges) => {
-    const { selection } = ranges;
+    let { selection } = ranges;
+    selection.startDate = moment(new Date()).startOf("day").toDate();
     setDays([selection]);
     setWallet(prevWallet => {
-      const startDate = moment(selection.startDate);
+      const startDate = moment(selection.startDate).startOf("day");
       const endDate = moment(selection.endDate);
       return { ...prevWallet, days: endDate.diff(startDate, 'days') + 1 };
     });
@@ -60,7 +62,7 @@ export default function Borrow(props) {
   const changeWallet = (key, value) => {
     setWallet(prevWallet => {
       if (key === 'collateral') {
-        return { ...prevWallet, [key]: value, borrow_amount: (value * prevWallet.hex_usdc_feed) || ""};
+        return { ...prevWallet, [key]: value, borrow_amount: roundNumber(value * prevWallet.hex_usdc_feed)};
       } else {
         return { ...prevWallet, [key]: value };
       }
@@ -83,7 +85,7 @@ export default function Borrow(props) {
           <i className="tim-icons icon-simple-remove text-white" />
         </button>
         <div className="text-muted text-center ml-auto mr-auto">
-          <h3 className="mb-0"><i className="tim-icons icon-coins" /> Borrow</h3>
+          <h3 className="mb-0"><i className="tim-icons tim-icons-lg icon-coins mr-1" /> Borrow</h3>
         </div>
       </div>
       <div className="modal-body">
@@ -120,6 +122,7 @@ export default function Borrow(props) {
             </InputGroup>
             {isOpen && <DateRange
               editableDateInputs={true}
+              minDate={new Date()}
               onChange={selectDays}
               moveRangeOnFirstSelection={false}
               showPreview={false}
