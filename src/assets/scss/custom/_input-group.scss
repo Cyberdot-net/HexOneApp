@@ -163,9 +163,10 @@
     border-left: 0 none;
 }
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
-    background-color: $black-states;
-    color: $default;
-    cursor: not-allowed;
+    // background-color: $black-states;
+    background-color: transparent;
+    // color: $default;
+    // cursor: not-allowed;
 }
 
 .input-group-btn .btn{

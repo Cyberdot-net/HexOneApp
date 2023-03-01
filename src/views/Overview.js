@@ -12,11 +12,15 @@ import {
 } from "reactstrap";
 
 import BorrowModal from "components/Modals/Borrow.js";
+import ReborrowModal from "components/Modals/Reborrow.js";
+import RechargeModal from "components/Modals/Recharge.js";
 
 export default function Overview() {
   const [overviews, setOverviews] = useState([]);
   const [liquidates, setLiquidates] = useState([]);
   const [isBorrowOpen, setBorrowOpen] = useState(false);
+  const [reborrow, setReborrow] = useState({ show: false, data: {} });
+  const [recharge, setRecharge] = useState({ show: false, data: {} });
 
   useEffect(() => {
     setOverviews([
@@ -27,9 +31,10 @@ export default function Overview() {
         stakeid: 123,
         collateralAmt: 100000,
         borrowedAmt: 100000,
-        initialAmt: 0.2,
+        initialHex: 0.2,
         currentHex: 0.2,
         ratio: 100,
+        totalHex: 1000,
         disabled: true,
       },
       {
@@ -39,9 +44,10 @@ export default function Overview() {
         stakeid: 734,
         collateralAmt: 20000,
         borrowedAmt: 10000,
-        initialAmt: 0.5,
+        initialHex: 0.5,
         currentHex: 0.2,
         ratio: 40,
+        totalHex: 1500,
         disabled: true,
       },
       {
@@ -51,9 +57,10 @@ export default function Overview() {
         stakeid: 945,
         collateralAmt: 1000000,
         borrowedAmt: 10000,
-        initialAmt: 0.05,
+        initialHex: 0.05,
         currentHex: 0.2,
         ratio: 300,
+        totalHex: 3000,
         disabled: true,
       },
       {
@@ -63,9 +70,10 @@ export default function Overview() {
         stakeid: 69,
         collateralAmt: 50000,
         borrowedAmt: 5000,
-        initialAmt: 0.01,
+        initialHex: 0.01,
         currentHex: 0.2,
         ratio: 1900,
+        totalHex: 2500,
         disabled: false,
       },
     ]);
@@ -110,8 +118,40 @@ export default function Overview() {
     ]);
   }, []);
 
-  const onBorrow = (e) => {
-    
+  const onClickReborrow = (row) => {
+    setReborrow({ show: true, data: row });
+  }
+
+  const onClickRecharge = (row) => {
+    setRecharge({ show: true, data: row });
+  }
+
+  const doBorrow = (collateralAmt, days, borrowedAmt) => {
+    console.log(collateralAmt, days, borrowedAmt);
+  }
+
+  const doReborrow = (stakeid, amount) => {
+    setOverviews(prev => {
+      return prev.map(r => {
+        if (r.stakeid === stakeid) {
+          r.borrowedAmt += parseFloat(amount);
+          r.initialHex = r.currentHex;
+        }
+        return r;
+      });
+    });
+  }
+
+  const doRecharge = (stakeid, amount) => {
+    setOverviews(prev => {
+      return prev.map(r => {
+        if (r.stakeid === stakeid) {
+          r.borrowedAmt += parseFloat(amount);
+          r.initialHex = r.currentHex;
+        }
+        return r;
+      });
+    });
   }
 
   return (
@@ -190,7 +230,7 @@ export default function Overview() {
                         <td>{r.collateralAmt.toLocaleString()} HEX</td>
                         <td>{r.borrowedAmt.toLocaleString()} HEX1</td>
                         <td className="text-center">{r.stakeid}</td>
-                        <td>${r.initialAmt.toLocaleString()}</td>
+                        <td>${r.initialHex.toLocaleString()}</td>
                         <td>${r.currentHex.toLocaleString()}</td>
                         <td className={r.ratio >= 100 ? "green" : "red"}>
                           {r.ratio.toLocaleString()}%
@@ -216,6 +256,7 @@ export default function Overview() {
                             rel="tooltip"
                             id="mintHex1"
                             className="btn btn-success btn-sm"
+                            onClick={() => onClickReborrow(r)}
                             disabled={!r.disabled}
                           >
                             Re-Borrow
@@ -231,6 +272,7 @@ export default function Overview() {
                             rel="tooltip"
                             id="addCollateral"
                             className="btn btn-info btn-sm"
+                            onClick={() => onClickRecharge(r)}
                             disabled={!r.disabled}
                           >
                             Re-Charge
@@ -239,8 +281,7 @@ export default function Overview() {
                             placement="bottom"
                             target="addCollateral"
                           >
-                            Add more collateral (HEX) without borrowing more
-                            $HEX1
+                            Add more collateral (HEX) without borrowing more $HEX1
                           </UncontrolledTooltip>
                         </td>
                       </tr>
@@ -397,11 +438,23 @@ export default function Overview() {
             </Row>
           </Container>
         </section>
-        <BorrowModal 
+        {isBorrowOpen && <BorrowModal 
           isOpen={isBorrowOpen}
-          onBorrow={() => onBorrow()}
+          onBorrow={doBorrow}
           onClose={() => setBorrowOpen(false)}
-        />
+        />}
+        {reborrow.show && <ReborrowModal 
+          isOpen={reborrow.show}
+          data={reborrow.data}
+          onReborrow={doReborrow}
+          onClose={() => setReborrow({ show: false, data: {} })}
+        />}
+        {recharge.show && <RechargeModal 
+          isOpen={recharge.show}
+          data={recharge.data}
+          onRecharge={doRecharge}
+          onClose={() => setRecharge({ show: false, data: {} })}
+        />}
       </div>
     </>
   );
