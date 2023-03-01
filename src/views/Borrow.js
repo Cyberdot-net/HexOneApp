@@ -33,7 +33,7 @@ export default function Borrow() {
     setWallet({
       totalHex: 2500,
       collateral: "",
-      hex_usdc_feed: 1.02,
+      hex_usdc_feed: 0.1,
       borrow_amount: "",
       days: ""
     });
