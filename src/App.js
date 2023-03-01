@@ -7,7 +7,6 @@ import Footer from "components/Footer/Footer.js";
 
 // views
 import Overview from "views/Overview";
-import Borrow from "views/Borrow";
 
 export default function App() {
 
@@ -16,7 +15,7 @@ export default function App() {
       <Navbar />
       <Switch>
         <Route exact path="/" render={(props) => <Overview {...props} />} />
-        <Route exact path="/borrow" render={(props) => <Borrow {...props} />} />
+        {/* add routes here */}
         <Redirect to='/' />
       </Switch>
       <Footer />

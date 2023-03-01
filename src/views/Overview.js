@@ -11,9 +11,12 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-export default function Overview(props) {
+import BorrowModal from "components/Modals/Borrow.js";
+
+export default function Overview() {
   const [overviews, setOverviews] = useState([]);
   const [liquidates, setLiquidates] = useState([]);
+  const [isBorrowOpen, setBorrowOpen] = useState(false);
 
   useEffect(() => {
     setOverviews([
@@ -107,8 +110,8 @@ export default function Overview(props) {
     ]);
   }, []);
 
-  const gotoBorrow = e => {
-    props.history.push('/borrow');
+  const onBorrow = (e) => {
+    
   }
 
   return (
@@ -127,7 +130,7 @@ export default function Overview(props) {
                   className="btn-simple grow"
                   color="info btn-lg"
                   id="borrow"
-                  onClick={gotoBorrow}>
+                  onClick={() => setBorrowOpen(true)}>
                   BORROW
                 </Button>
                 <UncontrolledTooltip
@@ -394,6 +397,11 @@ export default function Overview(props) {
             </Row>
           </Container>
         </section>
+        <BorrowModal 
+          isOpen={isBorrowOpen}
+          onBorrow={() => onBorrow()}
+          onClose={() => setBorrowOpen(false)}
+        />
       </div>
     </>
   );

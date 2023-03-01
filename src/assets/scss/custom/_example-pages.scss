@@ -7,7 +7,10 @@
   cursor: pointer;
 }
 
-
+.modal-open{
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 
 .index-page {
     .page-header {
@@ -112,6 +115,7 @@
 }
 .landing-page {
   overflow-x: hidden;
+  padding-right: 0px !important;
 
   &::-webkit-scrollbar-track
   {
