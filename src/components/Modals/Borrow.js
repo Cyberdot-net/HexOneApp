@@ -16,21 +16,44 @@ import { roundNumber } from "common/utilities";
 
 export default function Borrow(props) {
 
-  const [data, setData] = useState({ hex: 0.1, totalHex: 2500 });
+  const [totalHex,  setTotalHex] = useState(0);
+  const [hexFeed, setHexFeed] = useState(0);
+  const [shareRate, setShareRate] = useState(0);
+  const [dayPayoutTotal, setDayPayoutTotal] = useState(0);
   const [isOpen, setOpen] = useState(false);
   const [collateralAmt, setCollateralAmt] = useState("");
   const [borrowedAmt, setBorrowedAmt] = useState("");
-  const [days, setDays] = useState("");
+  const [effectiveHex, setEffectiveHex] = useState("");
+  const [totalTShare, setTotalTShare] = useState("");
+  const [stakeDays, setStakeDays] = useState("");
   const [daterange, setDateRange] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
 
   useEffect(() => {
-    setData({ hex: 0.1, totalHex: 2500 });
+
+    setHexFeed(0.1);
+
+    setTotalHex(100000);
+
+    setShareRate(265452); // get from third value (function 12)
+
+    setDayPayoutTotal(6494422766799027); // get from when use 8 (function 9)
 
     document.addEventListener("mousedown", bodyMouseDowntHandler);
     return () => {
       document.removeEventListener("mousedown", bodyMouseDowntHandler);
     };
   }, []);
+
+  useEffect(() => {
+    const totalTShare = totalHex / shareRate;
+
+    setTotalTShare(roundNumber(totalTShare));
+
+    const effectiveHex = totalTShare * dayPayoutTotal * stakeDays;
+
+    setEffectiveHex(roundNumber(effectiveHex));
+
+  }, [ totalHex, shareRate, dayPayoutTotal, stakeDays ]);
 
   const bodyMouseDowntHandler = e => {
     const calendar = document.getElementsByClassName("calendar");
@@ -47,18 +70,18 @@ export default function Borrow(props) {
     // calc days in selected daterange
     const startDate = moment(selection.startDate).startOf("day");
     const endDate = moment(selection.endDate);    
-    setDays(endDate.diff(startDate, 'days') + 1)
+    setStakeDays(endDate.diff(startDate, 'days') + 1)
   }
 
   const changeCollateralAmt = (value) => {
     setCollateralAmt(value);
-    setBorrowedAmt(roundNumber(value * data.hex));
+    setBorrowedAmt(roundNumber(value * hexFeed));
   }
 
   const onClickBorrow = () => {
-    if (!collateralAmt || !days || !borrowedAmt || collateralAmt > data.totalHex) return;
+    if (!collateralAmt || !stakeDays || !borrowedAmt || collateralAmt > totalHex) return;
 
-    props.onBorrow(collateralAmt, days, borrowedAmt);
+    props.onBorrow(collateralAmt, stakeDays, borrowedAmt);
     props.onClose();
   }
 
@@ -83,15 +106,15 @@ export default function Borrow(props) {
       </div>
       <div className="modal-body">
         <Form role="form">
-          <FormGroup className={"mb-3 mt-3 " + (collateralAmt > data.totalHex && " has-danger")}>
+          <FormGroup className={"mb-3 mt-3 " + (collateralAmt > totalHex && " has-danger")}>
             <InputGroup>
               <Input
                 type="text"
-                placeholder={`Collateral Amount in HEX (${(data.totalHex || 0).toLocaleString()} HEX available)`}
+                placeholder={`Collateral Amount in HEX (${(totalHex || 0).toLocaleString()} HEX available)`}
                 value={collateralAmt}
                 onChange={e => changeCollateralAmt(e.target.value)} 
                 autoFocus
-                {...(collateralAmt > data.totalHex) && {className: "form-control-danger"}}
+                {...(collateralAmt > totalHex) && {className: "form-control-danger"}}
               />
               <InputGroupAddon addonType="append">
                 <InputGroupText>
@@ -105,8 +128,8 @@ export default function Borrow(props) {
               <Input
                 type="text"
                 placeholder="Stake Length in Days"
-                value={days}
-                onChange={e => setDays(e.target.value)} 
+                value={stakeDays}
+                onChange={e => setStakeDays(e.target.value)} 
               />
               <InputGroupAddon addonType="append" className="pointer" onClick={e => setOpen(!isOpen)}>
                 <InputGroupText>
@@ -123,6 +146,36 @@ export default function Borrow(props) {
               ranges={daterange}
               className="calendar"
             />}
+          </FormGroup>
+          <FormGroup className="mb-3">
+            <InputGroup>
+              <Input
+                type="text"
+                placeholder="Effective Hex"
+                value={effectiveHex}
+                onChange={e => setEffectiveHex(e.target.value)} 
+              />
+              <InputGroupAddon addonType="append">
+                <InputGroupText>
+                  <i className="tim-icons icon-coins" />
+                </InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </FormGroup>
+          <FormGroup className="mb-3">
+            <InputGroup>
+              <Input
+                type="text"
+                placeholder="Total T-Shares"
+                value={totalTShare}
+                onChange={e => setTotalTShare(e.target.value)} 
+              />
+              <InputGroupAddon addonType="append">
+                <InputGroupText>
+                  <i className="tim-icons icon-coins" />
+                </InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
           </FormGroup>
           <FormGroup className="mb-3">
             <InputGroup>
