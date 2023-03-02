@@ -12,7 +12,7 @@ import {
   InputGroupText,
   UncontrolledTooltip,
 } from "reactstrap";
-import { roundNumber } from "common/utilities";
+import { roundNumber  } from "common/utilities";
 
 export default function Borrow(props) {
 
@@ -47,11 +47,11 @@ export default function Borrow(props) {
   useEffect(() => {
     const totalTShare = totalHex / shareRate;
 
-    setTotalTShare(roundNumber(totalTShare));
+    setTotalTShare(totalTShare);
 
     const effectiveHex = totalTShare * dayPayoutTotal * stakeDays;
 
-    setEffectiveHex(roundNumber(effectiveHex));
+    setEffectiveHex(effectiveHex);
 
   }, [ totalHex, shareRate, dayPayoutTotal, stakeDays ]);
 

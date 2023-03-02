@@ -10,21 +10,45 @@ import {
   InputGroupText,
   UncontrolledTooltip,
 } from "reactstrap";
-import { roundNumber } from "common/utilities";
 
 export default function Recharge(props) {
+
+  const [shareRate, setShareRate] = useState(0);
+  const [dayPayoutTotal, setDayPayoutTotal] = useState(0);
+  const [effectiveHex, setEffectiveHex] = useState("");
+  const [totalTShare, setTotalTShare] = useState("");
   const [amount, setAmount] = useState("");
   const [data, setData] = useState({});
+  const [totalHex, setTotalHex] = useState(0);
+
+  useEffect(() => {
+    setShareRate(265452); // get from third value (function 12)
+    setDayPayoutTotal(6494422766799027); // get from when use 8 (function 9)
+  }, []);
 
   useEffect(() => {
     if (props.data && props.data.stakeid) {
-      const totalHex = roundNumber(props.data.borrowedAmt * (props.data.initialHex - props.data.currentHex) / props.data.currentHex);
-      setData({ ...props.data, totalHex });
+      const totalHex = props.data.borrowedAmt * (props.data.initialHex - props.data.currentHex) / props.data.currentHex;
+      setData({ ...props.data });
+      setTotalHex(totalHex);
     }
   }, [props.data]);
 
+  useEffect(() => {
+    if (!shareRate) return;
+
+    const totalTShare = data.totalHex / shareRate;
+
+    setTotalTShare(totalTShare);
+
+    const effectiveHex = totalTShare * dayPayoutTotal * (data.endDay - data.startDay);
+
+    setEffectiveHex(effectiveHex);
+
+  }, [ shareRate, dayPayoutTotal, data ]);
+  
   const onClickRecharge = () => {
-    if (!amount || amount > data.totalHex) return;
+    if (!amount || amount > totalHex) return;
 
     props.onRecharge(data.stakeid, amount);
     props.onClose();
@@ -66,14 +90,44 @@ export default function Recharge(props) {
               </InputGroupAddon>
             </InputGroup>
           </FormGroup>
-          <FormGroup className={"mb-3 " + (amount > data.totalHex && " has-danger")}>
+          <FormGroup className="mb-3">
             <InputGroup>
               <Input
                 type="text"
-                placeholder={`Collateral Amount in HEX (${(data.totalHex || 0).toLocaleString()} HEX available)`}
+                placeholder="Effective Hex"
+                value={effectiveHex}
+                onChange={e => setEffectiveHex(e.target.value)} 
+              />
+              <InputGroupAddon addonType="append">
+                <InputGroupText>
+                  <i className="tim-icons icon-coins" />
+                </InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </FormGroup>
+          <FormGroup className="mb-3">
+            <InputGroup>
+              <Input
+                type="text"
+                placeholder="Total T-Shares"
+                value={totalTShare}
+                onChange={e => setTotalTShare(e.target.value)} 
+              />
+              <InputGroupAddon addonType="append">
+                <InputGroupText>
+                  <i className="tim-icons icon-coins" />
+                </InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </FormGroup>
+          <FormGroup className={"mb-3 " + (amount > totalHex && " has-danger")}>
+            <InputGroup>
+              <Input
+                type="text"
+                placeholder={`Collateral Amount in HEX (${(totalHex || 0).toLocaleString()} HEX available)`}
                 value={amount}
                 onChange={e => setAmount(e.target.value)} 
-                {...(amount > data.totalHex) && {className: "form-control-danger"}}
+                {...(amount > totalHex) && {className: "form-control-danger"}}
               />
               <InputGroupAddon addonType="append">
                 <InputGroupText>
@@ -90,7 +144,7 @@ export default function Recharge(props) {
               type="button"
               onClick={onClickRecharge}
             >
-              Charge
+              Add Collateral
             </Button>
             <UncontrolledTooltip
               placement="bottom"

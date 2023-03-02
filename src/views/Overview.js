@@ -148,13 +148,16 @@ export default function Overview() {
 
   const doRecharge = (stakeid, amount) => {
     setOverviews(prev => {
-      return prev.map(r => {
-        if (r.stakeid === stakeid) {
-          r.borrowedAmt += parseFloat(amount);
-          r.initialHex = r.currentHex;
-        }
-        return r;
+      const oldR = prev.find(r => r.stakeid === stakeid);
+      let newData = prev.filter(r => r.stakeid !== stakeid);
+      newData.push({
+        ...oldR,
+        stakeid: 2567,
+        borrowedAmt: oldR.borrowedAmt + parseFloat(amount),
+        initialHex: oldR.currentHex
       });
+
+      return newData;
     });
   }
 
@@ -241,12 +244,12 @@ export default function Overview() {
                         <td className={r.ratio >= 100 ? "green" : "red"}>
                           {r.ratio.toLocaleString()}%
                         </td>
-                        <td className="td-actions buttons" width="125">
+                        <td className="td-actions" width="125">
                           <button
                             type="button"
                             rel="tooltip"
                             id="claim"
-                            className="btn btn-primary btn-sm"
+                            className="btn btn-primary btn-sm w-full mb-1"
                             disabled={r.disabled}
                           >
                             Claim
@@ -261,7 +264,7 @@ export default function Overview() {
                             type="button"
                             rel="tooltip"
                             id="mintHex1"
-                            className="btn btn-success btn-sm"
+                            className="btn btn-success btn-sm w-full mb-1"
                             onClick={() => onClickReborrow(r)}
                             disabled={!r.disabled}
                           >
@@ -277,7 +280,7 @@ export default function Overview() {
                             type="button"
                             rel="tooltip"
                             id="addCollateral"
-                            className="btn btn-info btn-sm"
+                            className="btn btn-info btn-sm w-full"
                             onClick={() => onClickRecharge(r)}
                             disabled={!r.disabled}
                           >

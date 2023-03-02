@@ -10,21 +10,22 @@ import {
   InputGroupText,
   UncontrolledTooltip,
 } from "reactstrap";
-import { roundNumber } from "common/utilities";
 
 export default function Reborrow(props) {
   const [amount, setAmount] = useState("");
   const [data, setData] = useState({});
+  const [totalHex, setTotalHex] = useState(0);
 
   useEffect(() => {
     if (props.data && props.data.stakeid) {
-      const totalHex = roundNumber(props.data.borrowedAmt * (props.data.currentHex - props.data.initialHex));
-      setData({ ...props.data, totalHex });
+      const totalHex = props.data.borrowedAmt * (props.data.currentHex - props.data.initialHex);
+      setData({ ...props.data });
+      setTotalHex(totalHex);
     }
   }, [props.data]);
 
   const onClickReborrow = () => {
-    if (!amount || amount > data.totalHex) return;
+    if (!amount || amount > totalHex) return;
 
     props.onReborrow(data.stakeid, amount);
     props.onClose();
@@ -66,14 +67,14 @@ export default function Reborrow(props) {
               </InputGroupAddon>
             </InputGroup>
           </FormGroup>
-          <FormGroup className={"mb-3 " + (amount > data.totalHex && " has-danger")}>
+          <FormGroup className={"mb-3 " + (amount > totalHex && " has-danger")}>
             <InputGroup>
               <Input
                 type="text"
-                placeholder={`Borrow Amount in HEX (${(data.totalHex || 0).toLocaleString()} HEX available)`}
+                placeholder={`Borrow Amount in HEX (${(totalHex || 0).toLocaleString()} HEX available)`}
                 value={amount}
                 onChange={e => setAmount(e.target.value)} 
-                {...(amount > data.totalHex) && {className: "form-control-danger"}}
+                {...(amount > totalHex) && {className: "form-control-danger"}}
               />
               <InputGroupAddon addonType="append">
                 <InputGroupText>
