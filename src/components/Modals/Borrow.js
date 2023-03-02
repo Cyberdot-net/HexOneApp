@@ -62,7 +62,7 @@ export default function Borrow(props) {
     }
   }
 
-  const selectDays = (ranges) => {
+  const selectStakeDays = (ranges) => {
     let { selection } = ranges;
     selection.startDate = moment(new Date()).startOf("day").toDate();
     setDateRange([selection]);
@@ -140,7 +140,7 @@ export default function Borrow(props) {
             {isOpen && <DateRange
               editableDateInputs={true}
               minDate={new Date()}
-              onChange={selectDays}
+              onChange={selectStakeDays}
               moveRangeOnFirstSelection={false}
               showPreview={false}
               ranges={daterange}

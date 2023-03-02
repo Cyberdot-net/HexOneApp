@@ -31,6 +31,7 @@ export default function Overview() {
         stakeid: 123,
         collateralAmt: 100000,
         borrowedAmt: 100000,
+        effectiveAmt: 50000,
         initialHex: 0.2,
         currentHex: 0.2,
         ratio: 100,
@@ -44,6 +45,7 @@ export default function Overview() {
         stakeid: 734,
         collateralAmt: 20000,
         borrowedAmt: 10000,
+        effectiveAmt: 50000,
         initialHex: 0.5,
         currentHex: 0.2,
         ratio: 40,
@@ -57,6 +59,7 @@ export default function Overview() {
         stakeid: 945,
         collateralAmt: 1000000,
         borrowedAmt: 10000,
+        effectiveAmt: 80000,
         initialHex: 0.05,
         currentHex: 0.2,
         ratio: 300,
@@ -70,6 +73,7 @@ export default function Overview() {
         stakeid: 69,
         collateralAmt: 50000,
         borrowedAmt: 5000,
+        effectiveAmt: 2000,
         initialHex: 0.01,
         currentHex: 0.2,
         ratio: 1900,
@@ -199,7 +203,7 @@ export default function Overview() {
             className="path"
             src={require("assets/img/path3.png")}
           />
-          <Container>
+          <Container className="w-full">
             <Row>
               <Col md="4">
                 <hr className="line-info" />
@@ -214,6 +218,7 @@ export default function Overview() {
                       <th className="text-center">Start</th>
                       <th className="text-center">End</th>
                       <th>Collateral</th>
+                      <th>Effective</th>
                       <th>Borrowed Amt</th>
                       <th className="text-center">StakeId</th>
                       <th>Initial HEX/USDC</th>
@@ -228,6 +233,7 @@ export default function Overview() {
                         <td className="text-center">{r.startDay}</td>
                         <td className="text-center">{r.endDay}</td>
                         <td>{r.collateralAmt.toLocaleString()} HEX</td>
+                        <td>{r.effectiveAmt.toLocaleString()} HEX</td>
                         <td>{r.borrowedAmt.toLocaleString()} HEX1</td>
                         <td className="text-center">{r.stakeid}</td>
                         <td>${r.initialHex.toLocaleString()}</td>
@@ -235,7 +241,7 @@ export default function Overview() {
                         <td className={r.ratio >= 100 ? "green" : "red"}>
                           {r.ratio.toLocaleString()}%
                         </td>
-                        <td className="td-actions">
+                        <td className="td-actions buttons" width="125">
                           <button
                             type="button"
                             rel="tooltip"

@@ -141,9 +141,18 @@
         text-align: right;
     }
 
-  //  .td-actions .btn{
-  //     margin: 0px;
-  //   }
+    .td-actions{
+      .btn {
+        margin: 0px;
+      }
+
+      &.buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 3px;
+      }
+    }
 
     > tbody > tr{
         position: relative;
