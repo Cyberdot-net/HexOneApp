@@ -653,3 +653,36 @@
 .w-full {
   width: 100%;
 }
+
+.no-overflow {
+  overflow: hidden
+}
+
+.walletInfo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  > img {
+    margin-right: 0.7em;
+  }
+
+  .connectWalletText {
+    -webkit-font-smoothing: antialiased;
+    font-weight: 600;
+    font-size: 1.1em;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: #333;
+    > span {
+      color: #96908c;
+      font-size: 0.8em;
+      display: block;
+      margin-top: 0.5em;
+    }
+  }
+
+  &.disabled {
+    cursor: none;
+  }
+}

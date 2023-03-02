@@ -4,6 +4,9 @@ import moment from "moment";
 import {
   Modal,
   Button,
+  Row,
+  Col,
+  Label,
   Form,
   FormGroup,
   Input,
@@ -107,90 +110,102 @@ export default function Borrow(props) {
       <div className="modal-body">
         <Form role="form">
           <FormGroup className={"mb-3 mt-3 " + (collateralAmt > totalHex && " has-danger")}>
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder={`Collateral Amount in HEX (${(totalHex || 0).toLocaleString()} HEX available)`}
-                value={collateralAmt}
-                onChange={e => changeCollateralAmt(e.target.value)} 
-                autoFocus
-                {...(collateralAmt > totalHex) && {className: "form-control-danger"}}
-              />
-              <InputGroupAddon addonType="append">
-                <InputGroupText>
-                  <i className="tim-icons icon-coins" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
+            <Row>
+              <Label sm="3" className="text-right">Collateral Amount</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder={`Collateral Amount in HEX (${(totalHex || 0).toLocaleString()} HEX available)`}
+                    value={collateralAmt}
+                    onChange={e => changeCollateralAmt(e.target.value)} 
+                    autoFocus
+                    {...(collateralAmt > totalHex) && {className: "form-control-danger"}}
+                  />
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText>HEX</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Col>
+            </Row>
           </FormGroup>
           <FormGroup className="mb-3">
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="Stake Length in Days"
-                value={stakeDays}
-                onChange={e => setStakeDays(e.target.value)} 
-              />
-              <InputGroupAddon addonType="append" className="pointer" onClick={e => setOpen(!isOpen)}>
-                <InputGroupText>
-                  <i className="tim-icons icon-calendar-60" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-            {isOpen && <DateRange
-              editableDateInputs={true}
-              minDate={new Date()}
-              onChange={selectStakeDays}
-              moveRangeOnFirstSelection={false}
-              showPreview={false}
-              ranges={daterange}
-              className="calendar"
-            />}
+            <Row>
+              <Label sm="3" className="text-right">Stake Days</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Stake Length in Days"
+                    value={stakeDays}
+                    onChange={e => setStakeDays(e.target.value)} 
+                  />
+                  <InputGroupAddon addonType="append" className="pointer" onClick={e => setOpen(!isOpen)}>
+                    <InputGroupText>
+                      <i className="tim-icons icon-calendar-60" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+                {isOpen && <DateRange
+                  editableDateInputs={true}
+                  minDate={new Date()}
+                  onChange={selectStakeDays}
+                  moveRangeOnFirstSelection={false}
+                  showPreview={false}
+                  ranges={daterange}
+                  className="calendar"
+                />}
+              </Col>
+            </Row>
           </FormGroup>
           <FormGroup className="mb-3">
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="Effective Hex"
-                value={effectiveHex}
-                onChange={e => setEffectiveHex(e.target.value)} 
-              />
-              <InputGroupAddon addonType="append">
-                <InputGroupText>
-                  <i className="tim-icons icon-coins" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
+            <Row>
+              <Label sm="3" className="text-right">Effective Hex</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Effective Hex"
+                    value={effectiveHex}
+                    onChange={e => setEffectiveHex(e.target.value)} 
+                  />
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText>HEX</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Col>
+            </Row>
           </FormGroup>
           <FormGroup className="mb-3">
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="Total T-Shares"
-                value={totalTShare}
-                onChange={e => setTotalTShare(e.target.value)} 
-              />
-              <InputGroupAddon addonType="append">
-                <InputGroupText>
-                  <i className="tim-icons icon-coins" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
+            <Row>
+              <Label sm="3" className="text-right">Total T-Shares</Label>
+              <Col sm="8">
+                <Input
+                  type="text"
+                  placeholder="Total T-Shares"
+                  value={totalTShare}
+                  onChange={e => setTotalTShare(e.target.value)} 
+                />
+              </Col>
+            </Row>
           </FormGroup>
           <FormGroup className="mb-3">
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="Borrow amount"
-                value={borrowedAmt}
-                onChange={e => setBorrowedAmt(e.target.value)} 
-              />
-              <InputGroupAddon addonType="append">
-                <InputGroupText>
-                  <i className="tim-icons icon-coins" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
+            <Row>
+              <Label sm="3" className="text-right">Borrow amount</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Borrow amount"
+                    value={borrowedAmt}
+                    onChange={e => setBorrowedAmt(e.target.value)} 
+                  />
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText>HEX1</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Col>
+            </Row>
           </FormGroup>
           <div className="text-center">
             <Button

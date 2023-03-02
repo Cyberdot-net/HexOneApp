@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import {
   Modal,
   Button,
+  Row,
+  Col,
+  Label,
   Form,
   FormGroup,
   Input,
@@ -53,35 +56,36 @@ export default function Reborrow(props) {
       <div className="modal-body">
         <Form role="form">
           <FormGroup className="mb-3 mt-3">
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder="StakeId"
-                value={data.stakeid || ""}
-                readOnly
-              />
-              <InputGroupAddon addonType="append">
-                <InputGroupText>
-                  <i className="tim-icons icon-bank" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
+            <Row>
+              <Label sm="3" className="text-right">StakeId</Label>
+              <Col sm="8">
+                <Input
+                  type="text"
+                  placeholder="StakeId"
+                  value={data.stakeid || ""}
+                  readOnly
+                />
+              </Col>
+            </Row>
           </FormGroup>
           <FormGroup className={"mb-3 " + (amount > totalHex && " has-danger")}>
-            <InputGroup>
-              <Input
-                type="text"
-                placeholder={`Borrow Amount in HEX (${(totalHex || 0).toLocaleString()} HEX available)`}
-                value={amount}
-                onChange={e => setAmount(e.target.value)} 
-                {...(amount > totalHex) && {className: "form-control-danger"}}
-              />
-              <InputGroupAddon addonType="append">
-                <InputGroupText>
-                  <i className="tim-icons icon-coins" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
+            <Row>
+              <Label sm="3" className="text-right">Borrow Amount</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder={`Borrow Amount in HEX (${(totalHex || 0).toLocaleString()} HEX available)`}
+                    value={amount}
+                    onChange={e => setAmount(e.target.value)} 
+                    {...(amount > totalHex) && {className: "form-control-danger"}}
+                  />
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText>HEX1</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Col>
+            </Row>
           </FormGroup>
           <div className="text-center">
             <Button

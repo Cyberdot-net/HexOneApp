@@ -225,8 +225,12 @@
             }
         }
 
+        .navbar-nav .d-lg-block {
+          display: block !important;
+        }
+
         .navbar-nav li{
-          padding: 0px;
+          padding: 2px 0px;
         }
       }
 
@@ -236,9 +240,9 @@
           margin-left: -3px;
           display: flex;
 
-          i {
-            margin-right: 12px;
-          }
+          // i {
+          //   margin-right: 12px;
+          // }
 
           span {
             margin: 0;

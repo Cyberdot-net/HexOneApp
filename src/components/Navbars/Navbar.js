@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -18,10 +18,10 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-export default function IndexNavbar() {
-  const [collapseOpen, setCollapseOpen] = React.useState(false);
-  const [collapseOut, setCollapseOut] = React.useState("");
-  const [color, setColor] = React.useState("navbar-transparent");
+export default function IndexNavbar(props) {
+  const [collapseOpen, setCollapseOpen] = useState(false);
+  const [collapseOut, setCollapseOut] = useState("");
+  const [color, setColor] = useState("navbar-transparent");
 
   React.useEffect(() => {
     window.addEventListener("scroll", changeColor);
@@ -97,8 +97,9 @@ export default function IndexNavbar() {
                   <img
                     alt="logo"
                     src={require("assets/img/logo.png")}
-                    width="50"
-                    height="50"
+                    width="80"
+                    height="auto"
+                    className="mr-3"
                   />
                   <span className="ml-2">HEX ONE</span>
                 </a>
@@ -117,8 +118,8 @@ export default function IndexNavbar() {
           <Nav navbar>
             <NavItem>
               <Button
-                className="nav-link d-none d-lg-block"
-                style={{width: 100}}
+                className="nav-link d-lg-block"
+                style={{width: 120}}
                 color="primary"
                 target="_blank"
                 href="https://hex-one.gitbook.io/hex-one-protocol"
@@ -128,8 +129,8 @@ export default function IndexNavbar() {
             </NavItem>
             <NavItem>
               <Button
-                className="nav-link d-none d-lg-block"
-                style={{width: 100}}
+                className="nav-link d-lg-block"
+                style={{width: 120}}
                 color="primary"
                 target="_blank"
                 href="https://airdrop.hex1.club"
@@ -139,13 +140,23 @@ export default function IndexNavbar() {
             </NavItem>
             <NavItem>
               <Button
-                className="nav-link d-none d-lg-block"
-                style={{width: 100}}
+                className="nav-link d-lg-block"
+                style={{width: 120}}
                 color="primary"
                 target="_blank"
                 href="https://sacrifice.hex1.club"
               >
                 SACRIFICE
+              </Button>
+            </NavItem>
+            <NavItem>
+              <Button
+                className="nav-link d-lg-block"
+                style={{width: 120}}
+                onClick={() => props.onConnect()}
+              >
+                Connect
+                <i className="tim-icons icon-coins ml-1" />
               </Button>
             </NavItem>
             <UncontrolledDropdown nav>
