@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext} from "react";
 import {
   Modal,
   Button,
@@ -12,17 +12,20 @@ import {
   InputGroupAddon,
   InputGroupText,
   UncontrolledTooltip,
+  Alert
 } from "reactstrap";
+import { WalletContext } from "providers/WalletProvider";
 
 export default function Recharge(props) {
 
-  const [shareRate, setShareRate] = useState(0);
-  const [dayPayoutTotal, setDayPayoutTotal] = useState(0);
-  const [effectiveHex, setEffectiveHex] = useState("");
-  const [totalTShare, setTotalTShare] = useState("");
-  const [amount, setAmount] = useState("");
-  const [data, setData] = useState({});
-  const [totalHex, setTotalHex] = useState(0);
+  const { address } = useContext(WalletContext);
+  const [ shareRate, setShareRate ] = useState(0);
+  const [ dayPayoutTotal, setDayPayoutTotal ] = useState(0);
+  const [ effectiveHex, setEffectiveHex ] = useState("");
+  const [ totalTShare, setTotalTShare ] = useState("");
+  const [ amount, setAmount ] = useState("");
+  const [ data, setData ] = useState({});
+  const [ totalHex, setTotalHex ] = useState(0);
 
   useEffect(() => {
     setShareRate(265452); // get from third value (function 12)
@@ -42,11 +45,11 @@ export default function Recharge(props) {
 
     const totalTShare = data.totalHex / shareRate;
 
-    setTotalTShare(totalTShare);
+    setTotalTShare(isNaN(totalTShare) ? "" : totalTShare);
 
     const effectiveHex = totalTShare * dayPayoutTotal * (data.endDay - data.startDay);
 
-    setEffectiveHex(effectiveHex);
+    setEffectiveHex(isNaN(effectiveHex) ? "" : effectiveHex);
 
   }, [ shareRate, dayPayoutTotal, data ]);
   
@@ -77,6 +80,14 @@ export default function Recharge(props) {
         </div>
       </div>
       <div className="modal-body">
+        <Alert
+          className="alert-with-icon"
+          color="danger"
+          isOpen={!address}
+        >
+          <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
+          <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
+        </Alert>
         <Form role="form">
           <FormGroup className="mb-3 mt-3">
             <Row>
@@ -147,6 +158,7 @@ export default function Recharge(props) {
               color="info"
               id="recharge"
               type="button"
+              disabled={!address}
               onClick={onClickRecharge}
             >
               Add Collateral

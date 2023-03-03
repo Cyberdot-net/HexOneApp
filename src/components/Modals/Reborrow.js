@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Modal,
   Button,
@@ -12,12 +12,16 @@ import {
   InputGroupAddon,
   InputGroupText,
   UncontrolledTooltip,
+  Alert
 } from "reactstrap";
+import { WalletContext } from "providers/WalletProvider";
 
 export default function Reborrow(props) {
-  const [amount, setAmount] = useState("");
-  const [data, setData] = useState({});
-  const [totalHex, setTotalHex] = useState(0);
+
+  const { address } = useContext(WalletContext);
+  const [ amount, setAmount ] = useState("");
+  const [ data, setData ] = useState({});
+  const [ totalHex, setTotalHex ] = useState(0);
 
   useEffect(() => {
     if (props.data && props.data.stakeid) {
@@ -54,6 +58,14 @@ export default function Reborrow(props) {
         </div>
       </div>
       <div className="modal-body">
+        <Alert
+          className="alert-with-icon"
+          color="danger"
+          isOpen={!address}
+        >
+          <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
+          <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
+        </Alert>
         <Form role="form">
           <FormGroup className="mb-3 mt-3">
             <Row>
@@ -93,6 +105,7 @@ export default function Reborrow(props) {
               color="info"
               id="reborrow"
               type="button"
+              disabled={!address}
               onClick={onClickReborrow}
             >
               Borrow

@@ -1,22 +1,65 @@
-import React, { useEffect } from "react";
+import React, { useContext } from "react";
 import {
   Modal,
-  Table
+  Table,
+  Alert
 } from "reactstrap";
+import { ethers } from "ethers";
+import { useState } from "react";
+import { WalletContext } from "providers/WalletProvider";
+import { ModalContext } from "providers/ModalProvider";
 
-export default function ConnectWallet(props) {
+export default function ConnectWallet() {
+  
+  const { setProvider, address } = useContext(WalletContext);
+  const { open, showModal } = useContext(ModalContext);
+  const [ message, setMessage ] = useState({ show: false, error: "", msg: "" });
+  const [ connecting, setConnecting ] = useState(false);
+
+  const connectMetaMask = async () => {
+
+    if (address) return;
+
+    if (typeof window.ethereum === 'undefined') {
+      setMessage({ show: true, error: "<b>No MetaMask! - </b>Please, install MetaMask", msg: "" });
+      return;
+    }
+
+    setConnecting(true);
+
+    // Connect to MetaMask
+    try {
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+    } catch (error) {
+      setConnecting(false);
+      setMessage({ show: true, error: "Failed to connect to MetaMask", msg: "" });
+      return;
+    }
+
+    // Set up the provider and wallet
+    const connectProvider = new ethers.providers.Web3Provider(window.ethereum);
+
+    setProvider(connectProvider);
+
+    setMessage({ show: true, msg: "<b>Success! - </b>Connected MetaMask", error: "" });
+
+    setConnecting(false);
+    onClose();
+
+  }
 
   const onClose = () => {
-    props.onClose();
+    showModal(false);
   }
 
   return (
     <Modal
       modalClassName="modal-black"
-      isOpen={props.isOpen}
+      isOpen={open}
       toggle={onClose}
-      size="sm"
+      size="md"
       style={{ top: '15vh' }}
+      unmountOnClose
     >
       <div className="modal-header justify-content-center">
         <button className="close" onClick={onClose}>
@@ -34,26 +77,52 @@ export default function ConnectWallet(props) {
           </h3>
         </div>
       </div>
-      <div className="modal-body">
-        <Table className="tablesorter">
+      <div className="modal-body">  
+        <Alert
+          className="alert-with-icon"
+          color={message.msg ? "success" : "danger"}
+          isOpen={message.show}
+          toggle={() => setMessage({ show: false, error: "", msg: "" })}
+        >
+          <span data-notify="icon" className={`tim-icons ${message.msg ? "icon-check-2" : "icon-alert-circle-exc"}`} />
+          <span dangerouslySetInnerHTML={{__html: message.msg ? message.msg : message.error }}></span>
+        </Alert>
+        <Table className="tablehover">
           <tbody className="no-overflow">
-            <tr className="pointer">
-              <td className="walletInfo">
-                <img
-                  alt="metamask"
-                  src={require("assets/img/metamask.png")}
-                  width="80"
-                  height="auto"
-                  className="mr-3"
-                />
-                <p className="connectWalletText">
-                  Metamask<span>Browser Wallet</span>
-                </p>
+            {connecting ? <tr className="cursor-pointer">
+              <td>
+                <div className="walletInfo">
+                  <img
+                    alt="loading"
+                    src={require("assets/img/loading.gif")}
+                    width="70"
+                    height="auto"
+                    className="mr-3"
+                  />
+                  <p className="connectWalletText">
+                    Waiting to connect<span>Confirm this connection in your wallet</span>
+                  </p>
+                </div>
+              </td>
+            </tr> : <tr className={address ? "cursor-none" : "cursor-pointer"} onClick={connectMetaMask}>
+              <td>
+                <div className="walletInfo">
+                  <img
+                    alt="metamask"
+                    src={require("assets/img/metamask.png")}
+                    width="70"
+                    height="auto"
+                    className="mr-3"
+                  />
+                  <p className="connectWalletText">
+                    Metamask<span>Browser Wallet</span>
+                  </p>
+                </div>
               </td>
               <td>
                 <i className="tim-icons icon-minimal-right text-white" />
               </td>
-            </tr>
+            </tr>}
           </tbody>
         </Table>
       </div>

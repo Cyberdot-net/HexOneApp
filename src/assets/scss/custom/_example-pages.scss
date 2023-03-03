@@ -3,8 +3,12 @@
   min-height: calc(100vh - 254px);
 }
 
-.pointer {
+.cursor-pointer {
   cursor: pointer;
+}
+
+.cursor-none {
+  cursor: not-allowed;
 }
 
 .modal-open{
@@ -661,7 +665,7 @@
 .walletInfo {
   display: flex;
   align-items: center;
-  cursor: pointer;
+  // cursor: pointer;
 
   > img {
     margin-right: 0.7em;
@@ -683,6 +687,6 @@
   }
 
   &.disabled {
-    cursor: none;
+    cursor: not-allowed;
   }
 }

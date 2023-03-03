@@ -11,9 +11,9 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-import BorrowModal from "components/Modals/Borrow.js";
-import ReborrowModal from "components/Modals/Reborrow.js";
-import RechargeModal from "components/Modals/Recharge.js";
+import BorrowModal from "components/Modals/Borrow";
+import ReborrowModal from "components/Modals/Reborrow";
+import RechargeModal from "components/Modals/Recharge";
 
 export default function Overview() {
   const [overviews, setOverviews] = useState([]);

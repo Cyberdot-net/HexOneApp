@@ -16,16 +16,28 @@
       }
   }
 
-  .navbar-nav{
-    .nav-item .nav-link{
-      position: relative;
-      color: inherit;
-      line-height: 20px;
-      display: inline-flex;
-      &:hover{
-        color: $opacity-8;
+  .navbar-nav {
+    .nav-item {
+      &.wallet {
+        display: flex;
+        align-items: center;
+        border-radius: 3em;
+        border: 1px solid gray;
+        padding: 0px 16px;
+        margin: 0px 8px;
+        cursor: pointer;
       }
-    }
+
+      .nav-link {
+        position: relative;
+        color: inherit;
+        line-height: 20px;
+        display: inline-flex;
+        &:hover{
+          color: $opacity-8;
+        }
+      }
+    } 
   }
 
   .navbar-wrapper {
@@ -167,7 +179,7 @@
 }
 
 .navbar-nav li{
-  padding: 0 10px;
+  padding: 0 4px;
   a{
     color: $white;
   }

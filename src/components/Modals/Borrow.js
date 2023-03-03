@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { DateRange } from "react-date-range";
 import moment from "moment";
 import {
@@ -14,22 +14,25 @@ import {
   InputGroupAddon,
   InputGroupText,
   UncontrolledTooltip,
+  Alert
 } from "reactstrap";
 import { roundNumber  } from "common/utilities";
+import { WalletContext } from "providers/WalletProvider";
 
 export default function Borrow(props) {
 
-  const [totalHex,  setTotalHex] = useState(0);
-  const [hexFeed, setHexFeed] = useState(0);
-  const [shareRate, setShareRate] = useState(0);
-  const [dayPayoutTotal, setDayPayoutTotal] = useState(0);
-  const [isOpen, setOpen] = useState(false);
-  const [collateralAmt, setCollateralAmt] = useState("");
-  const [borrowedAmt, setBorrowedAmt] = useState("");
-  const [effectiveHex, setEffectiveHex] = useState("");
-  const [totalTShare, setTotalTShare] = useState("");
-  const [stakeDays, setStakeDays] = useState("");
-  const [daterange, setDateRange] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
+  const { address } = useContext(WalletContext);
+  const [ totalHex,  setTotalHex ] = useState(0);
+  const [ hexFeed, setHexFeed ] = useState(0);
+  const [ shareRate, setShareRate ] = useState(0);
+  const [ dayPayoutTotal, setDayPayoutTotal ] = useState(0);
+  const [ isOpen, setOpen ] = useState(false);
+  const [ collateralAmt, setCollateralAmt ] = useState("");
+  const [ borrowedAmt, setBorrowedAmt ] = useState("");
+  const [ effectiveHex, setEffectiveHex ] = useState("");
+  const [ totalTShare, setTotalTShare ] = useState("");
+  const [ stakeDays, setStakeDays ] = useState("");
+  const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
 
   useEffect(() => {
 
@@ -50,11 +53,11 @@ export default function Borrow(props) {
   useEffect(() => {
     const totalTShare = totalHex / shareRate;
 
-    setTotalTShare(totalTShare);
+    setTotalTShare(isNaN(totalTShare) ? "" : totalTShare);
 
     const effectiveHex = totalTShare * dayPayoutTotal * stakeDays;
 
-    setEffectiveHex(effectiveHex);
+    setEffectiveHex(isNaN(effectiveHex) ? "" : effectiveHex);
 
   }, [ totalHex, shareRate, dayPayoutTotal, stakeDays ]);
 
@@ -108,6 +111,14 @@ export default function Borrow(props) {
         </div>
       </div>
       <div className="modal-body">
+        <Alert
+          className="alert-with-icon"
+          color="danger"
+          isOpen={!address}
+        >
+          <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
+          <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
+        </Alert>
         <Form role="form">
           <FormGroup className={"mb-3 mt-3 " + (collateralAmt > totalHex && " has-danger")}>
             <Row>
@@ -140,7 +151,7 @@ export default function Borrow(props) {
                     value={stakeDays}
                     onChange={e => setStakeDays(e.target.value)} 
                   />
-                  <InputGroupAddon addonType="append" className="pointer" onClick={e => setOpen(!isOpen)}>
+                  <InputGroupAddon addonType="append" className="cursor-pointer" onClick={e => setOpen(!isOpen)}>
                     <InputGroupText>
                       <i className="tim-icons icon-calendar-60" />
                     </InputGroupText>
@@ -213,6 +224,7 @@ export default function Borrow(props) {
               color="info"
               id="borrow"
               type="button"
+              disabled={!address}
               onClick={onClickBorrow}
             >
               Borrow

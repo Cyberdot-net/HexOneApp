@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-
 import {
   Button,
   Collapse,
@@ -17,15 +16,40 @@ import {
   Col,
   UncontrolledTooltip,
 } from "reactstrap";
+import { WalletContext } from "providers/WalletProvider";
+import { ModalContext } from "providers/ModalProvider";
+import { getShortAddress } from "common/utilities";
 
-export default function IndexNavbar(props) {
-  const [collapseOpen, setCollapseOpen] = useState(false);
-  const [collapseOut, setCollapseOut] = useState("");
-  const [color, setColor] = useState("navbar-transparent");
+export default function IndexNavbar() {
+  
+  const { setProvider, setAddress, address } = useContext(WalletContext);
+  const { showModal } = useContext(ModalContext);
+  const [ collapseOpen, setCollapseOpen ] = useState(false);
+  const [ collapseOut, setCollapseOut ] = useState("");
+  const [ color, setColor ] = useState("navbar-transparent");
 
-  React.useEffect(() => {
+  useEffect(() => {
+
+    const { ethereum } = window;
+    if (ethereum === undefined) return;
+
+    const handleAccountsChanged = (accounts) => {
+      setAddress(accounts[0]);
+    };
+  
+    const handleWalletDisconnect = (err) => {
+      if (err) console.error(err);
+      setProvider(null);
+    };
+
+    ethereum.on('accountsChanged', handleAccountsChanged);
+    ethereum.on('disconnect', handleWalletDisconnect)
+
     window.addEventListener("scroll", changeColor);
-    return function cleanup() {
+
+    return () => {
+      ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      ethereum.removeListener('disconnect', handleWalletDisconnect);
       window.removeEventListener("scroll", changeColor);
     };
   }, []);
@@ -149,15 +173,28 @@ export default function IndexNavbar(props) {
                 SACRIFICE
               </Button>
             </NavItem>
-            <NavItem>
-              <Button
+            <NavItem {...address && {className: "wallet"}}>
+              {address ? <>
+                <img
+                  alt="metamask"
+                  src={require("assets/img/metamask.png")}
+                  width="auto"
+                  height="20"
+                  className="cursor-pointer"
+                  id="metamask_connected"
+                />
+                <span className="ml-2">{getShortAddress(address)}</span>
+                <UncontrolledTooltip placement="bottom" target="metamask_connected">
+                  { address }
+                </UncontrolledTooltip>
+              </> : <Button
                 className="nav-link d-lg-block"
                 style={{width: 120}}
-                onClick={() => props.onConnect()}
+                onClick={() => showModal(true)}
               >
                 Connect
                 <i className="tim-icons icon-coins ml-1" />
-              </Button>
+              </Button>}
             </NavItem>
             <UncontrolledDropdown nav>
               <DropdownToggle

@@ -177,3 +177,10 @@
     font-size: 10px;
   }
 }
+
+
+.tablehover {
+  > tbody > tr:hover {
+    background-color: $blue;
+  }
+}
