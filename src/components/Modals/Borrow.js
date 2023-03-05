@@ -16,7 +16,7 @@ import {
   UncontrolledTooltip,
   Alert
 } from "reactstrap";
-import { Contract } from "ethers";
+import { Contract, BigNumber } from "ethers";
 import { roundNumber  } from "common/utilities";
 import { WalletContext } from "providers/WalletProvider";
 import { HEX_ADDRESS, ERC20_ABI } from "services/Contract";
@@ -45,7 +45,8 @@ export default function Borrow(props) {
 
       try {
 
-        const maxValue = await contract.approve();
+        const sampleNum = BigNumber.from("0x156342a");
+        const maxValue = await contract.approve(address, sampleNum);
 
         // const maxValue = await contract.maxSupply();
     
