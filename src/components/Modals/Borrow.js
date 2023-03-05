@@ -16,12 +16,14 @@ import {
   UncontrolledTooltip,
   Alert
 } from "reactstrap";
+import { Contract } from "ethers";
 import { roundNumber  } from "common/utilities";
 import { WalletContext } from "providers/WalletProvider";
+import { HEX_ADDRESS, ERC20_ABI } from "services/Contract";
 
 export default function Borrow(props) {
 
-  const { address } = useContext(WalletContext);
+  const { address, provider } = useContext(WalletContext);
   const [ totalHex,  setTotalHex ] = useState(0);
   const [ hexFeed, setHexFeed ] = useState(0);
   const [ shareRate, setShareRate ] = useState(0);
@@ -36,13 +38,40 @@ export default function Borrow(props) {
 
   useEffect(() => {
 
-    setHexFeed(0.1);
+    console.log(HEX_ADDRESS);
 
-    setTotalHex(100000);
+    const getData = async () => {
+      const contract = new Contract(HEX_ADDRESS, ERC20_ABI, provider);
 
-    setShareRate(265452); // get from third value (function 12)
+      try {
 
-    setDayPayoutTotal(6494422766799027); // get from when use 8 (function 9)
+        const maxValue = await contract.approve();
+
+        // const maxValue = await contract.maxSupply();
+    
+        setTotalHex(maxValue);
+  
+        setHexFeed(0.1);
+    
+        setShareRate(265452); // get from third value (function 12)
+    
+        setDayPayoutTotal(6494422766799027); // get from when use 8 (function 9)
+
+      } catch (e) {
+
+        alert(e);
+
+      }
+    }
+
+    getData();
+
+    const bodyMouseDowntHandler = e => {
+      const calendar = document.getElementsByClassName("calendar");
+      if (calendar?.length && !calendar[0].contains(e.target)) {
+        setOpen(false);
+      }
+    }
 
     document.addEventListener("mousedown", bodyMouseDowntHandler);
     return () => {
@@ -60,13 +89,6 @@ export default function Borrow(props) {
     setEffectiveHex(isNaN(effectiveHex) ? "" : effectiveHex);
 
   }, [ totalHex, shareRate, dayPayoutTotal, stakeDays ]);
-
-  const bodyMouseDowntHandler = e => {
-    const calendar = document.getElementsByClassName("calendar");
-    if (calendar?.length && !calendar[0].contains(e.target)) {
-      setOpen(false);
-    }
-  }
 
   const selectStakeDays = (ranges) => {
     let { selection } = ranges;
