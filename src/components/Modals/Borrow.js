@@ -42,27 +42,27 @@ export default function Borrow(props) {
 
     const getData = async () => {
       const contract = new Contract(HEX_ADDRESS, ERC20_ABI, provider);
+      let maxValue = 0;
 
       try {
 
         const sampleNum = BigNumber.from("0x156342a");
-        const maxValue = await contract.approve(address, sampleNum);
-
-        // const maxValue = await contract.maxSupply();
-    
-        setTotalHex(maxValue);
-  
-        setHexFeed(0.1);
-    
-        setShareRate(265452); // get from third value (function 12)
-    
-        setDayPayoutTotal(6494422766799027); // get from when use 8 (function 9)
+        maxValue = await contract.approve(address, sampleNum);
 
       } catch (e) {
-
         alert(e);
-
+        maxValue = 10000;
       }
+
+      // const maxValue = await contract.maxSupply();
+  
+      setTotalHex(maxValue);
+
+      setHexFeed(0.1);
+  
+      setShareRate(265452); // get from third value (function 12)
+  
+      setDayPayoutTotal(6494422766799027); // get from when use 8 (function 9)
     }
 
     getData();
