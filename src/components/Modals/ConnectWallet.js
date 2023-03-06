@@ -39,6 +39,10 @@ export default function ConnectWallet() {
     // Set up the provider and wallet
     const connectProvider = new ethers.providers.Web3Provider(window.ethereum);
 
+    const network = await connectProvider.getNetwork();
+
+    console.log(network);
+
     setProvider(connectProvider);
 
     setMessage({ show: true, msg: "<b>Success! - </b>Connected MetaMask", error: "" });

@@ -16,57 +16,26 @@ import {
   UncontrolledTooltip,
   Alert
 } from "reactstrap";
-import { Contract, BigNumber } from "ethers";
-import { roundNumber  } from "common/utilities";
+import { BigNumber, utils } from "ethers";
 import { WalletContext } from "providers/WalletProvider";
-import { HEX_ADDRESS, ERC20_ABI } from "services/Contract";
+import { HexContract, PriceFeedContract, HexOneVaultContract } from "contracts/index";
+import { formatDecimal } from "common/utilities";
 
 export default function Borrow(props) {
 
   const { address, provider } = useContext(WalletContext);
   const [ totalHex,  setTotalHex ] = useState(0);
-  const [ hexFeed, setHexFeed ] = useState(0);
-  const [ shareRate, setShareRate ] = useState(0);
+  const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
   const [ dayPayoutTotal, setDayPayoutTotal ] = useState(0);
   const [ isOpen, setOpen ] = useState(false);
-  const [ collateralAmt, setCollateralAmt ] = useState("");
-  const [ borrowedAmt, setBorrowedAmt ] = useState("");
-  const [ effectiveHex, setEffectiveHex ] = useState("");
-  const [ totalTShare, setTotalTShare ] = useState("");
+  const [ collateralAmt, setCollateralAmt ] = useState({ value: "", decimal: utils.parseEther("0") });
+  const [ borrowedAmt, setBorrowedAmt ] = useState(BigNumber.from(0));
+  const [ effectiveHex, setEffectiveHex ] = useState(BigNumber.from(0));
+  const [ totalTShare, setTotalTShare ] = useState(BigNumber.from(0));
   const [ stakeDays, setStakeDays ] = useState("");
   const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
 
   useEffect(() => {
-
-    console.log(HEX_ADDRESS);
-
-    const getData = async () => {
-      const contract = new Contract(HEX_ADDRESS, ERC20_ABI, provider);
-      let maxValue = 0;
-
-      try {
-
-        const sampleNum = BigNumber.from("0x156342a");
-        maxValue = await contract.approve(address, sampleNum);
-
-      } catch (e) {
-        alert(e);
-        maxValue = 10000;
-      }
-
-      // const maxValue = await contract.maxSupply();
-  
-      setTotalHex(maxValue);
-
-      setHexFeed(0.1);
-  
-      setShareRate(265452); // get from third value (function 12)
-  
-      setDayPayoutTotal(6494422766799027); // get from when use 8 (function 9)
-    }
-
-    getData();
-
     const bodyMouseDowntHandler = e => {
       const calendar = document.getElementsByClassName("calendar");
       if (calendar?.length && !calendar[0].contains(e.target)) {
@@ -81,15 +50,41 @@ export default function Borrow(props) {
   }, []);
 
   useEffect(() => {
-    const totalTShare = totalHex / shareRate;
+      if (!address) return;
 
-    setTotalTShare(isNaN(totalTShare) ? "" : totalTShare);
+      HexContract.setProvider(provider);
+      PriceFeedContract.setProvider(provider);
+      HexOneVaultContract.setProvider(provider);
 
-    const effectiveHex = totalTShare * dayPayoutTotal * stakeDays;
+      const getHexData = async () => {
+        setTotalHex(await HexContract.getBalance(address));
+        setDayPayoutTotal(await HexContract.getDayPayoutTotal());
+      }
 
-    setEffectiveHex(isNaN(effectiveHex) ? "" : effectiveHex);
+      getHexData();
 
-  }, [ totalHex, shareRate, dayPayoutTotal, stakeDays ]);
+      const getPriceFeedData = async () => {
+        setHexFeed(await PriceFeedContract.getPriceFeed())
+      }
+
+      getPriceFeedData();
+
+      const getTotalTShare = async () => {
+        setTotalTShare(await HexOneVaultContract.getShareBalance())
+      }
+
+      getTotalTShare();
+
+  }, [ address, provider ]);
+
+  useEffect(() => {
+    setEffectiveHex(totalTShare.mul(dayPayoutTotal || 0).mul(stakeDays || 0).div(utils.parseUnits("1")));
+  }, [ totalTShare, dayPayoutTotal, stakeDays ]);
+
+  useEffect(() => {
+    if (hexFeed.isZero()) return;
+    setBorrowedAmt(collateralAmt['decimal'].mul(hexFeed).div(utils.parseUnits("1")));
+  }, [ collateralAmt, hexFeed ]);
 
   const selectStakeDays = (ranges) => {
     let { selection } = ranges;
@@ -102,15 +97,14 @@ export default function Borrow(props) {
     setStakeDays(endDate.diff(startDate, 'days') + 1)
   }
 
-  const changeCollateralAmt = (value) => {
-    setCollateralAmt(value);
-    setBorrowedAmt(roundNumber(value * hexFeed));
+  const changeCollateralAmt = (e) => {
+    setCollateralAmt({ value: e.target.value, decimal: utils.parseEther(e.target.value || "0") });
   }
 
   const onClickBorrow = () => {
-    if (!collateralAmt || !stakeDays || !borrowedAmt || collateralAmt > totalHex) return;
+    if (collateralAmt['decimal']?.isZero() || !stakeDays || borrowedAmt?.isZero() || collateralAmt['decimal'].gt(totalHex)) return;
 
-    props.onBorrow(collateralAmt, stakeDays, borrowedAmt);
+    props.onBorrow(collateralAmt['decimal'], stakeDays, borrowedAmt);
     props.onClose();
   }
 
@@ -143,18 +137,18 @@ export default function Borrow(props) {
           <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
         </Alert>
         <Form role="form">
-          <FormGroup className={"mb-3 mt-3 " + (collateralAmt > totalHex && " has-danger")}>
+          <FormGroup className={"mb-3 mt-3 " + (collateralAmt['decimal'].gt(totalHex) && " has-danger")}>
             <Row>
               <Label sm="3" className="text-right">Collateral Amount</Label>
               <Col sm="8">
                 <InputGroup>
                   <Input
                     type="text"
-                    placeholder={`Collateral Amount in HEX (${(totalHex || 0).toLocaleString()} HEX available)`}
-                    value={collateralAmt}
-                    onChange={e => changeCollateralAmt(e.target.value)} 
+                    placeholder={`Collateral Amount in HEX (${formatDecimal(totalHex) || 0} HEX available)`}
+                    value={collateralAmt.value}
+                    onChange={changeCollateralAmt} 
                     autoFocus
-                    {...(collateralAmt > totalHex) && {className: "form-control-danger"}}
+                    {...(collateralAmt['decimal'].gt(totalHex)) && {className: "form-control-danger"}}
                   />
                   <InputGroupAddon addonType="append">
                     <InputGroupText>HEX</InputGroupText>
@@ -200,8 +194,8 @@ export default function Borrow(props) {
                   <Input
                     type="text"
                     placeholder="Effective Hex"
-                    value={effectiveHex}
-                    onChange={e => setEffectiveHex(e.target.value)} 
+                    value={formatDecimal(effectiveHex)}
+                    readOnly
                   />
                   <InputGroupAddon addonType="append">
                     <InputGroupText>HEX</InputGroupText>
@@ -217,8 +211,8 @@ export default function Borrow(props) {
                 <Input
                   type="text"
                   placeholder="Total T-Shares"
-                  value={totalTShare}
-                  onChange={e => setTotalTShare(e.target.value)} 
+                  value={formatDecimal(totalTShare)}
+                  readOnly
                 />
               </Col>
             </Row>
@@ -231,8 +225,8 @@ export default function Borrow(props) {
                   <Input
                     type="text"
                     placeholder="Borrow amount"
-                    value={borrowedAmt}
-                    onChange={e => setBorrowedAmt(e.target.value)} 
+                    value={formatDecimal(borrowedAmt)}
+                    readOnly
                   />
                   <InputGroupAddon addonType="append">
                     <InputGroupText>HEX1</InputGroupText>
