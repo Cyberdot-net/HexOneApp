@@ -19,7 +19,8 @@ import {
 import { BigNumber, utils } from "ethers";
 import { WalletContext } from "providers/WalletProvider";
 import { HexContract, PriceFeedContract, HexOneVaultContract } from "contracts/index";
-import { formatDecimal } from "common/utilities";
+import { formatDecimal, isEmpty } from "common/utilities";
+import Loading from "components/Loading";
 
 export default function Borrow(props) {
 
@@ -34,6 +35,7 @@ export default function Borrow(props) {
   const [ totalTShare, setTotalTShare ] = useState(BigNumber.from(0));
   const [ stakeDays, setStakeDays ] = useState("");
   const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
+  const [ loading, setLoading ] = useState(false);
 
   useEffect(() => {
     const bodyMouseDowntHandler = e => {
@@ -52,6 +54,8 @@ export default function Borrow(props) {
   useEffect(() => {
       if (!address) return;
 
+      setLoading(true);
+
       HexContract.setProvider(provider);
       PriceFeedContract.setProvider(provider);
       HexOneVaultContract.setProvider(provider);
@@ -59,21 +63,16 @@ export default function Borrow(props) {
       const getHexData = async () => {
         setTotalHex(await HexContract.getBalance(address));
         setDayPayoutTotal(await HexContract.getDayPayoutTotal());
+        setTotalTShare(await HexContract.getTotalTShare(address));
+
+        setHexFeed(await PriceFeedContract.getPriceFeed());
+
+        // setTotalTShare(await HexOneVaultContract.getShareBalance())
+
+        setLoading(false);
       }
 
       getHexData();
-
-      const getPriceFeedData = async () => {
-        setHexFeed(await PriceFeedContract.getPriceFeed())
-      }
-
-      getPriceFeedData();
-
-      const getTotalTShare = async () => {
-        setTotalTShare(await HexOneVaultContract.getShareBalance())
-      }
-
-      getTotalTShare();
 
   }, [ address, provider ]);
 
@@ -82,7 +81,7 @@ export default function Borrow(props) {
   }, [ totalTShare, dayPayoutTotal, stakeDays ]);
 
   useEffect(() => {
-    if (hexFeed.isZero()) return;
+    if (isEmpty(hexFeed)) return;
     setBorrowedAmt(collateralAmt['decimal'].mul(hexFeed).div(utils.parseUnits("1")));
   }, [ collateralAmt, hexFeed ]);
 
@@ -102,13 +101,14 @@ export default function Borrow(props) {
   }
 
   const onClickBorrow = () => {
-    if (collateralAmt['decimal']?.isZero() || !stakeDays || borrowedAmt?.isZero() || collateralAmt['decimal'].gt(totalHex)) return;
+    if (isEmpty(collateralAmt['decimal']) || !stakeDays || isEmpty(borrowedAmt) || collateralAmt['decimal'].gt(totalHex)) return;
 
     props.onBorrow(collateralAmt['decimal'], stakeDays, borrowedAmt);
     props.onClose();
   }
 
   const onClose = () => {
+    setLoading(false);
     props.onClose();
   }
 
@@ -255,6 +255,7 @@ export default function Borrow(props) {
           </div>
         </Form>
       </div>
+      {loading && <Loading />}
     </Modal>
   );
 }

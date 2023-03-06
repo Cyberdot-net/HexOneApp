@@ -1,5 +1,5 @@
 import { Contract, BigNumber, utils } from "ethers";
-import { HEX_ADDRESS, HEX_DEC, HEX_DAYPAYOUT_DEC } from "./Address";
+import { HEX_ADDRESS, HEX_DEC, HEX_DAYPAYOUT_DEC, HEX_SHARERATE_DEC } from "./Address";
 import HEX_ABI from "./abis/hex.abi.json";
 
 const HexContract = () => {
@@ -16,8 +16,8 @@ const HexContract = () => {
         if (!contract) return balance;
 
         try {
-            // balance = await contract.balanceOf(address);
-            balance = utils.parseUnits("25148613.25", HEX_DEC);
+            balance = await contract.balanceOf(address);
+            // balance = utils.parseUnits("25148613.25", HEX_DEC);
             balance = balance.mul(utils.parseUnits("1", 18 - HEX_DEC));
         } catch (e) {
             console.error(e);
@@ -41,6 +41,41 @@ const HexContract = () => {
         return dayPayoutTotal;
     }
 
+    const GetShareRate = async () => {
+        let shareRate = BigNumber.from(0);
+        if (!contract) return shareRate;
+
+        try {
+            const globalInfo = await contract.globalInfo();
+            shareRate = globalInfo[2];
+        } catch (e) {
+            console.error(e);
+        }
+
+        return shareRate;
+    }
+
+    const GetTotalTShare = async (address) => {
+        let totalTShare = BigNumber.from(0);
+        if (!contract) return totalTShare;
+
+        try {
+            const stakeCount = await contract.stakeCount(address);
+            let totalHex = BigNumber.from(0);
+            for (let i = 0; i < +stakeCount; i++) {
+                const stakeList = await contract.stakeLists(address, i);
+                totalHex = totalHex.add(stakeList['stakedHearts']);
+                // totalHex = totalHex.add(stakeList['stakeShares']);
+            }
+            totalTShare = totalHex.div(await GetShareRate()).mul(utils.parseUnits("1", 18 - HEX_DEC - HEX_SHARERATE_DEC));
+            // totalTShare = totalHex;
+        } catch (e) {
+            console.error(e);
+        }
+
+        return totalTShare;
+    }
+
     return {
         setProvider: (provider) => {
             SetProvider(provider);
@@ -52,6 +87,10 @@ const HexContract = () => {
 
         getDayPayoutTotal: async () => {
             return await GetDayPayoutTotal();
+        },
+
+        getTotalTShare: async (address) => {
+            return await GetTotalTShare(address);
         },
     }
 };

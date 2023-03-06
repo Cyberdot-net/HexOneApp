@@ -2,6 +2,26 @@
 // Design element Dialogs
 // --------------------------------------------------
 
+.loading {
+  position: absolute;
+  z-index: 1060;
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  .walletInfo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .modal-backdrop {
+    width: 100%;
+    height: 100%;
+  }
+}
+
 .modal-content {
   border: 0;
 

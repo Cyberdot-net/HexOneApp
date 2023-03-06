@@ -16,8 +16,8 @@ const HexOneVaultContract = () => {
         if (!contract) return balance;
 
         try {
-            // balance = await contract.balanceOf(address);
-            balance = utils.parseUnits("15", HEXONE_VAULT_DEC);
+            balance = await contract.balanceOf(address);
+            // balance = utils.parseUnits("15", HEXONE_VAULT_DEC);
             balance = balance.mul(utils.parseUnits("1", 18 - HEXONE_VAULT_DEC));
         } catch (e) {
             console.error(e);

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Modal,
   Table,
@@ -8,6 +8,7 @@ import { ethers } from "ethers";
 import { useState } from "react";
 import { WalletContext } from "providers/WalletProvider";
 import { ModalContext } from "providers/ModalProvider";
+import { networks } from "contracts/Address";
 
 export default function ConnectWallet() {
   
@@ -16,7 +17,11 @@ export default function ConnectWallet() {
   const [ message, setMessage ] = useState({ show: false, error: "", msg: "" });
   const [ connecting, setConnecting ] = useState(false);
 
-  const connectMetaMask = async () => {
+  useEffect(() => {
+    connectMetaMask(false);
+  }, []);
+
+  const connectMetaMask = async (loading = false) => {
 
     if (address) return;
 
@@ -25,7 +30,7 @@ export default function ConnectWallet() {
       return;
     }
 
-    setConnecting(true);
+    if (loading) setConnecting(true);
 
     // Connect to MetaMask
     try {
@@ -41,7 +46,11 @@ export default function ConnectWallet() {
 
     const network = await connectProvider.getNetwork();
 
-    console.log(network);
+    if (!networks.find(r => r.chainId === network.chainId)) {
+      setConnecting(false);
+      setMessage({ show: true, error: "<b>Failed! - </b>Wrong Network", msg: "" });
+      return;
+    }
 
     setProvider(connectProvider);
 
@@ -53,6 +62,8 @@ export default function ConnectWallet() {
   }
 
   const onClose = () => {
+    setMessage({ show: false, msg: "", error: "" });
+    setConnecting(false);
     showModal(false);
   }
 
@@ -81,7 +92,7 @@ export default function ConnectWallet() {
           </h3>
         </div>
       </div>
-      <div className="modal-body">  
+      <div className="modal-body">
         <Alert
           className="alert-with-icon"
           color={message.msg ? "success" : "danger"}

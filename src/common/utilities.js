@@ -14,6 +14,14 @@ export const getShortAddress = (address) => {
   }
 }
 
+export const isEmpty = (value) => {
+  if (!value || (typeof value === "object" && value.isZero())) {
+    return true;
+  }
+
+  return false;
+}
+
 export const formatDecimal = (num, decimal = 18) => {
   if (!+num) return "";
 

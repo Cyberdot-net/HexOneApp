@@ -19,6 +19,7 @@ import {
 import { WalletContext } from "providers/WalletProvider";
 import { ModalContext } from "providers/ModalProvider";
 import { getShortAddress } from "common/utilities";
+import { networks } from "contracts/Address";
 
 export default function IndexNavbar() {
   
@@ -36,6 +37,12 @@ export default function IndexNavbar() {
     const handleAccountsChanged = (accounts) => {
       setAddress(accounts[0]);
     };
+
+    const handleNetworkChanged = (network) => {
+      if (!networks.find(r => r.chainId === network.chainId)) {
+        setProvider(null);
+      }
+    };
   
     const handleWalletDisconnect = (err) => {
       if (err) console.error(err);
@@ -43,6 +50,7 @@ export default function IndexNavbar() {
     };
 
     ethereum.on('accountsChanged', handleAccountsChanged);
+    ethereum.on('networkChanged', handleNetworkChanged)
     ethereum.on('disconnect', handleWalletDisconnect)
 
     window.addEventListener("scroll", changeColor);
