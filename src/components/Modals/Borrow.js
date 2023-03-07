@@ -18,8 +18,8 @@ import {
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
 import { WalletContext } from "providers/WalletProvider";
-import { HexContract, PriceFeedContract, HexOneVaultContract } from "contracts/index";
-import { formatDecimal, isEmpty } from "common/utilities";
+import { HexContract, PriceFeedContract, HexOneVaultContract, BORROW_FEE } from "contracts/index";
+import { formatDecimal, formatZeroDecimal, isEmpty } from "common/utilities";
 import Loading from "components/Loading";
 
 export default function Borrow(props) {
@@ -29,7 +29,7 @@ export default function Borrow(props) {
   const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
   const [ dayPayoutTotal, setDayPayoutTotal ] = useState(0);
   const [ isOpen, setOpen ] = useState(false);
-  const [ collateralAmt, setCollateralAmt ] = useState({ value: "", decimal: utils.parseEther("0") });
+  const [ collateralAmt, setCollateralAmt ] = useState({ value: "", decimal: BigNumber.from(0), fee: BigNumber.from(0) });
   const [ borrowedAmt, setBorrowedAmt ] = useState(BigNumber.from(0));
   const [ effectiveHex, setEffectiveHex ] = useState(BigNumber.from(0));
   const [ totalTShare, setTotalTShare ] = useState(BigNumber.from(0));
@@ -83,14 +83,14 @@ export default function Borrow(props) {
     // if (isEmpty(hexFeed)) return;
     
     // borrow amount = hex/usdc_price_feed * collateral
-    setBorrowedAmt(collateralAmt['decimal'].mul(hexFeed).div(utils.parseUnits("1")));
+    setBorrowedAmt(collateralAmt['fee'].mul(hexFeed).div(utils.parseUnits("1")));
 
     // total T-share = Collateral Amount / shareRate
-    const tShare = isEmpty(shareRate) ? BigNumber.from(0) : collateralAmt['decimal'].div(shareRate);    
+    const tShare = isEmpty(shareRate) ? BigNumber.from(0) : collateralAmt['fee'].div(shareRate);    
     setTotalTShare(tShare);
 
     // effectiveHex = dayPayoutTotal * Total T-shares * Total Days + Collateral Amount
-    setEffectiveHex(tShare.mul(dayPayoutTotal || 0).mul(stakeDays || 0).div(utils.parseUnits("1")).add(collateralAmt['decimal']));
+    setEffectiveHex(tShare.mul(dayPayoutTotal || 0).mul(stakeDays || 0).div(utils.parseUnits("1")).add(collateralAmt['fee']));
   }, [ collateralAmt, dayPayoutTotal, stakeDays, hexFeed ]);
 
   const selectStakeDays = (ranges) => {
@@ -105,13 +105,14 @@ export default function Borrow(props) {
   }
 
   const changeCollateralAmt = (e) => {
-    setCollateralAmt({ value: e.target.value, decimal: utils.parseEther(e.target.value || "0") });
+    const inputValue = utils.parseEther(e.target.value || "0");
+    setCollateralAmt({ value: e.target.value, decimal: inputValue, fee: inputValue.mul(100 - BORROW_FEE).div(100) });
   }
 
   const onClickBorrow = () => {
     if (isEmpty(collateralAmt['decimal']) || !stakeDays || isEmpty(borrowedAmt) || collateralAmt['decimal'].gt(totalHex)) return;
 
-    props.onBorrow(collateralAmt['decimal'], stakeDays, borrowedAmt);
+    props.onBorrow(collateralAmt['fee'], stakeDays, borrowedAmt);
     props.onClose();
   }
 
@@ -162,6 +163,13 @@ export default function Borrow(props) {
                     <InputGroupText>HEX</InputGroupText>
                   </InputGroupAddon>
                 </InputGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm="3"></Col>
+              <Col sm="8" className="text-right">
+                <span>{formatZeroDecimal(collateralAmt['fee'])} HEX</span>
+                <span className="ml-2">(Fee: {formatZeroDecimal(collateralAmt['decimal'].sub(collateralAmt['fee']))} HEX)</span>
               </Col>
             </Row>
           </FormGroup>

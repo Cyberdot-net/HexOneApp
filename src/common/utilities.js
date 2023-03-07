@@ -28,6 +28,12 @@ export const formatDecimal = (num, decimal = 18) => {
   return utils.formatUnits(num, decimal);
 }
 
+export const formatZeroDecimal = (num, decimal = 18) => {
+  if (!+num) return "0";
+
+  return utils.formatUnits(num, decimal);
+}
+
 export const formatNumber = (num) => {
   return utils.commify(num);
 }

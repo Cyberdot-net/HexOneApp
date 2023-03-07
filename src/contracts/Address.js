@@ -4,6 +4,8 @@ export const HEX_DAYPAYOUT_DEC = 15;
 export const HEX_SHARERATE_DEC = 1;
 export const HEXONE_VAULT_DEC = 8;
 
+export const BORROW_FEE = 5;
+
 export const HEX_ADDRESS = process.env.HEX_ADDRESS || "0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39";
 export const HEX1_ADDRESS = process.env.HEX1_ADDRESS || "0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39";
 export const HEXIT_ADDRESS = process.env.HEXIT_ADDRESS || "0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39";
