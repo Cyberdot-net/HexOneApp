@@ -47,7 +47,8 @@ const HexContract = () => {
 
         try {
             const globalInfo = await contract.globalInfo();
-            shareRate = globalInfo[2];
+            shareRate = globalInfo[2].div(utils.parseUnits("1", HEX_SHARERATE_DEC));
+            // shareRate = BigNumber.from(Math.round(+globalInfo[2] / 10));
         } catch (e) {
             console.error(e);
         }
@@ -67,7 +68,7 @@ const HexContract = () => {
                 totalHex = totalHex.add(stakeList['stakedHearts']);
                 // totalHex = totalHex.add(stakeList['stakeShares']);
             }
-            totalTShare = totalHex.div(await GetShareRate()).mul(utils.parseUnits("1", 18 - HEX_DEC - HEX_SHARERATE_DEC));
+            totalTShare = totalHex.div(await GetShareRate()).mul(utils.parseUnits("1", 18 - HEX_DEC));
             // totalTShare = totalHex;
         } catch (e) {
             console.error(e);
@@ -87,6 +88,10 @@ const HexContract = () => {
 
         getDayPayoutTotal: async () => {
             return await GetDayPayoutTotal();
+        },
+
+        getShareRate: async () => {
+            return await GetShareRate();
         },
 
         getTotalTShare: async (address) => {

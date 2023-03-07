@@ -33,6 +33,7 @@ export default function Borrow(props) {
   const [ borrowedAmt, setBorrowedAmt ] = useState(BigNumber.from(0));
   const [ effectiveHex, setEffectiveHex ] = useState(BigNumber.from(0));
   const [ totalTShare, setTotalTShare ] = useState(BigNumber.from(0));
+  const [ shareRate, setShareRate ] = useState(BigNumber.from(0));
   const [ stakeDays, setStakeDays ] = useState("");
   const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
   const [ loading, setLoading ] = useState(false);
@@ -63,11 +64,9 @@ export default function Borrow(props) {
       const getHexData = async () => {
         setTotalHex(await HexContract.getBalance(address));
         setDayPayoutTotal(await HexContract.getDayPayoutTotal());
-        setTotalTShare(await HexContract.getTotalTShare(address));
+        setShareRate(await HexContract.getShareRate());
 
         setHexFeed(await PriceFeedContract.getPriceFeed());
-
-        // setTotalTShare(await HexOneVaultContract.getShareBalance())
 
         setLoading(false);
       }
@@ -83,6 +82,7 @@ export default function Borrow(props) {
   useEffect(() => {
     if (isEmpty(hexFeed)) return;
     setBorrowedAmt(collateralAmt['decimal'].mul(hexFeed).div(utils.parseUnits("1")));
+    setTotalTShare(isEmpty(shareRate) ? BigNumber.from(0) : collateralAmt['decimal'].div(shareRate));
   }, [ collateralAmt, hexFeed ]);
 
   const selectStakeDays = (ranges) => {
