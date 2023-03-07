@@ -76,14 +76,22 @@ export default function Borrow(props) {
   }, [ address, provider ]);
 
   useEffect(() => {
-    setEffectiveHex(totalTShare.mul(dayPayoutTotal || 0).mul(stakeDays || 0).div(utils.parseUnits("1")));
-  }, [ totalTShare, dayPayoutTotal, stakeDays ]);
+    
+  }, [  ]);
 
   useEffect(() => {
-    if (isEmpty(hexFeed)) return;
+    // if (isEmpty(hexFeed)) return;
+    
+    // borrow amount = hex/usdc_price_feed * collateral
     setBorrowedAmt(collateralAmt['decimal'].mul(hexFeed).div(utils.parseUnits("1")));
-    setTotalTShare(isEmpty(shareRate) ? BigNumber.from(0) : collateralAmt['decimal'].div(shareRate));
-  }, [ collateralAmt, hexFeed ]);
+
+    // total T-share = Collateral Amount / shareRate
+    const tShare = isEmpty(shareRate) ? BigNumber.from(0) : collateralAmt['decimal'].div(shareRate);    
+    setTotalTShare(tShare);
+
+    // effectiveHex = dayPayoutTotal * Total T-shares * Total Days + Collateral Amount
+    setEffectiveHex(tShare.mul(dayPayoutTotal || 0).mul(stakeDays || 0).div(utils.parseUnits("1")).add(collateralAmt['decimal']));
+  }, [ collateralAmt, dayPayoutTotal, stakeDays, hexFeed ]);
 
   const selectStakeDays = (ranges) => {
     let { selection } = ranges;
