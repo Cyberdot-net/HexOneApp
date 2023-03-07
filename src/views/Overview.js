@@ -218,12 +218,12 @@ export default function Overview() {
                 <table className="table">
                   <thead>
                     <tr>
+                      <th className="text-center">StakeId</th>
                       <th className="text-center">Start</th>
                       <th className="text-center">End</th>
                       <th>Collateral</th>
                       <th>Effective</th>
                       <th>Borrowed Amt</th>
-                      <th className="text-center">StakeId</th>
                       <th>Initial HEX/USDC</th>
                       <th>Current HEX/USDC</th>
                       <th>Health Ratio</th>
@@ -233,12 +233,12 @@ export default function Overview() {
                   <tbody>
                     {overviews.map((r, idx) => (
                       <tr key={idx}>
+                        <td className="text-center">{r.stakeid}</td>
                         <td className="text-center">{r.startDay}</td>
                         <td className="text-center">{r.endDay}</td>
                         <td>{r.collateralAmt.toLocaleString()} HEX</td>
                         <td>{r.effectiveAmt.toLocaleString()} HEX</td>
                         <td>{r.borrowedAmt.toLocaleString()} HEX1</td>
-                        <td className="text-center">{r.stakeid}</td>
                         <td>${r.initialHex.toLocaleString()}</td>
                         <td>${r.currentHex.toLocaleString()}</td>
                         <td className={r.ratio >= 100 ? "green" : "red"}>
