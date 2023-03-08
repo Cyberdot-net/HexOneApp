@@ -1,10 +1,8 @@
 import HexContract from "./HexContract";
-import PriceFeedContract from "./PriceFeedContract";
-import HexOneVaultContract from "./HexOneVaultContract";
+import HexOnePriceFeed from "./HexOnePriceFeed";
 export * from "./Constants";
 
 export {
     HexContract,
-    PriceFeedContract,
-    HexOneVaultContract
+    HexOnePriceFeed
 }

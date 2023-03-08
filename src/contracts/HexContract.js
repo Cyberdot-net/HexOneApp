@@ -1,5 +1,5 @@
 import { Contract, BigNumber, utils } from "ethers";
-import { HEX_DEC, HEX_DAYPAYOUT_DEC } from "./Constants";
+import { HEX_DAYPAYOUT_DEC } from "./Constants";
 import { HexMockToken_Abi } from "./abis";
 import { HexMockToken_Addr } from "./address";
 import { isEmpty } from "common/utilities";
@@ -7,10 +7,23 @@ import { isEmpty } from "common/utilities";
 const HexContract = () => {
     let provider = null;
     let contract = null;
+    let decimals = 8;
 
     const SetProvider = (newProvider) => {
         provider = newProvider;
         contract = new Contract(HexMockToken_Addr.contract, HexMockToken_Abi, provider);
+    }
+
+    const GetDecimals = async () => {
+        if (!contract) return decimals;
+
+        try {
+            decimals = await contract.decimals();
+        } catch (e) {
+            console.error(e);
+        }
+
+        return +decimals;
     }
 
     const GetBalance = async (address) => {
@@ -19,8 +32,8 @@ const HexContract = () => {
 
         try {
             balance = await contract.balanceOf(address);
-            // balance = utils.parseUnits("25148613.25", HEX_DEC);
-            balance = balance.mul(utils.parseUnits("1", 18 - HEX_DEC));
+            // balance = utils.parseUnits("25148613.25", decimals);
+            balance = balance.mul(utils.parseUnits("1", 18 - decimals));
         } catch (e) {
             console.error(e);
         }
@@ -61,6 +74,10 @@ const HexContract = () => {
     return {
         setProvider: (provider) => {
             SetProvider(provider);
+        },
+
+        getDecimals: async () => {
+            return await GetDecimals();
         },
 
         getBalance: async (address) => {

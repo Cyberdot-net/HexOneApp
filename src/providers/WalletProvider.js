@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 export const WalletContext = React.createContext({});
 
 const WalletProvider = ({ children }) => {
-  const [provider, setWalletProvider] = useState(null);
-  const [address, setWalletAddress] = useState("");
+  const [ provider, setWalletProvider ] = useState(null);
+  const [ address, setWalletAddress ] = useState("");
 
   // useEffect(() => {
   //   async function getWalletAddress() {

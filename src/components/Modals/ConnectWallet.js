@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import {
   Modal,
   Table,
@@ -17,11 +17,7 @@ export default function ConnectWallet() {
   const [ message, setMessage ] = useState({ show: false, error: "", msg: "" });
   const [ connecting, setConnecting ] = useState(false);
 
-  useEffect(() => {
-    connectMetaMask(false);
-  }, []);
-
-  const connectMetaMask = async (loading = false) => {
+  const connectMetaMask = async () => {
 
     if (address) return;
 
@@ -30,12 +26,13 @@ export default function ConnectWallet() {
       return;
     }
 
-    if (loading) setConnecting(true);
+    setConnecting(true);
 
     // Connect to MetaMask
     try {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
     } catch (error) {
+      console.error(error);
       setConnecting(false);
       setMessage({ show: true, error: "Failed to connect to MetaMask", msg: "" });
       return;

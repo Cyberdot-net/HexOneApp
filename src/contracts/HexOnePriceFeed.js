@@ -2,7 +2,7 @@ import { Contract, BigNumber, utils } from "ethers";
 import { HexOnePriceFeedTest_Abi } from "./abis";
 import { HexOnePriceFeedTest_Addr } from "./address";
 
-const PriceFeedContract = () => {
+const HexOnePriceFeed = () => {
     let provider = null;
     let contract = null;
 
@@ -11,13 +11,12 @@ const PriceFeedContract = () => {
         contract = new Contract(HexOnePriceFeedTest_Addr.contract, HexOnePriceFeedTest_Abi, provider);
     }
 
-    const GetPriceFeed = async () => {
+    const GetHexTokenPrice = async (hexPrice) => {
         let feed = BigNumber.from(0);
         if (!contract) return feed;
 
         try {
-            // feed = await contract.getHexPrice();
-            feed = utils.parseUnits("0.1");
+            feed = await contract.getHexTokenPrice(hexPrice);
         } catch (e) {
             console.error(e);
         }
@@ -30,10 +29,10 @@ const PriceFeedContract = () => {
             SetProvider(provider);
         },
 
-        getPriceFeed: async () => {
-            return await GetPriceFeed();
+        getHexTokenPrice: async (hexPrice) => {
+            return await GetHexTokenPrice(hexPrice);
         },
     }
 };
 
-export default PriceFeedContract()
+export default HexOnePriceFeed()

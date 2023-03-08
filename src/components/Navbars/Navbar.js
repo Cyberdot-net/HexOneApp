@@ -16,6 +16,7 @@ import {
   Col,
   UncontrolledTooltip,
 } from "reactstrap";
+import { ethers } from "ethers";
 import { WalletContext } from "providers/WalletProvider";
 import { ModalContext } from "providers/ModalProvider";
 import { getShortAddress } from "common/utilities";
@@ -30,7 +31,6 @@ export default function IndexNavbar() {
   const [ color, setColor ] = useState("navbar-transparent");
 
   useEffect(() => {
-
     const { ethereum } = window;
     if (ethereum === undefined) return;
 
@@ -54,6 +54,29 @@ export default function IndexNavbar() {
     ethereum.on('disconnect', handleWalletDisconnect)
 
     window.addEventListener("scroll", changeColor);
+    
+    const connectMetaMask = async () => {
+      try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+      } catch (error) {
+        console.error(error);
+        return;
+      }
+      
+      // Set up the provider and wallet
+      const connectProvider = new ethers.providers.Web3Provider(window.ethereum);
+
+      const network = await connectProvider.getNetwork();
+
+      if (!networks.find(r => r.chainId === network.chainId)) {
+        return;
+      }
+
+      setProvider(connectProvider);
+    }
+    
+    // connect MetaMask Wallet
+    connectMetaMask();
 
     return () => {
       ethereum.removeListener('accountsChanged', handleAccountsChanged);

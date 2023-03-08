@@ -18,7 +18,7 @@ import {
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
 import { WalletContext } from "providers/WalletProvider";
-import { HexContract, PriceFeedContract, HexOneVaultContract, BORROW_FEE } from "contracts";
+import { HexContract, HexOnePriceFeed, BORROW_FEE } from "contracts";
 import { formatDecimal, formatZeroDecimal, isEmpty } from "common/utilities";
 import { HEX_SHARERATE_DEC } from "contracts/Constants";
 import Loading from "components/Loading";
@@ -59,15 +59,15 @@ export default function Borrow(props) {
       setLoading(true);
 
       HexContract.setProvider(provider);
-      PriceFeedContract.setProvider(provider);
-      HexOneVaultContract.setProvider(provider);
+      HexOnePriceFeed.setProvider(provider);
 
       const getHexData = async () => {
+        const hexDecimals = await HexContract.getDecimals();
         setTotalHex(await HexContract.getBalance(address));
         setDayPayoutTotal(await HexContract.getDayPayoutTotal());
         setShareRate(await HexContract.getShareRate());
 
-        setHexFeed(await PriceFeedContract.getPriceFeed());
+        setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", hexDecimals)));
 
         setLoading(false);
       }
@@ -75,10 +75,6 @@ export default function Borrow(props) {
       getHexData();
 
   }, [ address, provider ]);
-
-  useEffect(() => {
-    
-  }, [  ]);
 
   useEffect(() => {
     // if (isEmpty(hexFeed)) return;
@@ -112,6 +108,8 @@ export default function Borrow(props) {
 
   const onClickBorrow = () => {
     if (isEmpty(collateralAmt['decimal']) || !stakeDays || isEmpty(borrowedAmt) || collateralAmt['decimal'].gt(totalHex)) return;
+
+
 
     props.onBorrow(collateralAmt['fee'], stakeDays, borrowedAmt);
     props.onClose();
