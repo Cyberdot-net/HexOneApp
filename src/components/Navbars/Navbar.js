@@ -19,7 +19,7 @@ import {
 import { WalletContext } from "providers/WalletProvider";
 import { ModalContext } from "providers/ModalProvider";
 import { getShortAddress } from "common/utilities";
-import { networks } from "contracts/Address";
+import { networks } from "contracts";
 
 export default function IndexNavbar() {
   

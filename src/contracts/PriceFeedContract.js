@@ -1,6 +1,6 @@
 import { Contract, BigNumber, utils } from "ethers";
-import { PRICEFEED_ADDRESS } from "./Address";
-import PPRICEFEED_ABI from "./abis/pricefeed.abi.json";
+import { HexOnePriceFeedTest_Abi } from "./abis";
+import { HexOnePriceFeedTest_Addr } from "./address";
 
 const PriceFeedContract = () => {
     let provider = null;
@@ -8,7 +8,7 @@ const PriceFeedContract = () => {
 
     const SetProvider = (newProvider) => {
         provider = newProvider;
-        contract = new Contract(PRICEFEED_ADDRESS, PPRICEFEED_ABI, provider);
+        contract = new Contract(HexOnePriceFeedTest_Addr.contract, HexOnePriceFeedTest_Abi, provider);
     }
 
     const GetPriceFeed = async () => {

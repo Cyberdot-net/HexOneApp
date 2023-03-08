@@ -18,8 +18,9 @@ import {
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
 import { WalletContext } from "providers/WalletProvider";
-import { HexContract, PriceFeedContract, HexOneVaultContract, BORROW_FEE } from "contracts/index";
+import { HexContract, PriceFeedContract, HexOneVaultContract, BORROW_FEE } from "contracts";
 import { formatDecimal, formatZeroDecimal, isEmpty } from "common/utilities";
+import { HEX_SHARERATE_DEC } from "contracts/Constants";
 import Loading from "components/Loading";
 
 export default function Borrow(props) {
@@ -86,12 +87,12 @@ export default function Borrow(props) {
     setBorrowedAmt(collateralAmt['fee'].mul(hexFeed).div(utils.parseUnits("1")));
 
     // total T-share = Collateral Amount / shareRate
-    const tShare = isEmpty(shareRate) ? BigNumber.from(0) : collateralAmt['fee'].div(shareRate);    
+    const tShare = isEmpty(shareRate) ? BigNumber.from(0) : collateralAmt['fee'].mul(utils.parseUnits("1", HEX_SHARERATE_DEC)).div(shareRate);
     setTotalTShare(tShare);
 
     // effectiveHex = dayPayoutTotal * Total T-shares * Total Days + Collateral Amount
     setEffectiveHex(tShare.mul(dayPayoutTotal || 0).mul(stakeDays || 0).div(utils.parseUnits("1")).add(collateralAmt['fee']));
-  }, [ collateralAmt, dayPayoutTotal, stakeDays, hexFeed ]);
+  }, [ collateralAmt, dayPayoutTotal, stakeDays, shareRate, hexFeed ]);
 
   const selectStakeDays = (ranges) => {
     let { selection } = ranges;

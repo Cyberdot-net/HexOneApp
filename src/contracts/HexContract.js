@@ -1,6 +1,8 @@
 import { Contract, BigNumber, utils } from "ethers";
-import { HEX_ADDRESS, HEX_DEC, HEX_DAYPAYOUT_DEC, HEX_SHARERATE_DEC } from "./Address";
-import HEX_ABI from "./abis/hex.abi.json";
+import { HEX_DEC, HEX_DAYPAYOUT_DEC } from "./Constants";
+import { HexMockToken_Abi } from "./abis";
+import { HexMockToken_Addr } from "./address";
+import { isEmpty } from "common/utilities";
 
 const HexContract = () => {
     let provider = null;
@@ -8,7 +10,7 @@ const HexContract = () => {
 
     const SetProvider = (newProvider) => {
         provider = newProvider;
-        contract = new Contract(HEX_ADDRESS, HEX_ABI, provider);
+        contract = new Contract(HexMockToken_Addr.contract, HexMockToken_Abi, provider);
     }
 
     const GetBalance = async (address) => {
@@ -32,7 +34,7 @@ const HexContract = () => {
 
         try {
             const currentDay = await contract.currentDay();
-            const dailyData = await contract.dailyData(currentDay.sub(1));
+            const dailyData = await contract.dailyData(isEmpty(currentDay) ? currentDay : currentDay.sub(1));
             dayPayoutTotal = dailyData['dayPayoutTotal'].mul(utils.parseUnits("1", 18 - HEX_DAYPAYOUT_DEC));
         } catch (e) {
             console.error(e);
@@ -46,35 +48,14 @@ const HexContract = () => {
         if (!contract) return shareRate;
 
         try {
-            const globalInfo = await contract.globalInfo();
-            shareRate = globalInfo[2].div(utils.parseUnits("1", HEX_SHARERATE_DEC));
-            // shareRate = BigNumber.from(Math.round(+globalInfo[2] / 10));
+            const globalInfo = await contract.globals();
+            // shareRate = BigNumber.from(globalInfo["shareRate"]).div(utils.parseUnits("1", HEX_SHARERATE_DEC));
+            shareRate = BigNumber.from(globalInfo["shareRate"]);
         } catch (e) {
             console.error(e);
         }
 
         return shareRate;
-    }
-
-    const GetTotalTShare = async (address) => {
-        let totalTShare = BigNumber.from(0);
-        if (!contract) return totalTShare;
-
-        try {
-            const stakeCount = await contract.stakeCount(address);
-            let totalHex = BigNumber.from(0);
-            for (let i = 0; i < +stakeCount; i++) {
-                const stakeList = await contract.stakeLists(address, i);
-                totalHex = totalHex.add(stakeList['stakedHearts']);
-                // totalHex = totalHex.add(stakeList['stakeShares']);
-            }
-            totalTShare = totalHex.div(await GetShareRate()).mul(utils.parseUnits("1", 18 - HEX_DEC));
-            // totalTShare = totalHex;
-        } catch (e) {
-            console.error(e);
-        }
-
-        return totalTShare;
     }
 
     return {
@@ -92,10 +73,6 @@ const HexContract = () => {
 
         getShareRate: async () => {
             return await GetShareRate();
-        },
-
-        getTotalTShare: async (address) => {
-            return await GetTotalTShare(address);
         },
     }
 };

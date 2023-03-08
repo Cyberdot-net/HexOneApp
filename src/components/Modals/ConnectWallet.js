@@ -8,7 +8,7 @@ import { ethers } from "ethers";
 import { useState } from "react";
 import { WalletContext } from "providers/WalletProvider";
 import { ModalContext } from "providers/ModalProvider";
-import { networks } from "contracts/Address";
+import { networks } from "contracts";
 
 export default function ConnectWallet() {
   

@@ -1,6 +1,7 @@
 import { Contract, BigNumber, utils } from "ethers";
-import { VAULT_ADDRESS, HEXONE_VAULT_DEC } from "./Address";
-import HEXONEVAULT_ABI from "./abis/hexonevault.abi.json";
+import { HEXONE_VAULT_DEC } from "./Constants";
+import { HexOneVault_Abi } from "./abis";
+import { HexOneVault_Addr } from "./address";
 
 const HexOneVaultContract = () => {
     let provider = null;
@@ -8,7 +9,7 @@ const HexOneVaultContract = () => {
 
     const SetProvider = (newProvider) => {
         provider = newProvider;
-        contract = new Contract(VAULT_ADDRESS, HEXONEVAULT_ABI, provider);
+        contract = new Contract(HexOneVault_Addr.contract, HexOneVault_Abi, provider);
     }
 
     const GetShareBalance  = async (address) => {
