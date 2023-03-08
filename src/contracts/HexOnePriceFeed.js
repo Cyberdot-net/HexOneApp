@@ -1,4 +1,4 @@
-import { Contract, BigNumber, utils } from "ethers";
+import { Contract, BigNumber } from "ethers";
 import { HexOnePriceFeedTest_Abi } from "./abis";
 import { HexOnePriceFeedTest_Addr } from "./address";
 

@@ -7,13 +7,13 @@ import {
 import { ethers } from "ethers";
 import { useState } from "react";
 import { WalletContext } from "providers/WalletProvider";
-import { ModalContext } from "providers/ModalProvider";
+import { ConnectWalletContext } from "providers/ConnectWalletProvider";
 import { networks } from "contracts";
 
 export default function ConnectWallet() {
   
   const { setProvider, address } = useContext(WalletContext);
-  const { open, showModal } = useContext(ModalContext);
+  const { open, showModal } = useContext(ConnectWalletContext);
   const [ message, setMessage ] = useState({ show: false, error: "", msg: "" });
   const [ connecting, setConnecting ] = useState(false);
 

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-export const ModalContext = React.createContext({});
+export const ConnectWalletContext = React.createContext({});
 
-const ModalProvider = ({ children }) => {
+const ConnectWalletProvider = ({ children }) => {
   const [open, setOpen] = useState(false);
 
   function showModal(show) {
@@ -10,15 +10,15 @@ const ModalProvider = ({ children }) => {
   }
 
   return (
-    <ModalContext.Provider
+    <ConnectWalletContext.Provider
       value={{
         open,
         showModal
       }}
     >
       {children}
-    </ModalContext.Provider>
+    </ConnectWalletContext.Provider>
   );
 };
 
-export default ModalProvider;
+export default ConnectWalletProvider;

@@ -18,14 +18,14 @@ import {
 } from "reactstrap";
 import { ethers } from "ethers";
 import { WalletContext } from "providers/WalletProvider";
-import { ModalContext } from "providers/ModalProvider";
+import { ConnectWalletContext } from "providers/ConnectWalletProvider";
 import { getShortAddress } from "common/utilities";
 import { networks } from "contracts";
 
 export default function IndexNavbar() {
   
   const { setProvider, setAddress, address } = useContext(WalletContext);
-  const { showModal } = useContext(ModalContext);
+  const { showModal } = useContext(ConnectWalletContext);
   const [ collapseOpen, setCollapseOpen ] = useState(false);
   const [ collapseOut, setCollapseOut ] = useState("");
   const [ color, setColor ] = useState("navbar-transparent");

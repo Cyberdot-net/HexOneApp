@@ -11,14 +11,14 @@ const HexOneProtocol = () => {
         contract = new Contract(HexOneProtocol_Addr.contract, HexOneProtocol_Abi, provider);
     }
 
-    const depositCollateral = async (address, amount, duration, commit) => {
+    const DepositCollateral = async (amount, duration, commit) => {
         if (!contract) return false;
 
         try {
-            const tx = await contract.depositCollateral(address, amount, duration, commit);
-            const tr = await tx.wait();
-            const event = tr.events.find(event => event.event === 'Transfer');
-            const [transferEvent] = tr.events;
+            // const tx = await contract.depositCollateral(HexOneProtocol_Addr.contract, amount, duration, commit);
+            // const tr = await tx.wait();
+            // const event = tr.events.find(event => event.event === 'Transfer');
+            // const [transferEvent] = tr.events;
         } catch (e) {
             console.error(e);
             return false;
@@ -32,8 +32,8 @@ const HexOneProtocol = () => {
             SetProvider(provider);
         },
 
-        DepositCollateral: async () => {
-            return await depositCollateral();
+        depositCollateral: async (amount, duration, commit) => {
+            return await DepositCollateral(amount, duration, commit);
         },
     }
 };
