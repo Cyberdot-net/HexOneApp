@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Button,
   ListGroupItem,
@@ -8,80 +8,32 @@ import {
   Col,
   Card,
   CardBody,
+  Alert,
   UncontrolledTooltip,
 } from "reactstrap";
-
+import { BigNumber, utils } from "ethers";
+import { WalletContext } from "providers/WalletProvider";
+import { HexOneVault, HexContract, HexOnePriceFeed } from "contracts";
+import { ITEMS_PER_PAGE } from "contracts/Constants";
 import BorrowModal from "components/Modals/Borrow";
 import ReborrowModal from "components/Modals/Reborrow";
 import RechargeModal from "components/Modals/Recharge";
+import Pagination from "components/Common/Pagination";
+import Loading from "components/Common/Loading";
 
 export default function Overview() {
-  const [overviews, setOverviews] = useState([]);
-  const [liquidates, setLiquidates] = useState([]);
-  const [isBorrowOpen, setBorrowOpen] = useState(false);
-  const [reborrow, setReborrow] = useState({ show: false, data: {} });
-  const [recharge, setRecharge] = useState({ show: false, data: {} });
-
+  const { address, provider } = useContext(WalletContext);
+  const [ hexDecimals, setHexDecimals ] = useState(BigNumber.from(0));
+  const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
+  const [ history, setHistory ] = useState([]);
+  const [ liquidates, setLiquidates ] = useState([]);
+  const [ isBorrowOpen, setBorrowOpen ] = useState(false);
+  const [ reborrow, setReborrow ] = useState({ show: false, data: {} });
+  const [ recharge, setRecharge ] = useState({ show: false, data: {} });
+  const [ loading, setLoading ] = useState(false);
+  const [ page, setPage ] = useState(1);
+  
   useEffect(() => {
-    setOverviews([
-      {
-        startDay: 1001,
-        endDay: 5001,
-        currentDay: 3050,
-        stakeid: 123,
-        collateralAmt: 100000,
-        borrowedAmt: 100000,
-        effectiveAmt: 50000,
-        initialHex: 0.2,
-        currentHex: 0.2,
-        ratio: 100,
-        totalHex: 1000,
-        disabled: true,
-      },
-      {
-        startDay: 2100,
-        endDay: 5001,
-        currentDay: 3050,
-        stakeid: 734,
-        collateralAmt: 20000,
-        borrowedAmt: 10000,
-        effectiveAmt: 50000,
-        initialHex: 0.5,
-        currentHex: 0.2,
-        ratio: 40,
-        totalHex: 1500,
-        disabled: true,
-      },
-      {
-        startDay: 3000,
-        endDay: 6029,
-        currentDay: 3050,
-        stakeid: 945,
-        collateralAmt: 1000000,
-        borrowedAmt: 10000,
-        effectiveAmt: 80000,
-        initialHex: 0.05,
-        currentHex: 0.2,
-        ratio: 300,
-        totalHex: 3000,
-        disabled: true,
-      },
-      {
-        startDay: 550,
-        endDay: 3050,
-        currentDay: 2500,
-        stakeid: 69,
-        collateralAmt: 50000,
-        borrowedAmt: 5000,
-        effectiveAmt: 2000,
-        initialHex: 0.01,
-        currentHex: 0.2,
-        ratio: 1900,
-        totalHex: 2500,
-        disabled: false,
-      },
-    ]);
-
     setLiquidates([
       {
         stakeid: 123,
@@ -122,6 +74,34 @@ export default function Overview() {
     ]);
   }, []);
 
+  useEffect(() => {
+    if (!address) return;
+
+    HexContract.setProvider(provider);
+    HexOnePriceFeed.setProvider(provider);
+    HexOneVault.setProvider(provider);
+
+    const getData = async () => {
+      setLoading(true);
+
+      const decimals = await HexContract.getDecimals();
+      setHexDecimals(decimals);
+      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
+      setHistory(await HexOneVault.getHistory(address));
+
+      setLoading(false);
+    }
+
+    getData();
+
+  }, [ address, provider ]);
+
+  const getHistory = async () => {    
+    // setLoading(true);
+    setHistory(await HexOneVault.getHistory(address));
+    // setLoading(false);
+  }
+
   const onClickReborrow = (row) => {
     setReborrow({ show: true, data: row });
   }
@@ -130,35 +110,16 @@ export default function Overview() {
     setRecharge({ show: true, data: row });
   }
 
-  const doBorrow = (collateralAmt, days, borrowedAmt) => {
-    console.log(collateralAmt, days, borrowedAmt);
+  const doBorrow = async () => {
+    getHistory();
   }
 
-  const doReborrow = (stakeid, amount) => {
-    setOverviews(prev => {
-      return prev.map(r => {
-        if (r.stakeid === stakeid) {
-          r.borrowedAmt += parseFloat(amount);
-          r.initialHex = r.currentHex;
-        }
-        return r;
-      });
-    });
+  const doReborrow = () => {
+    getHistory();
   }
 
-  const doRecharge = (stakeid, amount) => {
-    setOverviews(prev => {
-      const oldR = prev.find(r => r.stakeid === stakeid);
-      let newData = prev.filter(r => r.stakeid !== stakeid);
-      newData.push({
-        ...oldR,
-        stakeid: 2567,
-        borrowedAmt: oldR.borrowedAmt + parseFloat(amount),
-        initialHex: oldR.currentHex
-      });
-
-      return newData;
-    });
+  const doRecharge = () => {
+    getHistory();
   }
 
   return (
@@ -231,18 +192,19 @@ export default function Overview() {
                     </tr>
                   </thead>
                   <tbody>
-                    {overviews.map((r, idx) => (
+                    {history.length > 0 ? 
+                      history.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE).map((r, idx) => (
                       <tr key={idx}>
-                        <td className="text-center">{r.stakeid}</td>
-                        <td className="text-center">{r.startDay}</td>
-                        <td className="text-center">{r.endDay}</td>
-                        <td>{r.collateralAmt.toLocaleString()} HEX</td>
-                        <td>{r.effectiveAmt.toLocaleString()} HEX</td>
-                        <td>{r.borrowedAmt.toLocaleString()} HEX1</td>
-                        <td>${r.initialHex.toLocaleString()}</td>
-                        <td>${r.currentHex.toLocaleString()}</td>
-                        <td className={r.ratio >= 100 ? "green" : "red"}>
-                          {r.ratio.toLocaleString()}%
+                        <td className="text-center">{r.depositId.toString()}</td>
+                        <td className="text-center">{r.lockedHexDay.toString()}</td>
+                        <td className="text-center">{r.endHexDay.toString()}</td>
+                        <td>{utils.formatUnits(r.depositAmount, hexDecimals)} HEX</td>
+                        <td>{0} HEX</td>
+                        <td>{utils.formatUnits(r.mintAmount)} HEX1</td>
+                        <td>${0}</td>
+                        <td>${utils.formatUnits(hexFeed)}</td>
+                        <td className={0 >= 100 ? "green" : "red"}>
+                          {100}%
                         </td>
                         <td className="td-actions" width="125">
                           <button
@@ -250,7 +212,7 @@ export default function Overview() {
                             rel="tooltip"
                             id="claim"
                             className="btn btn-primary btn-sm w-full mb-1"
-                            disabled={r.disabled}
+                            disabled={r.curHexDay.lte(r.endHexDay)}
                           >
                             Claim
                           </button>
@@ -266,7 +228,7 @@ export default function Overview() {
                             id="mintHex1"
                             className="btn btn-success btn-sm w-full mb-1"
                             onClick={() => onClickReborrow(r)}
-                            disabled={!r.disabled}
+                            disabled={r.curHexDay.gt(r.endHexDay)}
                           >
                             Re-Borrow
                           </button>
@@ -282,7 +244,7 @@ export default function Overview() {
                             id="addCollateral"
                             className="btn btn-info btn-sm w-full"
                             onClick={() => onClickRecharge(r)}
-                            disabled={!r.disabled}
+                            disabled={r.curHexDay.gt(r.endHexDay)}
                           >
                             Re-Charge
                           </button>
@@ -294,9 +256,27 @@ export default function Overview() {
                           </UncontrolledTooltip>
                         </td>
                       </tr>
-                    ))}
+                    )) : <tr>
+                      <td colSpan={10} className="text-center">                
+                        <Alert
+                          className="alert-with-icon"
+                          color="default"
+                        >
+                          <span>There are no matching entries</span>
+                        </Alert>
+                      </td>
+                    </tr>}
                   </tbody>
                 </table>
+              </Col>
+              <Col md="12">
+                <Pagination 
+                  className="mb-3"
+                  page={page}
+                  count={history.length}
+                  perPage={ITEMS_PER_PAGE}
+                  onChange={p => setPage(p)}
+                />
               </Col>
             </Row>
             <Row gutter="10" className="pl-4 pr-4 mt-2">
@@ -465,6 +445,7 @@ export default function Overview() {
           onClose={() => setRecharge({ show: false, data: {} })}
         />}
       </div>
+      {loading && <Loading />}
     </>
   );
 }

@@ -24,7 +24,7 @@ import { HexContract, HexOnePriceFeed, HexOneProtocol } from "contracts";
 import { STAKEDAYS_MIN, STAKEDAYS_MAX } from "contracts/Constants";
 import { formatDecimal, formatZeroDecimal, isEmpty } from "common/utilities";
 import { HEX_SHARERATE_DEC } from "contracts/Constants";
-import Loading from "components/Loading";
+import Loading from "components/Common/Loading";
 
 export default function Borrow(props) {
 
@@ -85,7 +85,6 @@ export default function Borrow(props) {
   }, [ address, provider ]);
 
   const getBorrowAmt = () => {
-    // console.log(formatDecimal(hexFeed));
     return collateralAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"));
   }
 
@@ -137,7 +136,7 @@ export default function Borrow(props) {
     setLoading(false);
     showMessage("Borrow success!", "info");
     setCollateralAmt({ value: "", bignum: BigNumber.from(0), fee: BigNumber.from(0) });
-    // props.onBorrow(collateralAmt['bignum'], stakeDays);
+    props.onBorrow();
     // props.onClose();
   }
 

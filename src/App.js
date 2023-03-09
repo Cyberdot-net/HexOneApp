@@ -17,7 +17,7 @@ import Staking from "views/Staking";
 
 // modal
 import ConnectWallet from "components/Modals/ConnectWallet";
-import Message from "components/Modals/Message";
+import Message from "components/Common/Message";
 
 export default function App() {
 
