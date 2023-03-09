@@ -12,6 +12,8 @@ import Footer from "components/Footer/Footer";
 
 // views
 import Overview from "views/Overview";
+import Bootstrap from "views/Bootstrap";
+import Staking from "views/Staking";
 
 // modal
 import ConnectWallet from "components/Modals/ConnectWallet";
@@ -26,6 +28,8 @@ export default function App() {
           <Navbar />
           <Switch>
             <Route exact path="/" render={(props) => <Overview {...props} />} />
+            <Route exact path="/bootstrap" render={(props) => <Bootstrap {...props} />} />
+            <Route exact path="/staking" render={(props) => <Staking {...props} />} />
             {/* add routes here */}
             <Redirect to='/' />
           </Switch>

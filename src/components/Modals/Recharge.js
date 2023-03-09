@@ -14,6 +14,7 @@ import {
   UncontrolledTooltip,
   Alert
 } from "reactstrap";
+import { BigNumber, utils } from "ethers";
 import { WalletContext } from "providers/WalletProvider";
 
 export default function Recharge(props) {
@@ -21,11 +22,10 @@ export default function Recharge(props) {
   const { address } = useContext(WalletContext);
   const [ shareRate, setShareRate ] = useState(0);
   const [ dayPayoutTotal, setDayPayoutTotal ] = useState(0);
-  const [ effectiveHex, setEffectiveHex ] = useState("");
-  const [ totalTShare, setTotalTShare ] = useState("");
-  const [ amount, setAmount ] = useState("");
+  const [ collateralAmt, setCollateralAmt ] = useState({ value: "", decimal: BigNumber.from(0), fee: BigNumber.from(0) });
   const [ data, setData ] = useState({});
   const [ totalHex, setTotalHex ] = useState(0);
+  const BORROW_FEE = 5;
 
   useEffect(() => {
     setShareRate(265452); // get from third value (function 12)
@@ -39,24 +39,24 @@ export default function Recharge(props) {
       setTotalHex(totalHex);
     }
   }, [props.data]);
+  
+  const getTotalTshare = () => {
+    return (data.totalHex / shareRate) || "";
+  }
 
-  useEffect(() => {
-    if (!shareRate) return;
+  const getEffectiveHex = () => {
+    return (getTotalTshare() * dayPayoutTotal * (data.endDay - data.startDay)) || "";
+  }
 
-    const totalTShare = data.totalHex / shareRate;
-
-    setTotalTShare(isNaN(totalTShare) ? "" : totalTShare);
-
-    const effectiveHex = totalTShare * dayPayoutTotal * (data.endDay - data.startDay);
-
-    setEffectiveHex(isNaN(effectiveHex) ? "" : effectiveHex);
-
-  }, [ shareRate, dayPayoutTotal, data ]);
+  const changeCollateralAmt = (e) => {
+    const inputValue = utils.parseEther(e.target.value || "0");
+    setCollateralAmt({ value: e.target.value, decimal: inputValue, fee: inputValue.mul(100 - BORROW_FEE).div(100) });
+  }
   
   const onClickRecharge = () => {
-    if (!amount || amount > totalHex) return;
+    // if (!amount || amount > totalHex) return;
 
-    props.onRecharge(data.stakeid, amount);
+    // props.onRecharge(data.stakeid, amount);
     props.onClose();
   }
 
@@ -110,8 +110,8 @@ export default function Recharge(props) {
                   <Input
                     type="text"
                     placeholder="Effective Hex"
-                    value={effectiveHex}
-                    onChange={e => setEffectiveHex(e.target.value)} 
+                    value={getEffectiveHex()}
+                    readOnly
                   />
                   <InputGroupAddon addonType="append">
                     <InputGroupText>HEX</InputGroupText>
@@ -127,13 +127,13 @@ export default function Recharge(props) {
                 <Input
                   type="text"
                   placeholder="Total T-Shares"
-                  value={totalTShare}
-                  onChange={e => setTotalTShare(e.target.value)} 
+                  value={getTotalTshare()}
+                  readOnly
                 />
               </Col>
             </Row>
           </FormGroup>
-          <FormGroup className={"mb-3 " + (amount > totalHex && " has-danger")}>
+          <FormGroup className={"mb-3 " + (collateralAmt['value'] > totalHex && " has-danger")}>
             <Row>
               <Label sm="3" className="text-right">Collateral Amount</Label>
               <Col sm="8">
@@ -141,9 +141,9 @@ export default function Recharge(props) {
                   <Input
                     type="text"
                     placeholder={`Collateral Amount in HEX (${(totalHex || 0).toLocaleString()} HEX available)`}
-                    value={amount}
-                    onChange={e => setAmount(e.target.value)} 
-                    {...(amount > totalHex) && {className: "form-control-danger"}}
+                    value={collateralAmt['value']}
+                    onChange={changeCollateralAmt} 
+                    {...(collateralAmt['value'] > totalHex) && {className: "form-control-danger"}}
                   />
                   <InputGroupAddon addonType="append">
                     <InputGroupText>HEX</InputGroupText>

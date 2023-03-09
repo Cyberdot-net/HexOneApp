@@ -4,6 +4,7 @@ export default function Loading(props) {
 
   return (
     <div className="loading">
+      <div className="backdrop fade show"></div>
       <div className="walletInfo">
         <img
           alt="loading"
@@ -17,7 +18,6 @@ export default function Loading(props) {
           {/* Loading... <span>Wait a moment.</span> */}
         </p>
       </div>
-      <div className="modal-backdrop fade show"></div>
     </div>
   );
 }

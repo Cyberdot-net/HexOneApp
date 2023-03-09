@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -20,10 +21,11 @@ import { ethers } from "ethers";
 import { WalletContext } from "providers/WalletProvider";
 import { ConnectWalletContext } from "providers/ConnectWalletProvider";
 import { getShortAddress } from "common/utilities";
-import { networks } from "contracts";
+import { networks } from "contracts/Constants";
 
 export default function IndexNavbar() {
   
+  const history = useHistory();
   const { setProvider, setAddress, address } = useContext(WalletContext);
   const { showModal } = useContext(ConnectWalletContext);
   const [ collapseOpen, setCollapseOpen ] = useState(false);
@@ -84,6 +86,10 @@ export default function IndexNavbar() {
       window.removeEventListener("scroll", changeColor);
     };
   }, []);
+
+  const gotoPage = (url) => {
+    history.push(url);
+  }
 
   const changeColor = () => {
     if (
@@ -179,7 +185,7 @@ export default function IndexNavbar() {
                 target="_blank"
                 href="https://hex-one.gitbook.io/hex-one-protocol"
               >
-                {/* <i className="tim-icons icon-spaceship" /> */} LEARN
+                LEARN
               </Button>
             </NavItem>
             <NavItem>
@@ -187,10 +193,9 @@ export default function IndexNavbar() {
                 className="nav-link d-lg-block"
                 style={{width: 120}}
                 color="primary"
-                target="_blank"
-                href="https://airdrop.hex1.club"
+                onClick={() => gotoPage("/bootstrap")}
               >
-                AIRDROP
+                Bootstrap
               </Button>
             </NavItem>
             <NavItem>
@@ -198,10 +203,19 @@ export default function IndexNavbar() {
                 className="nav-link d-lg-block"
                 style={{width: 120}}
                 color="primary"
-                target="_blank"
-                href="https://sacrifice.hex1.club"
+                onClick={() => gotoPage("/airdrop")}
               >
-                SACRIFICE
+                Airdrop
+              </Button>
+            </NavItem>
+            <NavItem>
+              <Button
+                className="nav-link d-lg-block"
+                style={{width: 120}}
+                color="primary"
+                onClick={() => gotoPage("/staking")}
+              >
+                Staking
               </Button>
             </NavItem>
             <NavItem {...address && {className: "wallet"}}>

@@ -1,7 +1,7 @@
 import { Contract, BigNumber, utils } from "ethers";
 import { HEX_DAYPAYOUT_DEC } from "./Constants";
 import { HexMockToken_Abi } from "./abis";
-import { HexMockToken_Addr } from "./address";
+import { HexMockToken_Addr, HexOneProtocol_Addr } from "./address";
 import { isEmpty } from "common/utilities";
 
 const HexContract = () => {
@@ -11,7 +11,7 @@ const HexContract = () => {
 
     const SetProvider = (newProvider) => {
         provider = newProvider;
-        contract = new Contract(HexMockToken_Addr.contract, HexMockToken_Abi, provider);
+        contract = new Contract(HexMockToken_Addr.contract, HexMockToken_Abi, provider.getSigner());
     }
 
     const GetDecimals = async () => {
@@ -71,6 +71,25 @@ const HexContract = () => {
         return shareRate;
     }
 
+    const Approve = async (amount) => {
+        if (!contract) return { status: "failed" };
+
+        try {
+            const tx = await contract.approve(HexOneProtocol_Addr.contract, amount);
+            await tx.wait();
+            // const [transferEvent] = tr.events;
+        } catch (e) {
+            console.error(e);
+            if (e.code === 4001) {
+                return { status: "failed", error: "Borrow failed! User denied transaction." };
+            } else {
+                return { status: "failed" };
+            }
+        }
+
+        return { status: "success" };
+    }
+
     return {
         setProvider: (provider) => {
             SetProvider(provider);
@@ -90,6 +109,10 @@ const HexContract = () => {
 
         getShareRate: async () => {
             return await GetShareRate();
+        },
+
+        approve: async (amount) => {
+            return await Approve(amount);
         },
     }
 };
