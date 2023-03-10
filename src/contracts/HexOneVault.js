@@ -17,7 +17,7 @@ const HexOneVault = () => {
 
         try {
             list = await contract.getUserInfos(address);
-            console.log(list);
+            // console.log(list);
         } catch (e) {
             console.error(e);
         }

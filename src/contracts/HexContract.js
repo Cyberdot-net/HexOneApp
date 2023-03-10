@@ -1,5 +1,5 @@
 import { Contract, BigNumber, utils } from "ethers";
-import { HEX_DAYPAYOUT_DEC } from "./Constants";
+import { HEX_DAYPAYOUT_DEC, HEX_SHARERATE_DEC } from "./Constants";
 import { HexMockToken_Abi } from "./abis";
 import { HexMockToken_Addr, HexOneProtocol_Addr } from "./address";
 import { isEmpty } from "common/utilities";
@@ -64,6 +64,7 @@ const HexContract = () => {
             const globalInfo = await contract.globals();
             // shareRate = BigNumber.from(globalInfo["shareRate"]).div(utils.parseUnits("1", HEX_SHARERATE_DEC));
             shareRate = BigNumber.from(globalInfo["shareRate"]);
+            console.log("shareRate", utils.formatUnits(shareRate, HEX_SHARERATE_DEC));
         } catch (e) {
             console.error(e);
         }
