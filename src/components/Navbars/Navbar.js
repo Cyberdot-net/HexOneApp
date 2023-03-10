@@ -18,8 +18,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { ethers } from "ethers";
-import { WalletContext } from "providers/WalletProvider";
-import { ConnectWalletContext } from "providers/ConnectWalletProvider";
+import { WalletContext, ConnectWalletContext } from "providers/Contexts";
 import { getShortAddress } from "common/utilities";
 import { networks } from "contracts/Constants";
 
@@ -85,6 +84,8 @@ export default function IndexNavbar() {
       ethereum.removeListener('disconnect', handleWalletDisconnect);
       window.removeEventListener("scroll", changeColor);
     };
+    
+    // eslint-disable-next-line
   }, []);
 
   const gotoPage = (url) => {

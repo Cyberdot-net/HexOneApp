@@ -18,30 +18,27 @@ import {
   Alert
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
-import { WalletContext } from "providers/WalletProvider";
-import { MessageContext } from "providers/MessageProvider";
+import { WalletContext, MessageContext, LoadingContext } from "providers/Contexts";
 import { HexContract, HexOnePriceFeed, HexOneProtocol } from "contracts";
-import { STAKEDAYS_MIN, STAKEDAYS_MAX } from "contracts/Constants";
+import { HEX_SHARERATE_DEC, STAKEDAYS_MIN, STAKEDAYS_MAX } from "contracts/Constants";
 import { formatDecimal, formatZeroDecimal, isEmpty } from "common/utilities";
-import { HEX_SHARERATE_DEC } from "contracts/Constants";
-import Loading from "components/Common/Loading";
 
-export default function Borrow(props) {
+export default function Borrow({ show, onClose, onBorrow }) {
 
   const { address, provider } = useContext(WalletContext);
   const { showMessage } = useContext(MessageContext);
+  const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ isOpen, setOpen ] = useState(false);
   const [ hexDecimals, setHexDecimals ] = useState(8);
-  const [ fee,  setFee ] = useState(BigNumber.from(0));
-  const [ totalHex,  setTotalHex ] = useState(BigNumber.from(0));
-  const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
+  const [ fee,  setFee ] = useState(0);
+  const [ totalHex,  setTotalHex ] = useState(0);
+  const [ hexFeed, setHexFeed ] = useState(0);
   const [ dayPayoutTotal, setDayPayoutTotal ] = useState(0);
-  const [ shareRate, setShareRate ] = useState(BigNumber.from(0));
+  const [ shareRate, setShareRate ] = useState(0);
   const [ collateralAmt, setCollateralAmt ] = useState({ value: "", bignum: BigNumber.from(0), fee: BigNumber.from(0) });
   const [ stakeDays, setStakeDays ] = useState("");
   const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
   const [ commit, setCommit ] = useState(false);
-  const [ loading, setLoading ] = useState(false);
 
   useEffect(() => {
     const bodyMouseDowntHandler = e => {
@@ -60,7 +57,7 @@ export default function Borrow(props) {
   useEffect(() => {
       if (!address) return;
 
-      setLoading(true);
+      showLoading();
 
       HexContract.setProvider(provider);
       HexOnePriceFeed.setProvider(provider);
@@ -77,11 +74,12 @@ export default function Borrow(props) {
 
         setFee(await HexOneProtocol.getFees());
 
-        setLoading(false);
+        hideLoading();
       }
 
       getHexData();
 
+    // eslint-disable-next-line
   }, [ address, provider ]);
 
   const getBorrowAmt = () => {
@@ -115,198 +113,194 @@ export default function Borrow(props) {
   const onClickBorrow = async () => {
     if (isEmpty(collateralAmt['bignum']) || (+stakeDays < STAKEDAYS_MIN || STAKEDAYS_MAX < +stakeDays) || collateralAmt['bignum'].gt(totalHex)) return;
 
-    setLoading(true);
+    showLoading("Borrowing...");
 
     const amount = collateralAmt['bignum'].div(utils.parseUnits("1", 18 - hexDecimals));
 
     let res = await HexContract.approve(amount);
     if (res.status !== "success") {
-      setLoading(false);
+      hideLoading();
       showMessage(res.error ?? "Borrow failed! HEX Approve error!", "error");
       return;
     }
 
     res = await HexOneProtocol.depositCollateral(amount, +stakeDays, commit);
     if (res.status !== "success") {
-      setLoading(false);
+      hideLoading();
       showMessage(res.error ?? "Borrow failed! Deposit Collateral error!", "error");
       return;
     }
 
-    setLoading(false);
-    showMessage("Borrow success!", "info");
     setCollateralAmt({ value: "", bignum: BigNumber.from(0), fee: BigNumber.from(0) });
-    props.onBorrow();
-    // props.onClose();
-  }
+    setStakeDays("");
 
-  const onClose = () => {
-    setLoading(false);
-    props.onClose();
+    onBorrow();
+    setTotalHex(await HexContract.getBalance(address));
+    
+    hideLoading();
+    showMessage("Borrow success!", "info");
+    // onClose();
   }
 
   return (
-    <>
-      <Modal
-        modalClassName="modal-black"
-        isOpen={props.isOpen}
-        toggle={onClose}
-        size="lg"
-      >
-        <div className="modal-header justify-content-center">
-          <button className="close" onClick={onClose}>
-            <i className="tim-icons icon-simple-remove text-white" />
-          </button>
-          <div className="text-muted text-center ml-auto mr-auto">
-            <h3 className="mb-0"><i className="tim-icons tim-icons-lg icon-coins mr-1" /> Borrow</h3>
-          </div>
+    <Modal
+      modalClassName="modal-black"
+      isOpen={show}
+      toggle={onClose}
+      size="lg"
+    >
+      <div className="modal-header justify-content-center">
+        <button className="close" onClick={onClose}>
+          <i className="tim-icons icon-simple-remove text-white" />
+        </button>
+        <div className="text-muted text-center ml-auto mr-auto">
+          <h3 className="mb-0"><i className="tim-icons tim-icons-lg icon-coins mr-1" /> Borrow</h3>
         </div>
-        <div className="modal-body">
-          <Alert
-            className="alert-with-icon"
-            color="danger"
-            isOpen={!address}
-          >
-            <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
-            <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
-          </Alert>
-          <Form role="form">
-            <FormGroup className={"mb-3 mt-3 " + (collateralAmt['bignum'].gt(totalHex) && " has-danger")}>
-              <Row>
-                <Label sm="3" className="text-right">Collateral Amount</Label>
-                <Col sm="8">
-                  <InputGroup>
-                    <Input
-                      type="text"
-                      placeholder={`Collateral Amount in HEX (${formatDecimal(totalHex) || 0} HEX available)`}
-                      value={collateralAmt.value}
-                      onChange={changeCollateralAmt} 
-                      autoFocus
-                      {...(collateralAmt['bignum'].gt(totalHex)) && {className: "form-control-danger"}}
-                    />
-                    <InputGroupAddon addonType="append">
-                      <InputGroupText>HEX</InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col sm="3"></Col>
-                <Col sm="8" className="text-right">
-                  <span>{formatZeroDecimal(collateralAmt['fee'])} HEX</span>
-                  <span className="ml-2">(Fee: {formatZeroDecimal(collateralAmt['bignum'].sub(collateralAmt['fee']))} HEX)</span>
-                </Col>
-              </Row>
-            </FormGroup>
-            <FormGroup className={"mb-3 " + ((stakeDays && (+stakeDays < STAKEDAYS_MIN || +stakeDays > STAKEDAYS_MAX)) && " has-danger")}>
-              <Row>
-                <Label sm="3" className="text-right">Stake Days</Label>
-                <Col sm="8">
-                  <InputGroup>
-                    <Input
-                      type="text"
-                      placeholder={`Stake Length in Days (${STAKEDAYS_MIN} ~ ${STAKEDAYS_MAX})`}
-                      value={stakeDays}
-                      onChange={e => setStakeDays(e.target.value)} 
-                      {...(stakeDays && (+stakeDays < STAKEDAYS_MIN || +stakeDays > STAKEDAYS_MAX)) && {className: "form-control-danger"}}
-                    />
-                    <InputGroupAddon addonType="append" className="cursor-pointer" onClick={e => setOpen(!isOpen)}>
-                      <InputGroupText>
-                        <i className="tim-icons icon-calendar-60" />
-                      </InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
-                  {isOpen && <DateRange
-                    editableDateInputs={true}
-                    minDate={new Date()}
-                    onChange={selectStakeDays}
-                    moveRangeOnFirstSelection={false}
-                    showPreview={false}
-                    ranges={daterange}
-                    className="calendar"
-                  />}
-                </Col>
-              </Row>
-            </FormGroup>
-            <FormGroup className="mb-3">
-              <Row>
-                <Label sm="3" className="text-right">Effective Hex</Label>
-                <Col sm="8">
-                  <InputGroup>
-                    <Input
-                      type="text"
-                      placeholder="Effective Hex"
-                      value={formatDecimal(getEffectiveHex())}
-                      readOnly
-                    />
-                    <InputGroupAddon addonType="append">
-                      <InputGroupText>HEX</InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
-                </Col>
-              </Row>
-            </FormGroup>
-            <FormGroup className="mb-4">
-              <Row>
-                <Label sm="3" className="text-right">Total T-Shares</Label>
-                <Col sm="8">
+      </div>
+      <div className="modal-body">
+        <Alert
+          className="alert-with-icon"
+          color="danger"
+          isOpen={!address}
+        >
+          <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
+          <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
+        </Alert>
+        <Form role="form">
+          <FormGroup className={"mb-3 mt-3 " + (collateralAmt['bignum'].gt(totalHex) && " has-danger")}>
+            <Row>
+              <Label sm="3" className="text-right">Collateral Amount</Label>
+              <Col sm="8">
+                <InputGroup>
                   <Input
                     type="text"
-                    placeholder="Total T-Shares"
-                    value={formatDecimal(getTotalTshare())}
+                    placeholder={`Collateral Amount in HEX (${formatDecimal(totalHex) || 0} HEX available)`}
+                    value={collateralAmt.value}
+                    onChange={changeCollateralAmt} 
+                    autoFocus
+                    {...(collateralAmt['bignum'].gt(totalHex)) && {className: "form-control-danger"}}
+                  />
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText>HEX</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm="3"></Col>
+              <Col sm="8" className="text-right">
+                <span>{formatZeroDecimal(collateralAmt['fee'])} HEX</span>
+                <span className="ml-2">(Fee: {formatZeroDecimal(collateralAmt['bignum'].sub(collateralAmt['fee']))} HEX)</span>
+              </Col>
+            </Row>
+          </FormGroup>
+          <FormGroup className={"mb-3 " + ((stakeDays && (+stakeDays < STAKEDAYS_MIN || +stakeDays > STAKEDAYS_MAX)) && " has-danger")}>
+            <Row>
+              <Label sm="3" className="text-right">Stake Days</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder={`Stake Length in Days (${STAKEDAYS_MIN} ~ ${STAKEDAYS_MAX})`}
+                    value={stakeDays}
+                    onChange={e => setStakeDays(e.target.value)} 
+                    {...(stakeDays && (+stakeDays < STAKEDAYS_MIN || +stakeDays > STAKEDAYS_MAX)) && {className: "form-control-danger"}}
+                  />
+                  <InputGroupAddon addonType="append" className="cursor-pointer" onClick={e => setOpen(!isOpen)}>
+                    <InputGroupText>
+                      <i className="tim-icons icon-calendar-60" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+                {isOpen && <DateRange
+                  editableDateInputs={true}
+                  minDate={new Date()}
+                  onChange={selectStakeDays}
+                  moveRangeOnFirstSelection={false}
+                  showPreview={false}
+                  ranges={daterange}
+                  className="calendar"
+                />}
+              </Col>
+            </Row>
+          </FormGroup>
+          <FormGroup className="mb-3">
+            <Row>
+              <Label sm="3" className="text-right">Effective Hex</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Effective Hex"
+                    value={formatDecimal(getEffectiveHex())}
                     readOnly
                   />
-                </Col>
-              </Row>
-            </FormGroup>
-            <FormGroup className="mb-3">
-              <Row>
-                <Label sm="3" className="text-right">Borrow amount</Label>
-                <Col sm="8">
-                  <InputGroup>
-                    <Input
-                      type="text"
-                      placeholder="Borrow amount"
-                      value={formatDecimal(getBorrowAmt())}
-                      readOnly
-                    />
-                    <InputGroupAddon addonType="append">
-                      <InputGroupText>HEX1</InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
-                </Col>
-              </Row>
-            </FormGroup>
-            <FormGroup className="mb-3">
-              <Row>
-                <Col sm="3"></Col>
-                <Col sm="8">
-                  <CustomInput type="switch" id="switch" label="Committed" checked={commit} onChange={e => setCommit(e.target.checked)} />
-                </Col>
-              </Row>
-            </FormGroup>
-            <div className="text-center">
-              <Button
-                className="btn-simple my-4"
-                color="info"
-                id="borrow"
-                type="button"
-                disabled={!address}
-                onClick={onClickBorrow}
-              >
-                Borrow
-              </Button>
-              <UncontrolledTooltip
-                placement="bottom"
-                target="borrow"
-              >
-                Borrow HEX1 by depositing HEX (T-shares)
-              </UncontrolledTooltip>
-            </div>
-          </Form>
-        </div>
-      </Modal>
-      {loading && <Loading />}
-    </>
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText>HEX</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Col>
+            </Row>
+          </FormGroup>
+          <FormGroup className="mb-4">
+            <Row>
+              <Label sm="3" className="text-right">Total T-Shares</Label>
+              <Col sm="8">
+                <Input
+                  type="text"
+                  placeholder="Total T-Shares"
+                  value={formatDecimal(getTotalTshare())}
+                  readOnly
+                />
+              </Col>
+            </Row>
+          </FormGroup>
+          <FormGroup className="mb-3">
+            <Row>
+              <Label sm="3" className="text-right">Borrow amount</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Borrow amount"
+                    value={formatDecimal(getBorrowAmt())}
+                    readOnly
+                  />
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText>HEX1</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Col>
+            </Row>
+          </FormGroup>
+          <FormGroup className="mb-3">
+            <Row>
+              <Col sm="3"></Col>
+              <Col sm="8">
+                <CustomInput type="switch" id="switch" label="Committed" checked={commit} onChange={e => setCommit(e.target.checked)} />
+              </Col>
+            </Row>
+          </FormGroup>
+          <div className="text-center">
+            <Button
+              className="btn-simple my-4"
+              color="info"
+              id="borrow"
+              type="button"
+              disabled={!address}
+              onClick={onClickBorrow}
+            >
+              Borrow
+            </Button>
+            <UncontrolledTooltip
+              placement="bottom"
+              target="borrow"
+            >
+              Borrow HEX1 by depositing HEX (T-shares)
+            </UncontrolledTooltip>
+          </div>
+        </Form>
+      </div>
+    </Modal>
   );
 }

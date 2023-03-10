@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 
-export default function Loading(props) {
+import { LoadingContext } from "providers/Contexts";
+
+export default function Loading() {
+
+  const { show, msg } = useContext(LoadingContext);
 
   return (
-    <div className="loading">
+    show && <div className="loading">
       <div className="backdrop fade show"></div>
       <div className="walletInfo">
         <img
@@ -14,8 +18,7 @@ export default function Loading(props) {
           className="mr-3"
         />
         <p className="connectWalletText">
-          {props.msg ? props.msg : "Loading ..."}
-          {/* Loading... <span>Wait a moment.</span> */}
+          {msg || "Loading ..."}
         </p>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export const WalletContext = React.createContext({});
+import { WalletContext } from "./Contexts";
 
 const WalletProvider = ({ children }) => {
   const [ provider, setWalletProvider ] = useState(null);

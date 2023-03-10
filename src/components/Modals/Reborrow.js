@@ -14,38 +14,70 @@ import {
   UncontrolledTooltip,
   Alert
 } from "reactstrap";
-import { WalletContext } from "providers/WalletProvider";
+import { BigNumber, utils } from "ethers";
+import { WalletContext, MessageContext, LoadingContext } from "providers/Contexts";
+import { HexContract, HexOneVault, HexOneProtocol } from "contracts";
+import { formatDecimal, isEmpty } from "common/utilities";
 
-export default function Reborrow(props) {
+export default function Reborrow({ show, data, onClose, onReborrow }) {
 
-  const { address } = useContext(WalletContext);
-  const [ amount, setAmount ] = useState("");
-  const [ data, setData ] = useState({});
-  const [ totalHex, setTotalHex ] = useState(0);
+  const { address, provider } = useContext(WalletContext);
+  const { showMessage } = useContext(MessageContext);
+  const { showLoading, hideLoading } = useContext(LoadingContext);
+  const [ amount, setAmount ] = useState({ value: "", bignum: BigNumber.from(0) });
+  const [ totalHex,  setTotalHex ] = useState(0);
 
   useEffect(() => {
-    if (props.data && props.data.stakeid) {
-      const totalHex = props.data.borrowedAmt * (props.data.currentHex - props.data.initialHex);
-      setData({ ...props.data });
-      setTotalHex(totalHex);
+    if (!address) return;
+
+    HexContract.setProvider(provider);
+    HexOneVault.setProvider(provider);
+    HexOneProtocol.setProvider(provider);
+
+    // if (data && data.depositId) {
+    //   setTotalHex(data.mintAmount.mul(data.currentFeed).div(utils.parseUnits("1")));
+    // }
+
+    const getHexData = async () => {
+      showLoading();
+      setTotalHex(await HexOneVault.getBorrowableAmount(address, data.depositId));
+      hideLoading();
     }
-  }, [props.data]);
 
-  const onClickReborrow = () => {
-    if (!amount || amount > totalHex) return;
+    getHexData();
 
-    props.onReborrow(data.stakeid, amount);
-    props.onClose();
+  }, [ address, provider, data ]);
+
+  const changeAmount = (e) => {
+    const inputValue = utils.parseEther(e.target.value || "0");
+    setAmount({ value: e.target.value, bignum: inputValue });
   }
 
-  const onClose = () => {
-    props.onClose();
+  const onClickReborrow = async () => {
+    if (isEmpty(amount['bignum']) || amount['bignum'].gt(totalHex)) return;
+
+    showLoading("Re-borrowing...");
+
+    let res = await HexOneProtocol.borrowHexOne(data.depositId, amount["bignum"]);
+    if (res.status !== "success") {
+      hideLoading();
+      showMessage(res.error ?? "Re-Borrow failed! Borrow Hex One error!", "error");
+      return;
+    }
+
+    setAmount({ value: "", bignum: BigNumber.from(0) });
+
+    onReborrow();
+    setTotalHex(await HexOneVault.getBorrowableAmount(address, data.depositId));
+
+    hideLoading();
+    showMessage("Re-Borrow success!", "info");
   }
 
   return (
     <Modal
       modalClassName="modal-black"
-      isOpen={props.isOpen}
+      isOpen={show}
       toggle={onClose}
       size="lg"
     >
@@ -74,23 +106,24 @@ export default function Reborrow(props) {
                 <Input
                   type="text"
                   placeholder="StakeId"
-                  value={data.stakeid || ""}
+                  value={data.depositId.toString()}
                   readOnly
                 />
               </Col>
             </Row>
           </FormGroup>
-          <FormGroup className={"mb-3 " + (amount > totalHex && " has-danger")}>
+          <FormGroup className={"mb-3 " + (amount['bignum'].gt(totalHex) && " has-danger")}>
             <Row>
               <Label sm="3" className="text-right">Borrow Amount</Label>
               <Col sm="8">
                 <InputGroup>
                   <Input
                     type="text"
-                    placeholder={`Borrow Amount in HEX (${(totalHex || 0).toLocaleString()} HEX available)`}
-                    value={amount}
-                    onChange={e => setAmount(e.target.value)} 
-                    {...(amount > totalHex) && {className: "form-control-danger"}}
+                    placeholder={`Borrow Amount in HEX (${formatDecimal(totalHex) || 0} HEX available)`}
+                    value={amount.value}
+                    onChange={changeAmount} 
+                    autoFocus
+                    {...(amount['bignum'].gt(totalHex)) && {className: "form-control-danger"}}
                   />
                   <InputGroupAddon addonType="append">
                     <InputGroupText>HEX1</InputGroupText>

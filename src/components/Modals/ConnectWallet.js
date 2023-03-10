@@ -6,8 +6,7 @@ import {
 } from "reactstrap";
 import { ethers } from "ethers";
 import { useState } from "react";
-import { WalletContext } from "providers/WalletProvider";
-import { ConnectWalletContext } from "providers/ConnectWalletProvider";
+import { WalletContext, ConnectWalletContext } from "providers/Contexts";
 import { networks } from "contracts/Constants";
 
 export default function ConnectWallet() {

@@ -12,17 +12,19 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
-import { WalletContext } from "providers/WalletProvider";
-import { HexOneVault, HexContract, HexOnePriceFeed } from "contracts";
+import { WalletContext, MessageContext, LoadingContext } from "providers/Contexts";
+import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import BorrowModal from "components/Modals/Borrow";
 import ReborrowModal from "components/Modals/Reborrow";
 import RechargeModal from "components/Modals/Recharge";
 import Pagination from "components/Common/Pagination";
-import Loading from "components/Common/Loading";
+import { isEmpty } from "common/utilities";
 
 export default function Overview() {
   const { address, provider } = useContext(WalletContext);
+  const { showMessage } = useContext(MessageContext);
+  const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ hexDecimals, setHexDecimals ] = useState(BigNumber.from(0));
   const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
   const [ history, setHistory ] = useState([]);
@@ -30,7 +32,6 @@ export default function Overview() {
   const [ isBorrowOpen, setBorrowOpen ] = useState(false);
   const [ reborrow, setReborrow ] = useState({ show: false, data: {} });
   const [ recharge, setRecharge ] = useState({ show: false, data: {} });
-  const [ loading, setLoading ] = useState(false);
   const [ page, setPage ] = useState(1);
   
   useEffect(() => {
@@ -80,30 +81,53 @@ export default function Overview() {
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
     HexOneVault.setProvider(provider);
+    HexOneProtocol.setProvider(provider);
 
     const getData = async () => {
-      setLoading(true);
+      showLoading();
 
       const decimals = await HexContract.getDecimals();
       setHexDecimals(decimals);
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
       setHistory(await HexOneVault.getHistory(address));
 
-      setLoading(false);
+      hideLoading();
     }
 
     getData();
 
+    // eslint-disable-next-line
   }, [ address, provider ]);
 
-  const getHistory = async () => {    
-    // setLoading(true);
+  const getHistory = async () => {
     setHistory(await HexOneVault.getHistory(address));
-    // setLoading(false);
+  }
+
+  const getHealthRatio = (initialFeed) => {
+    if (isEmpty(initialFeed)) return 0;
+
+    const currentPrice = +utils.formatUnits(hexFeed);
+    const originalPrice = +utils.formatUnits(initialFeed);
+    
+    return Math.round((currentPrice / originalPrice) * 100);
+  }
+
+  const onClickClaim = async (row) => {
+    showLoading("Claiming...");
+
+    const res = await HexOneProtocol.claimCollateral(row.depositId);
+    if (res.status !== "success") {
+      hideLoading();
+      showMessage(res.error ?? "Claim failed!", "error");
+      return;
+    }
+
+    hideLoading();
+    showMessage("Claim success!", "info");
   }
 
   const onClickReborrow = (row) => {
-    setReborrow({ show: true, data: row });
+    setReborrow({ show: true, data: {...row, currentFeed: hexFeed} });
   }
 
   const onClickRecharge = (row) => {
@@ -204,7 +228,7 @@ export default function Overview() {
                         <td>${0}</td>
                         <td>${utils.formatUnits(hexFeed)}</td>
                         <td className={0 >= 100 ? "green" : "red"}>
-                          {100}%
+                          {getHealthRatio(hexFeed).toString()}%
                         </td>
                         <td className="td-actions" width="125">
                           <button
@@ -212,6 +236,7 @@ export default function Overview() {
                             rel="tooltip"
                             id="claim"
                             className="btn btn-primary btn-sm w-full mb-1"
+                            onClick={() => onClickClaim(r)}
                             disabled={r.curHexDay.lte(r.endHexDay)}
                           >
                             Claim
@@ -244,7 +269,7 @@ export default function Overview() {
                             id="addCollateral"
                             className="btn btn-info btn-sm w-full"
                             onClick={() => onClickRecharge(r)}
-                            disabled={r.curHexDay.gt(r.endHexDay)}
+                            disabled={r.curHexDay.lte(r.endHexDay)}
                           >
                             Re-Charge
                           </button>
@@ -428,24 +453,23 @@ export default function Overview() {
           </Container>
         </section>
         {isBorrowOpen && <BorrowModal 
-          isOpen={isBorrowOpen}
+          show={isBorrowOpen}
           onBorrow={doBorrow}
           onClose={() => setBorrowOpen(false)}
         />}
         {reborrow.show && <ReborrowModal 
-          isOpen={reborrow.show}
+          show={reborrow.show}
           data={reborrow.data}
           onReborrow={doReborrow}
           onClose={() => setReborrow({ show: false, data: {} })}
         />}
         {recharge.show && <RechargeModal 
-          isOpen={recharge.show}
+          show={recharge.show}
           data={recharge.data}
           onRecharge={doRecharge}
           onClose={() => setRecharge({ show: false, data: {} })}
         />}
       </div>
-      {loading && <Loading />}
     </>
   );
 }

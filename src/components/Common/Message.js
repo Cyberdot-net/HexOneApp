@@ -3,7 +3,7 @@ import {
   Modal,
   Button
 } from "reactstrap";
-import { MessageContext } from "providers/MessageProvider";
+import { MessageContext } from "providers/Contexts";
 
 const customStyles = {
   closeButton: {
@@ -17,7 +17,7 @@ const customStyles = {
   }
 }
 
-export default function Message(props) {
+export default function Message() {
 
   const { msg, hideMessage } = useContext(MessageContext);
 
