@@ -186,7 +186,7 @@ export default function IndexNavbar() {
                 target="_blank"
                 href="https://hex-one.gitbook.io/hex-one-protocol"
               >
-                LEARN
+                Learn
               </Button>
             </NavItem>
             <NavItem>
