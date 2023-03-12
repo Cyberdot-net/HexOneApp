@@ -43,6 +43,7 @@ export default function Overview() {
         currentDay: 3000,
         grace: 8,
         borrowedAmt: 100000,
+        effectiveHex: 2205,
         currentHex: 0.2,
         totalHex: 50000,
         currentValue: 10000,
@@ -55,6 +56,7 @@ export default function Overview() {
         currentDay: 3000,
         grace: 5,
         borrowedAmt: 500000,
+        effectiveHex: 2205,
         currentHex: 0.2,
         totalHex: 100000,
         currentValue: 20000,
@@ -67,6 +69,7 @@ export default function Overview() {
         currentDay: 3000,
         grace: 7,
         borrowedAmt: 1000000,
+        effectiveHex: 2205,
         currentHex: 0.2,
         totalHex: 4000000,
         currentValue: 800000,
@@ -206,6 +209,7 @@ export default function Overview() {
                       <th className="text-center">StakeId</th>
                       <th className="text-center">Start</th>
                       <th className="text-center">End</th>
+                      <th className="text-center">Current</th>
                       <th>Collateral</th>
                       <th>Effective</th>
                       <th>Borrowed Amt</th>
@@ -222,6 +226,7 @@ export default function Overview() {
                         <td className="text-center">{r.depositId.toString()}</td>
                         <td className="text-center">{r.lockedHexDay.toString()}</td>
                         <td className="text-center">{r.endHexDay.toString()}</td>
+                        <td className="text-center">{r.curHexDay.toString()}</td>
                         <td>{utils.formatUnits(r.depositAmount, hexDecimals)} HEX</td>
                         <td>{0} HEX</td>
                         <td>{utils.formatUnits(r.mintAmount)} HEX1</td>
@@ -385,6 +390,7 @@ export default function Overview() {
                       <th className="text-center">End</th>
                       <th className="text-center">Current Day</th>
                       <th>Grace</th>
+                      <th>Effective Hex</th>
                       <th>Borrowed $HEX1</th>
                       <th>Current HEX/USDC</th>
                       <th>Total Hex</th>
@@ -400,6 +406,7 @@ export default function Overview() {
                         <td className="text-center">{r.endDay}</td>
                         <td className="text-center">{r.currentDay}</td>
                         <td className={r.grace <= 5 ? "green" : (r.grace <= 7 ? "yellow" : "red")}>{r.grace}</td>
+                        <td>{r.effectiveHex.toLocaleString()} HEX</td>
                         <td>{r.borrowedAmt.toLocaleString()} HEX1</td>
                         <td>${r.currentHex.toLocaleString()}</td>
                         <td>{r.totalHex.toLocaleString()}</td>
