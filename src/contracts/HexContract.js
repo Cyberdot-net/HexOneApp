@@ -91,6 +91,25 @@ const HexContract = () => {
         return { status: "success" };
     }
 
+    const Mint = async () => {
+        if (!contract) return { status: "failed" };
+
+        try {
+            const tx = await contract.mint();
+            await tx.wait();
+            // const [transferEvent] = tr.events;
+        } catch (e) {
+            console.error(e);
+            if (e.code === 4001) {
+                return { status: "failed", error: "Mint failed! User denied transaction." };
+            } else {
+                return { status: "failed", error: `Mint failed! ${e.message}`};
+            }
+        }
+
+        return { status: "success" };
+    }
+
     return {
         setProvider: (provider) => {
             SetProvider(provider);
@@ -115,6 +134,10 @@ const HexContract = () => {
         approve: async (amount) => {
             return await Approve(amount);
         },
+
+        mint: async () => {
+            return await Mint();
+        }
     }
 };
 

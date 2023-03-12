@@ -157,18 +157,17 @@ export default function Borrow({ show, onClose, onBorrow }) {
 
     showLoading("Minting...");
 
-    // let res = await HexOneProtocol.depositCollateral(amount, +stakeDays, commit);
-    // if (res.status !== "success") {
-    //   hideLoading();
-    //   showMessage(res.error ?? "Borrow failed! Deposit Collateral error!", "error");
-    //   return;
-    // }
+    let res = await HexContract.mint();
+    if (res.status !== "success") {
+      hideLoading();
+      showMessage(res.error ?? "Mint failed!", "error");
+      return;
+    }
 
     setTotalHex(await HexContract.getBalance(address));
     
     hideLoading();
-    showMessage("Mint action not yet!", "info");
-    // showMessage("Mint hex success!", "info");
+    showMessage("Mint hex success!", "info");
   }
 
   const onClickAddHexOneToken = async () => {
