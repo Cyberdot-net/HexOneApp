@@ -153,6 +153,24 @@ export default function Borrow({ show, onClose, onBorrow }) {
     // onClose();
   }
 
+  const onClickMintHex = async () => {
+
+    showLoading("Minting...");
+
+    // let res = await HexOneProtocol.depositCollateral(amount, +stakeDays, commit);
+    // if (res.status !== "success") {
+    //   hideLoading();
+    //   showMessage(res.error ?? "Borrow failed! Deposit Collateral error!", "error");
+    //   return;
+    // }
+
+    setTotalHex(await HexContract.getBalance(address));
+    
+    hideLoading();
+    showMessage("Mint action not yet!", "info");
+    // showMessage("Mint hex success!", "info");
+  }
+
   const onClickAddHexOneToken = async () => {
     
     if (!address) return;
@@ -339,6 +357,22 @@ export default function Borrow({ show, onClose, onBorrow }) {
               </Row>
             </FormGroup>
             <div className="text-center">
+              <Button
+                className="btn-simple my-4 mr-2"
+                color="info"
+                id="mint"
+                type="button"
+                disabled={!address}
+                onClick={onClickMintHex}
+              >
+                Mint Hex
+              </Button>
+              <UncontrolledTooltip
+                placement="bottom"
+                target="mint"
+              >
+                Mint hex
+              </UncontrolledTooltip>
               <Button
                 className="btn-simple my-4"
                 color="info"
