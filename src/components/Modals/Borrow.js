@@ -20,6 +20,7 @@ import {
 import { BigNumber, utils } from "ethers";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexContract, HexOnePriceFeed, HexOneProtocol } from "contracts";
+import { HexOneToken_Addr } from "contracts/address";
 import { HEX_SHARERATE_DEC, STAKEDAYS_MIN, STAKEDAYS_MAX } from "contracts/Constants";
 import { formatDecimal, formatZeroDecimal, isEmpty } from "common/utilities";
 
@@ -40,6 +41,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
   const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
   const [ commit, setCommit ] = useState(false);
   const [ result, setResult ] = useState({ show: false, type: "error" , msg: ""});
+  const [ message, setMessage ] = useState({ show: false, error: "", msg: "" });
 
   useEffect(() => {
     const bodyMouseDowntHandler = e => {
@@ -151,8 +153,49 @@ export default function Borrow({ show, onClose, onBorrow }) {
     // onClose();
   }
 
-  const onClickMintHexOne = async () => {
+  const onClickAddHexOneToken = async () => {
+    
+    if (!address) return;
 
+    if (typeof window.ethereum === 'undefined') {
+      setMessage({ show: true, error: "<b>No MetaMask! - </b>Please, install MetaMask", msg: "" });
+      return;
+    }
+
+    showLoading("Adding...");
+
+    // Add Hexone to MetaMask
+    try {
+      const wasAdded = await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: HexOneToken_Addr.contract,
+            symbol: "HEXONE",
+            decimals: 18,
+          },
+        },
+      });
+     
+      hideLoading();
+      if (wasAdded) {
+        setMessage({ show: true, msg: "Added hexone to MetaMask", error: "" });
+      } else {
+        setMessage({ show: true, error: "Failed to add hexone to MetaMask", msg: "" });
+      }
+
+    } catch (error) {
+      hideLoading();
+
+      if (error.code === 4001) {
+        setMessage({ show: true, error: `Add failed! ${error.message}`, msg: "" });
+      } else {
+        setMessage({ show: true, error: `Add failed! ${error.message}`, msg: "" });
+      }
+
+      return;
+    }
   }
 
   return (
@@ -327,15 +370,26 @@ export default function Borrow({ show, onClose, onBorrow }) {
           </button>
           <h4 className="title title-up">{result.msg}</h4>
         </div>
+        {message.show && <div className="modal-body">
+          <Alert
+            className="alert-with-icon"
+            color={message.msg ? "success" : "danger"}
+            isOpen={message.show}
+            toggle={() => setMessage({ show: false, error: "", msg: "" })}
+          >
+            <span data-notify="icon" className={`tim-icons ${message.msg ? "icon-check-2" : "icon-alert-circle-exc"}`} />
+            <span dangerouslySetInnerHTML={{__html: message.msg ? message.msg : message.error }}></span>
+          </Alert>
+        </div>}
         <div className="modal-footer" style={{ justifyContent: "flex-end" }}>
           {result.error === "info" && <Button
             className="mr-2"
             color="success"
             type="button"
             size="sm"
-            onClick={() => onClickMintHexOne()}
+            onClick={() => onClickAddHexOneToken()}
           >
-            Add Hex1
+            Add Hexone
           </Button>}
           <Button
             color="default"
