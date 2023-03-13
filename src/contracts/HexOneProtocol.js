@@ -3,9 +3,11 @@ import { HexOneProtocol_Abi } from "./abis";
 import { HexOneProtocol_Addr, HexMockToken_Addr } from "./address";
 
 export default (function() {
+
     let contract = null;
 
     return {
+
         setProvider: (provider) => {
             if (provider) {
                 contract = new Contract(HexOneProtocol_Addr.contract, HexOneProtocol_Abi, provider.getSigner());
@@ -91,4 +93,5 @@ export default (function() {
             return { status: "success" };
         },
     }
+    
 })();

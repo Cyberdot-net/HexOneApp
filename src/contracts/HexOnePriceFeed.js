@@ -3,9 +3,11 @@ import { HexOnePriceFeedTest_Abi } from "./abis";
 import { HexOnePriceFeedTest_Addr } from "./address";
 
 export default (function() {
+
     let contract = null;
 
     return {
+        
         setProvider: (provider) => {
             if (provider) {
                 contract = new Contract(HexOnePriceFeedTest_Addr.contract, HexOnePriceFeedTest_Abi, provider);
@@ -25,4 +27,5 @@ export default (function() {
             return feed;
         },
     }
+
 })();

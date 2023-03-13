@@ -5,10 +5,12 @@ import { HexMockToken_Addr, HexOneProtocol_Addr } from "./address";
 import { isEmpty } from "common/utilities";
 
 export default (function() {
+    
     let contract = null;
     let decimals = 8;
 
     return {
+
         setProvider: (provider) => {
             if (provider) {
                 contract = new Contract(HexMockToken_Addr.contract, HexMockToken_Abi, provider.getSigner());
@@ -111,4 +113,5 @@ export default (function() {
             return { status: "success" };
         }
     }
+
 })();

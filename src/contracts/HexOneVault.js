@@ -3,9 +3,11 @@ import { HexOneVault_Abi } from "./abis";
 import { HexOneVault_Addr } from "./address";
 
 export default (function() {
+    
     let contract = null;
 
     return {
+
         setProvider: (provider) => {
             if (provider) {
                 contract = new Contract(HexOneVault_Addr.contract, HexOneVault_Abi, provider.getSigner());
@@ -59,4 +61,5 @@ export default (function() {
             return list;
         },
     }
+
 })();
