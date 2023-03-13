@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
 import { WalletContext, MessageContext, LoadingContext } from "providers/Contexts";
-import { HexContract, HexOneVault, HexOneProtocol } from "contracts";
+import { HexOneVault, HexOneProtocol } from "contracts";
 import { formatDecimal, isEmpty } from "common/utilities";
 
 export default function Reborrow({ show, data, onClose, onReborrow }) {
@@ -30,7 +30,6 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
   useEffect(() => {
     if (!address) return;
 
-    HexContract.setProvider(provider);
     HexOneVault.setProvider(provider);
     HexOneProtocol.setProvider(provider);
 

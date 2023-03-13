@@ -257,6 +257,7 @@ export default function Overview() {
                       <th>Initial HEX/USDC</th>
                       <th>Current HEX/USDC</th>
                       <th>Health Ratio</th>
+                      <th className="text-center">Committed</th>
                       <th className="text-center"></th>
                     </tr>
                   </thead>
@@ -276,6 +277,7 @@ export default function Overview() {
                         <td className={0 >= 100 ? "green" : "red"}>
                           {getHealthRatio(hexFeed).toString()}%
                         </td>
+                        <td>{r.commitType ? "Yes" : "No"}</td>
                         <td className="td-actions" width="125">
                           <button
                             type="button"
