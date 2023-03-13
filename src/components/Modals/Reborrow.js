@@ -45,6 +45,7 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
 
     getHexData();
 
+    // eslint-disable-next-line
   }, [ address, provider, data ]);
 
   const changeAmount = (e) => {

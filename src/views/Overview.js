@@ -330,7 +330,7 @@ export default function Overview() {
                         </td>
                       </tr>
                     )) : <tr>
-                      <td colSpan={10} className="text-center">                
+                      <td colSpan={12} className="text-center">                
                         <Alert
                           className="alert-with-icon"
                           color="default"
