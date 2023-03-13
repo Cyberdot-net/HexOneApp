@@ -11,7 +11,7 @@ const HexContract = () => {
 
     const SetProvider = (newProvider) => {
         provider = newProvider;
-        contract = new Contract(HexMockToken_Addr.contract, HexMockToken_Abi, provider.getSigner());
+        if (provider) contract = new Contract(HexMockToken_Addr.contract, HexMockToken_Abi, provider.getSigner());
     }
 
     const GetDecimals = async () => {

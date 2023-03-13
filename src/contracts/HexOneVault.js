@@ -8,7 +8,7 @@ const HexOneVault = () => {
 
     const SetProvider = (newProvider) => {
         provider = newProvider;
-        contract = new Contract(HexOneVault_Addr.contract, HexOneVault_Abi, provider.getSigner());
+        if (provider) contract = new Contract(HexOneVault_Addr.contract, HexOneVault_Abi, provider.getSigner());
     }
 
     const GetBorrowableAmount = async (address, depositId) => {

@@ -8,7 +8,7 @@ const HexOneProtocol = () => {
 
     const SetProvider = (newProvider) => {
         provider = newProvider;
-        contract = new Contract(HexOneProtocol_Addr.contract, HexOneProtocol_Abi, provider.getSigner());
+        if (provider) contract = new Contract(HexOneProtocol_Addr.contract, HexOneProtocol_Abi, provider.getSigner());
     }
 
     const GetFees = async () => {
