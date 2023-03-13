@@ -137,6 +137,23 @@ export default function Overview() {
     setRecharge({ show: true, data: row });
   }
 
+  const doMintHex = async () => {
+
+    showLoading("Minting...");
+
+    console.log(HexContract.provider);
+
+    let res = await HexContract.mint();
+    if (res.status !== "success") {
+      hideLoading();
+      showMessage(res.error ?? "Mint failed!", "error");
+      return;
+    }
+    
+    hideLoading();
+    showMessage("Mint hex success!", "info");
+  }
+
   const doBorrow = async () => {
     getHistory();
   }
@@ -159,8 +176,32 @@ export default function Overview() {
             src={require("assets/img/path3.png")}
           />
           <Container>
+            {!address && <Row gutter="10" className="pl-4 pr-4 center">
+              <Col lg="8" md="10" sm="12" className="mb-4">
+                <Alert
+                  className="alert-with-icon"
+                  color="danger"
+                >
+                  <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
+                  <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
+                </Alert>
+              </Col>
+            </Row>}
             <Row gutter="10" className="pl-4 pr-4">
               <Col lg="12" className="mb-4">
+                <Button
+                  className="btn-simple mr-4"
+                  color="info btn-lg"
+                  id="mint"
+                  onClick={() => doMintHex()}>
+                  MINT HEX
+                </Button>
+                <UncontrolledTooltip
+                  placement="bottom"
+                  target="mint"
+                >
+                  Mint hex
+                </UncontrolledTooltip>
                 <Button
                   className="btn-simple grow"
                   color="info btn-lg"
