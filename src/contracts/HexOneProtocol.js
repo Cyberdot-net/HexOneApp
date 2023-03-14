@@ -76,8 +76,8 @@ export default (function() {
             if (!contract) return { status: "failed" };
     
             try {
-                // const tx = await contract.borrowHexOne(HexMockToken_Addr.contract, depositId, amount);
-                // await tx.wait();
+                const tx = await contract.borrowHexOne(HexMockToken_Addr.contract, depositId, amount);
+                await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {
                 console.error(e);
@@ -92,6 +92,27 @@ export default (function() {
     
             return { status: "success" };
         },
+
+        addCollateralForLiquidate: async (depositId, amount, duration) => {
+            if (!contract) return { status: "failed" };
+    
+            try {
+                const tx = await contract.addCollateralForLiquidate(HexMockToken_Addr.contract, amount, depositId, duration);
+                await tx.wait();
+                // const [transferEvent] = tr.events;
+            } catch (e) {
+                console.error(e);
+                if (e.error?.code === -32603) {
+                    return { status: "failed", error: "Re-Charge failed! " + e.error?.message };
+                } else if (e.code === 4001) {
+                    return { status: "failed", error: "Re-Charge failed! User denied transaction." };
+                } else {
+                    return { status: "failed" };
+                }
+            }
+    
+            return { status: "success" };
+        }
     }
     
 })();

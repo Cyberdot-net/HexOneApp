@@ -1,4 +1,6 @@
+import moment from "moment";
 import React, { useState, useEffect, useContext} from "react";
+import { DateRange } from "react-date-range";
 import {
   Modal,
   Button,
@@ -17,19 +19,22 @@ import {
 import { BigNumber, utils } from "ethers";
 import { WalletContext, MessageContext, LoadingContext } from "providers/Contexts";
 import { HexOneVault, HexOneProtocol, HexContract } from "contracts";
-import { HEX_SHARERATE_DEC } from "contracts/Constants";
-import { formatDecimal, isEmpty } from "common/utilities";
+import { HEX_SHARERATE_DEC, STAKEDAYS_MIN, STAKEDAYS_MAX } from "contracts/Constants";
+import { formatDecimal, formatterFloat, isEmpty } from "common/utilities";
 
 export default function Recharge({ show, data, onClose, onRecharge }) {
 
   const { address, provider } = useContext(WalletContext);
   const { showMessage } = useContext(MessageContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
-  const [ fee,  setFee ] = useState(0);
+  const [ hexDecimals, setHexDecimals ] = useState(8);
+  const [ isOpen, setOpen ] = useState(false);
   const [ shareRate, setShareRate ] = useState(0);
   const [ dayPayoutTotal, setDayPayoutTotal ] = useState(0);
-  const [ collateralAmt, setCollateralAmt ] = useState({ value: "", bignum: BigNumber.from(0), fee: BigNumber.from(0) });
+  const [ collateralAmt, setCollateralAmt ] = useState({ value: "", bignum: BigNumber.from(0) });
   const [ totalHex, setTotalHex ] = useState(0);
+  const [ stakeDays, setStakeDays ] = useState("");
+  const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
 
   useEffect(() => {
     if (!address) return;
@@ -40,23 +45,22 @@ export default function Recharge({ show, data, onClose, onRecharge }) {
 
     const getHexData = async () => {
       showLoading();
-      setTotalHex(await HexOneVault.getLiquidableDeposit(data.depositId));
+
+      setHexDecimals(await HexContract.getDecimals());
+      setTotalHex(await HexOneVault.getLiquidableTotalHex(data.depositId));
       setShareRate(await HexContract.getShareRate());
       setDayPayoutTotal(await HexContract.getDayPayoutTotal());
 
-      setFee(await HexOneProtocol.getFees());
       hideLoading();
     }
 
-    //const totalHex = data.borrowedAmt * (data.initialHex - data.currentHex) / data.currentHex;
-
     getHexData();
 
+    // eslint-disable-next-line
   }, [ provider, address, data ]);
 
   const changeCollateralAmt = (e) => {
-    const inputValue = utils.parseEther(e.target.value || "0");
-    setCollateralAmt({ value: e.target.value, bignum: inputValue, fee: inputValue.mul(100 - fee).div(100) });
+    setCollateralAmt({ value: e.target.value, bignum: utils.parseEther(e.target.value || "0") });
   }
 
   const getTotalTshare = () => {
@@ -64,25 +68,46 @@ export default function Recharge({ show, data, onClose, onRecharge }) {
   }
   
   const getEffectiveHex = () => {
-    return getTotalTshare().mul(dayPayoutTotal || 0).mul(data.endHexDay.sub(data.lockedHexDay)).div(utils.parseUnits("1")).add(collateralAmt['bignum']);
+    return getTotalTshare().mul(dayPayoutTotal || 0).mul(stakeDays || 0).div(utils.parseUnits("1")).add(collateralAmt['bignum']);
   }
   
+  const selectStakeDays = (ranges) => {
+    let { selection } = ranges;
+    selection.startDate = moment(new Date()).startOf("day").toDate();
+    setDateRange([selection]);
+
+    // calc days in selected daterange
+    const startDate = moment(selection.startDate).startOf("day");
+    const endDate = moment(selection.endDate);    
+    setStakeDays(endDate.diff(startDate, 'days') + 1)
+  }
+
   const onClickRecharge = async () => {
-    if (isEmpty(collateralAmt['bignum']) || collateralAmt['bignum'].gt(totalHex)) return;
+    if (isEmpty(collateralAmt['bignum']) || collateralAmt['bignum'].gt(totalHex) || (+stakeDays < STAKEDAYS_MIN || STAKEDAYS_MAX < +stakeDays)) return;
 
     showLoading("Re-Charging...");
 
-    // let res = await HexOneProtocol.borrowHexOne(data.depositId, collateralAmt.div(utils.parseUnits("1", 18 - hexDecimals)));
-    // if (res.status !== "success") {
-    //   hideLoading();
-    //   showMessage(res.error ?? "Re-Charge failed! Charge Hex One error!", "error");
-    //   return;
-    // }
+    const amount = collateralAmt['bignum'].div(utils.parseUnits("1", 18 - hexDecimals));
 
-    setCollateralAmt({ value: "", bignum: BigNumber.from(0), fee: BigNumber.from(0) });
+    let res = await HexContract.approve(amount);
+    if (res.status !== "success") {
+      hideLoading();
+      showMessage(res.error ?? "Re-Charge failed! HEX Approve error!", "error");
+      return;
+    }
+
+    res = await HexOneProtocol.addCollateralForLiquidate(amount, data.depositId, +stakeDays);
+    if (res.status !== "success") {
+      hideLoading();
+      showMessage(res.error ?? "Re-Charge failed! Charge Hex One error!", "error");
+      return;
+    }
+
+    setCollateralAmt({ value: "", bignum: BigNumber.from(0) });
+    setStakeDays("");
 
     onRecharge();
-    setTotalHex(await HexOneVault.getLiquidableDeposit(data.depositId));
+    setTotalHex(await HexOneVault.getLiquidableTotalHex(data.depositId));
 
     hideLoading();
     showMessage("Re-Charge success!", "info");
@@ -113,6 +138,55 @@ export default function Recharge({ show, data, onClose, onRecharge }) {
           <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
         </Alert>
         <Form role="form">
+          <FormGroup className={"mb-3 " + (collateralAmt['bignum'].gt(totalHex) && " has-danger")}>
+            <Row>
+              <Label sm="3" className="text-right">Collateral Amount</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder={`Collateral Amount in HEX (${formatDecimal(totalHex) || 0} HEX available)`}
+                    value={collateralAmt['value']}
+                    onChange={changeCollateralAmt} 
+                    {...(collateralAmt['bignum'].gt(totalHex)) && {className: "form-control-danger"}}
+                  />
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText>HEX</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Col>
+            </Row>
+          </FormGroup>
+          <FormGroup className={"mb-3 " + ((stakeDays && (+stakeDays < STAKEDAYS_MIN || +stakeDays > STAKEDAYS_MAX)) && " has-danger")}>
+            <Row>
+              <Label sm="3" className="text-right">Stake Days</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder={`Stake Length in Days (${formatterFloat(STAKEDAYS_MIN)} ~ ${formatterFloat(STAKEDAYS_MAX)})`}
+                    value={stakeDays}
+                    onChange={e => setStakeDays(e.target.value)} 
+                    {...(stakeDays && (+stakeDays < STAKEDAYS_MIN || +stakeDays > STAKEDAYS_MAX)) && {className: "form-control-danger"}}
+                  />
+                  <InputGroupAddon addonType="append" className="cursor-pointer" onClick={() => setOpen(!isOpen)}>
+                    <InputGroupText>
+                      <i className="tim-icons icon-calendar-60" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+                {isOpen && <DateRange
+                  editableDateInputs={true}
+                  minDate={new Date()}
+                  onChange={selectStakeDays}
+                  moveRangeOnFirstSelection={false}
+                  showPreview={false}
+                  ranges={daterange}
+                  className="calendar"
+                />}
+              </Col>
+            </Row>
+          </FormGroup>
           <FormGroup className="mb-3 mt-3">
             <Row>
               <Label sm="3" className="text-right">StakeId</Label>
@@ -154,25 +228,6 @@ export default function Recharge({ show, data, onClose, onRecharge }) {
                   value={formatDecimal(getTotalTshare())}
                   readOnly
                 />
-              </Col>
-            </Row>
-          </FormGroup>
-          <FormGroup className={"mb-3 " + (collateralAmt['bignum'].gt(totalHex) && " has-danger")}>
-            <Row>
-              <Label sm="3" className="text-right">Collateral Amount</Label>
-              <Col sm="8">
-                <InputGroup>
-                  <Input
-                    type="text"
-                    placeholder={`Collateral Amount in HEX (${formatDecimal(totalHex) || 0} HEX available)`}
-                    value={collateralAmt['value']}
-                    onChange={changeCollateralAmt} 
-                    {...(collateralAmt['bignum'].gt(totalHex)) && {className: "form-control-danger"}}
-                  />
-                  <InputGroupAddon addonType="append">
-                    <InputGroupText>HEX</InputGroupText>
-                  </InputGroupAddon>
-                </InputGroup>
               </Col>
             </Row>
           </FormGroup>

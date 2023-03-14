@@ -19,7 +19,7 @@ import BorrowModal from "components/Modals/Borrow";
 import ReborrowModal from "components/Modals/Reborrow";
 import RechargeModal from "components/Modals/Recharge";
 import Pagination from "components/Common/Pagination";
-import { isEmpty } from "common/utilities";
+import { isEmpty, formatterFloat } from "common/utilities";
 
 export default function Overview() {
   const { address, provider } = useContext(WalletContext);
@@ -33,53 +33,11 @@ export default function Overview() {
   const [ reborrow, setReborrow ] = useState({ show: false, data: {} });
   const [ recharge, setRecharge ] = useState({ show: false, data: {} });
   const [ page, setPage ] = useState(1);
-  
-  useEffect(() => {
-    setLiquidates([
-      {
-        stakeid: 123,
-        startDay: 1001,
-        endDay: 2993,
-        currentDay: 3000,
-        grace: 8,
-        borrowedAmt: 100000,
-        effectiveHex: 2205,
-        currentHex: 0.2,
-        totalHex: 50000,
-        currentValue: 10000,
-        profitloss: 2000
-      },
-      {
-        stakeid: 726,
-        startDay: 1001,
-        endDay: 3002,
-        currentDay: 3000,
-        grace: 5,
-        borrowedAmt: 500000,
-        effectiveHex: 2205,
-        currentHex: 0.2,
-        totalHex: 100000,
-        currentValue: 20000,
-        profitloss: -200000
-      },
-      {
-        stakeid: 435,
-        startDay: 1001,
-        endDay: 3000,
-        currentDay: 3000,
-        grace: 7,
-        borrowedAmt: 1000000,
-        effectiveHex: 2205,
-        currentHex: 0.2,
-        totalHex: 4000000,
-        currentValue: 800000,
-        profitloss: -200000
-      },
-    ]);
-  }, []);
 
   useEffect(() => {
     if (!address) return;
+
+    // console.log(new BigNumber("1.2345"));
 
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
@@ -93,6 +51,7 @@ export default function Overview() {
       setHexDecimals(decimals);
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
       setHistory(await HexOneVault.getHistory(address));
+      setLiquidates(await HexOneVault.getLiquidableDeposits());
 
       hideLoading();
     }
@@ -112,13 +71,21 @@ export default function Overview() {
     const currentPrice = +utils.formatUnits(hexFeed);
     const originalPrice = +utils.formatUnits(initialFeed);
     
-    return Math.round((currentPrice / originalPrice) * 100);
+    return formatterFloat((currentPrice / originalPrice) * 100);
   }
 
-  const onClickClaim = async (row) => {
+  const getProfitLoss = (row) => {
+
+    const profit = formatterFloat(+(row.currentUSDValue.sub(row.initUSDValue)));
+    const percent = formatterFloat(+(row.currentUSDValue.div(row.initUSDValue).mul(100)), 0);
+    
+    return `${profit} (${percent}%)`;
+  }
+
+  const onClickClaim = async (depositId) => {
     showLoading("Claiming...");
 
-    const res = await HexOneProtocol.claimCollateral(row.depositId);
+    const res = await HexOneProtocol.claimCollateral(depositId);
     if (res.status !== "success") {
       hideLoading();
       showMessage(res.error ?? "Claim failed!", "error");
@@ -254,8 +221,8 @@ export default function Overview() {
                       <th>Collateral</th>
                       <th>Effective</th>
                       <th>Borrowed Amt</th>
-                      <th>Initial HEX/USDC</th>
-                      <th>Current HEX/USDC</th>
+                      <th>Initial HexPrice</th>
+                      <th>Current HexPrice</th>
                       <th>Health Ratio</th>
                       <th className="text-center">Committed</th>
                       <th className="text-center"></th>
@@ -269,13 +236,13 @@ export default function Overview() {
                         <td className="text-center">{r.lockedHexDay.toString()}</td>
                         <td className="text-center">{r.endHexDay.toString()}</td>
                         <td className="text-center">{r.curHexDay.toString()}</td>
-                        <td>{utils.formatUnits(r.depositAmount, hexDecimals)} HEX</td>
-                        <td>{0} HEX</td>
-                        <td>{utils.formatUnits(r.mintAmount)} HEX1</td>
-                        <td>${0}</td>
-                        <td>${utils.formatUnits(hexFeed)}</td>
+                        <td>{formatterFloat(+utils.formatUnits(r.depositAmount, hexDecimals))} HEX</td>
+                        <td>{formatterFloat(+utils.formatUnits(r.effectiveAmount, hexDecimals))} HEX</td>
+                        <td>{formatterFloat(+utils.formatUnits(r.mintAmount))} HEX1</td>
+                        <td>${formatterFloat(+utils.formatUnits(r.initialHexPrice))}</td>
+                        <td>${formatterFloat(+utils.formatUnits(hexFeed))}</td>
                         <td className={0 >= 100 ? "green" : "red"}>
-                          {getHealthRatio(hexFeed).toString()}%
+                          {getHealthRatio(r.initialHexPrice)}%
                         </td>
                         <td>{r.commitType ? "Yes" : "No"}</td>
                         <td className="td-actions" width="125">
@@ -284,7 +251,7 @@ export default function Overview() {
                             rel="tooltip"
                             id="claim"
                             className="btn btn-primary btn-sm w-full mb-1"
-                            onClick={() => onClickClaim(r)}
+                            onClick={() => onClickClaim(r.depositId)}
                             disabled={r.curHexDay.lte(r.endHexDay)}
                           >
                             Claim
@@ -301,7 +268,7 @@ export default function Overview() {
                             id="mintHex1"
                             className="btn btn-success btn-sm w-full mb-1"
                             onClick={() => onClickReborrow(r)}
-                            disabled={r.curHexDay.gt(r.endHexDay)}
+                            disabled={r.borrowableAmount.lte(0)}
                           >
                             Re-Borrow
                           </button>
@@ -317,7 +284,7 @@ export default function Overview() {
                             id="addCollateral"
                             className="btn btn-info btn-sm w-full"
                             onClick={() => onClickRecharge(r)}
-                            disabled={r.curHexDay.lte(r.endHexDay)}
+                            disabled={r.liquidateAmount.lte(0)}
                           >
                             Re-Charge
                           </button>
@@ -435,7 +402,7 @@ export default function Overview() {
                       <th>Grace</th>
                       <th>Effective Hex</th>
                       <th>Borrowed $HEX1</th>
-                      <th>Current HEX/USDC</th>
+                      <th>Current HexPrice</th>
                       <th>Total Hex</th>
                       <th>Current Value</th>
                       <th>Profit/Loss</th>
@@ -443,25 +410,26 @@ export default function Overview() {
                     </tr>
                   </thead>
                   <tbody>
-                    {liquidates.map((r, idx) => (
+                    {liquidates.length > 0 ? liquidates.map((r, idx) => (
                       <tr key={idx}>
                         <td className="text-center">{r.stakeid}</td>
-                        <td className="text-center">{r.endDay}</td>
-                        <td className="text-center">{r.currentDay}</td>
-                        <td className={r.grace <= 5 ? "green" : (r.grace <= 7 ? "yellow" : "red")}>{r.grace}</td>
-                        <td>{r.effectiveHex.toLocaleString()} HEX</td>
-                        <td>{r.borrowedAmt.toLocaleString()} HEX1</td>
-                        <td>${r.currentHex.toLocaleString()}</td>
-                        <td>{r.totalHex.toLocaleString()}</td>
-                        <td>${r.currentValue.toLocaleString()}</td>
-                        <td>${(r.currentValue - r.borrowedAmt).toLocaleString()} (%{r.borrowedAmt ? Math.round(r.currentValue / r.borrowedAmt * 100) : 0})</td>
+                        <td className="text-center">{r.endDay.toString()}</td>
+                        <td className="text-center">{r.curHexDay.toString()}</td>
+                        <td className={r.graceDay.lte(5) ? "green" : (r.graceDay.lte(7) ? "yellow" : "red")}>{r.graceDay.toString()}</td>
+                        <td>{formatterFloat(+utils.formatUnits(r.effectiveHex, hexDecimals))} HEX</td>
+                        <td>{formatterFloat(+utils.formatUnits(r.borrowedHexOne))} HEX1</td>
+                        <td>${formatterFloat(+utils.formatUnits(hexFeed))}</td>
+                        <td>{formatterFloat(+utils.formatUnits(r.effectiveHex, hexDecimals))} HEX</td>
+                        <td>${formatterFloat(+utils.formatUnits(r.currentValue))}</td>
+                        <td>{getProfitLoss(r)}</td>
                         <td className="td-actions">
                           <button
                             type="button"
                             rel="tooltip"
                             id="liquidate"
                             className="btn btn-success btn-sm"
-                            disabled={r.grace <= 7}
+                            onClick={() => onClickClaim(r.depositId)}
+                            disabled={!r.liquidable}
                           >
                             Liquidate
                           </button>
@@ -475,7 +443,16 @@ export default function Overview() {
                           </UncontrolledTooltip>
                         </td>
                       </tr>
-                    ))}
+                    )) : <tr>
+                    <td colSpan={11} className="text-center">                
+                      <Alert
+                        className="alert-with-icon"
+                        color="default"
+                      >
+                        <span>There are no matching entries</span>
+                      </Alert>
+                    </td>
+                  </tr>}
                   </tbody>
                 </table>
               </Col>

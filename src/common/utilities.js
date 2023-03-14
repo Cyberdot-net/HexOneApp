@@ -25,15 +25,16 @@ export const isEmpty = (value) => {
 export const formatDecimal = (num, decimal = 18) => {
   if (!+num) return "";
 
-  return utils.formatUnits(num, decimal);
+  return utils.commify(utils.formatUnits(num, decimal));
 }
 
 export const formatZeroDecimal = (num, decimal = 18) => {
   if (!+num) return "0";
 
-  return utils.formatUnits(num, decimal);
+  return utils.commify(utils.formatUnits(num, decimal));
 }
 
-export const formatNumber = (num) => {
-  return utils.commify(num);
-}
+export const formatterFloat = (num, decimal = 2) => new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: decimal,
+}).format(num);
+

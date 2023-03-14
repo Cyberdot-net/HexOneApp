@@ -1,6 +1,6 @@
+import moment from "moment";
 import React, { useState, useEffect, useContext } from "react";
 import { DateRange } from "react-date-range";
-import moment from "moment";
 import {
   Modal,
   Button,
@@ -22,7 +22,7 @@ import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexContract, HexOnePriceFeed, HexOneProtocol } from "contracts";
 import { HexOneToken_Addr } from "contracts/address";
 import { HEX_SHARERATE_DEC, STAKEDAYS_MIN, STAKEDAYS_MAX } from "contracts/Constants";
-import { formatDecimal, formatZeroDecimal, isEmpty } from "common/utilities";
+import { formatDecimal, formatZeroDecimal, formatterFloat, isEmpty } from "common/utilities";
 
 
 export default function Borrow({ show, onClose, onBorrow }) {
@@ -41,7 +41,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
   const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
   const [ commit, setCommit ] = useState(false);
   const [ result, setResult ] = useState({ show: false, type: "error" , msg: ""});
-  const [ message, setMessage ] = useState({ show: false, error: "", msg: "" });
+  const [ alert, setAlert ] = useState({ show: false, error: "", msg: "" });
 
   useEffect(() => {
     const bodyMouseDowntHandler = e => {
@@ -58,29 +58,29 @@ export default function Borrow({ show, onClose, onBorrow }) {
   }, []);
 
   useEffect(() => {
-      if (!address) return;
+    if (!address) return;
 
-      showLoading();
+    showLoading();
 
-      HexContract.setProvider(provider);
-      HexOnePriceFeed.setProvider(provider);
-      HexOneProtocol.setProvider(provider);
+    HexContract.setProvider(provider);
+    HexOnePriceFeed.setProvider(provider);
+    HexOneProtocol.setProvider(provider);
 
-      const getHexData = async () => {
-        const decimals = await HexContract.getDecimals();
-        setHexDecimals(decimals);
-        setTotalHex(await HexContract.getBalance(address));
-        setDayPayoutTotal(await HexContract.getDayPayoutTotal());
-        setShareRate(await HexContract.getShareRate());
+    const getHexData = async () => {
+      const decimals = await HexContract.getDecimals();
+      setHexDecimals(decimals);
+      setTotalHex(await HexContract.getBalance(address));
+      setDayPayoutTotal(await HexContract.getDayPayoutTotal());
+      setShareRate(await HexContract.getShareRate());
 
-        setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
+      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
 
-        setFee(await HexOneProtocol.getFees());
+      setFee(await HexOneProtocol.getFees());
 
-        hideLoading();
-      }
+      hideLoading();
+    }
 
-      getHexData();
+    getHexData();
 
     // eslint-disable-next-line
   }, [ address, provider ]);
@@ -122,7 +122,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
   }
 
   const onClickBorrow = async () => {
-    if (isEmpty(collateralAmt['bignum']) || (+stakeDays < STAKEDAYS_MIN || STAKEDAYS_MAX < +stakeDays) || collateralAmt['bignum'].gt(totalHex)) return;
+    if (isEmpty(collateralAmt['bignum']) || collateralAmt['bignum'].gt(totalHex) || (+stakeDays < STAKEDAYS_MIN || STAKEDAYS_MAX < +stakeDays)) return;
 
     showLoading("Borrowing...");
 
@@ -158,7 +158,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
     if (!address) return;
 
     if (typeof window.ethereum === 'undefined') {
-      setMessage({ show: true, error: "<b>No MetaMask! - </b>Please, install MetaMask", msg: "" });
+      setAlert({ show: true, error: "<b>No MetaMask! - </b>Please, install MetaMask", msg: "" });
       return;
     }
 
@@ -180,18 +180,18 @@ export default function Borrow({ show, onClose, onBorrow }) {
      
       hideLoading();
       if (wasAdded) {
-        setMessage({ show: true, msg: "Added hexone to MetaMask", error: "" });
+        setAlert({ show: true, msg: "Added hexone to MetaMask", error: "" });
       } else {
-        setMessage({ show: true, error: "Failed to add hexone to MetaMask", msg: "" });
+        setAlert({ show: true, error: "Failed to add hexone to MetaMask", msg: "" });
       }
 
     } catch (error) {
       hideLoading();
 
       if (error.code === 4001) {
-        setMessage({ show: true, error: `Add failed! ${error.message}`, msg: "" });
+        setAlert({ show: true, error: `Add failed! ${error.message}`, msg: "" });
       } else {
-        setMessage({ show: true, error: `Add failed! ${error.message}`, msg: "" });
+        setAlert({ show: true, error: `Add failed! ${error.message}`, msg: "" });
       }
 
       return;
@@ -231,7 +231,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
                   <InputGroup>
                     <Input
                       type="text"
-                      placeholder={`Collateral Amount in HEX (${formatDecimal(totalHex) || 0} HEX available)`}
+                      placeholder={`Collateral Amount in HEX (${formatDecimal(totalHex)} HEX available)`}
                       value={collateralAmt.value}
                       onChange={changeCollateralAmt} 
                       autoFocus
@@ -258,12 +258,12 @@ export default function Borrow({ show, onClose, onBorrow }) {
                   <InputGroup>
                     <Input
                       type="text"
-                      placeholder={`Stake Length in Days (${STAKEDAYS_MIN} ~ ${STAKEDAYS_MAX})`}
+                      placeholder={`Stake Length in Days (${formatterFloat(STAKEDAYS_MIN)} ~ ${formatterFloat(STAKEDAYS_MAX)})`}
                       value={stakeDays}
                       onChange={e => setStakeDays(e.target.value)} 
                       {...(stakeDays && (+stakeDays < STAKEDAYS_MIN || +stakeDays > STAKEDAYS_MAX)) && {className: "form-control-danger"}}
                     />
-                    <InputGroupAddon addonType="append" className="cursor-pointer" onClick={e => setOpen(!isOpen)}>
+                    <InputGroupAddon addonType="append" className="cursor-pointer" onClick={() => setOpen(!isOpen)}>
                       <InputGroupText>
                         <i className="tim-icons icon-calendar-60" />
                       </InputGroupText>
@@ -362,7 +362,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
       <Modal
         isOpen={result.show}
         toggle={() => hideMessage()}
-        backdrop={result.error === "info" ? "static" : true}
+        backdrop={result.type === "info" ? "static" : true}
       >
         <div className="modal-header justify-content-center">
           <button className="close" onClick={() => hideMessage()} style={{ padding: "10px", top: "10px", right: "16px" }}>
@@ -370,19 +370,19 @@ export default function Borrow({ show, onClose, onBorrow }) {
           </button>
           <h4 className="title title-up">{result.msg}</h4>
         </div>
-        {message.show && <div className="modal-body">
+        {alert.show && <div className="modal-body">
           <Alert
             className="alert-with-icon"
-            color={message.msg ? "success" : "danger"}
-            isOpen={message.show}
-            toggle={() => setMessage({ show: false, error: "", msg: "" })}
+            color={alert.msg ? "success" : "danger"}
+            isOpen={alert.show}
+            toggle={() => setAlert({ show: false, error: "", msg: "" })}
           >
-            <span data-notify="icon" className={`tim-icons ${message.msg ? "icon-check-2" : "icon-alert-circle-exc"}`} />
-            <span dangerouslySetInnerHTML={{__html: message.msg ? message.msg : message.error }}></span>
+            <span data-notify="icon" className={`tim-icons ${alert.msg ? "icon-check-2" : "icon-alert-circle-exc"}`} />
+            <span dangerouslySetInnerHTML={{__html: alert.msg ? alert.msg : alert.error }}></span>
           </Alert>
         </div>}
         <div className="modal-footer" style={{ justifyContent: "flex-end" }}>
-          {result.error === "info" && <Button
+          {result.type === "info" && <Button
             className="mr-2"
             color="success"
             type="button"

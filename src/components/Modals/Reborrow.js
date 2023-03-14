@@ -33,10 +33,6 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
     HexOneVault.setProvider(provider);
     HexOneProtocol.setProvider(provider);
 
-    // if (data && data.depositId) {
-    //   setTotalHex(data.mintAmount.mul(data.currentFeed).div(utils.parseUnits("1")));
-    // }
-
     const getHexData = async () => {
       showLoading();
       setTotalHex(await HexOneVault.getBorrowableAmount(address, data.depositId));

@@ -31,7 +31,21 @@ export default (function() {
             return amount;
         },
 
-        getLiquidableDeposit: async (depositId) => {
+        getLiquidableDeposits: async () => {
+            let list = [];
+            if (!contract) return list;
+    
+            try {
+                list = await contract.getLiquidableDeposits();
+                console.log(list);
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return list;
+        },
+
+        getLiquidableTotalHex: async (depositId) => {
             let amount = BigNumber.from(0);
             if (!contract) return amount;
     
@@ -39,7 +53,7 @@ export default (function() {
                 let rs = await contract.getLiquidableDeposits();
                 rs = rs.find(r => r["depositId"].eq(depositId));
                 if (rs) {
-                    amount = rs["liquidateAmount"];
+                    amount = rs["maxLiquidateHexAmount"];
                 }
             } catch (e) {
                 console.error(e);
@@ -54,6 +68,7 @@ export default (function() {
     
             try {
                 list = await contract.getUserInfos(address);
+                console.log(list);
             } catch (e) {
                 console.error(e);
             }
