@@ -161,13 +161,13 @@ export default function Overview() {
                   color="info btn-lg"
                   id="mint"
                   onClick={() => doMintHex()}>
-                  MINT HEX
+                  MINT TESTNET HEX
                 </Button>
                 <UncontrolledTooltip
                   placement="bottom"
                   target="mint"
                 >
-                  Mint hex
+                  Mint TestNet Hex
                 </UncontrolledTooltip>
                 <Button
                   className="btn-simple grow"
