@@ -44,7 +44,6 @@ export default function Borrow({ show, onClose, onBorrow }) {
   const [ result, showResult ] = useState(false);
 
   useEffect(() => {
-    toast.success("Borrow failed! Deposit Collateral error!");
     const bodyMouseDowntHandler = e => {
       const calendar = document.getElementsByClassName("calendar");
       if (calendar?.length && !calendar[0].contains(e.target)) {
