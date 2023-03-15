@@ -8,7 +8,7 @@ import WalletProvider from "providers/WalletProvider";
 import ConnectWalletProvider from "providers/ConnectWalletProvider";
 
 // layout components
-import Layout from "components/layout/Layout";
+import Layout from "components/Layout/Layout";
 
 // modal
 import ConnectWallet from "components/Modals/ConnectWallet";
@@ -16,9 +16,9 @@ import Loading from "components/Common/Loading";
 import Loading180Ring from "components/Common/Loading180Ring";
 
 // views
-const Overview = lazy(() => import('./views/Overview'));
-const Bootstrap = lazy(() => import('./views/Bootstrap'));
-const Staking = lazy(() => import('./views/Staking'));
+const Overview = lazy(() => import('views/Overview'));
+const Bootstrap = lazy(() => import('views/Bootstrap'));
+const Staking = lazy(() => import('views/Staking'));
 
 export default function App() {
 
@@ -61,13 +61,12 @@ export default function App() {
               style: {
                 position: "relative",
                 top: "4rem",
-                right: "1.5rem",
-                margin: "5px 0",
                 padding: ".7rem 1.5rem",
                 color: "white",
-                fontSize: "16px",
+                fontSize: "1rem",
                 borderRadius: "20px",
                 border: "2px solid #10172a",
+                maxWidth: "500px",
                 boxShadow:
                   "0px 0px 0px 1.6px #1A2238, -4px -4px 8px rgba(255, 255, 255, 0.1), 4px 8px 8px rgba(1, 7, 19, 0.2)",
                 background: "linear-gradient(135deg, #35405b 0%, #222c45 100%)",
