@@ -24,6 +24,7 @@ import { isEmpty, formatterFloat } from "common/utilities";
 export default function Overview() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
+  const [ isTestNet, setIsTestNet ] = useState(false);
   const [ hexDecimals, setHexDecimals ] = useState(BigNumber.from(0));
   const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
   const [ history, setHistory ] = useState([]);
@@ -50,6 +51,9 @@ export default function Overview() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
       setHistory(await HexOneVault.getHistory(address));
       setLiquidates(await HexOneVault.getLiquidableDeposits());
+      
+      const network = await provider.getNetwork();
+      setIsTestNet(network.chainId === 5);
 
       hideLoading();
     }
@@ -146,19 +150,19 @@ export default function Overview() {
             </Row>}
             <Row gutter="10" className="pl-4 pr-4">
               <Col lg="12" className="mb-4">
-                <Button
+                {isTestNet && <Button
                   className="btn-simple mr-4"
                   color="info btn-lg"
                   id="mint"
                   onClick={() => doMintHex()}>
                   MINT TESTNET HEX
-                </Button>
-                <UncontrolledTooltip
+                </Button>}
+                {isTestNet && <UncontrolledTooltip
                   placement="bottom"
                   target="mint"
                 >
                   Mint TestNet Hex
-                </UncontrolledTooltip>
+                </UncontrolledTooltip>}
                 <Button
                   className="btn-simple grow"
                   color="info btn-lg"

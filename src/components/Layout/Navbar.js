@@ -40,8 +40,10 @@ export default function IndexNavbar() {
     };
 
     const handleNetworkChanged = (network) => {
-      if (!networks.find(r => r.chainId === network.chainId)) {
+      if (!networks.find(r => r.chainId === +network)) {
         setProvider(null);
+      } else {
+        connectMetaMask();
       }
     };
   
