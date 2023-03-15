@@ -18,7 +18,6 @@ import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed } from "contr
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import BorrowModal from "components/Modals/Borrow";
 import ReborrowModal from "components/Modals/Reborrow";
-import RechargeModal from "components/Modals/Recharge";
 import Pagination from "components/Common/Pagination";
 import { isEmpty, formatterFloat } from "common/utilities";
 
@@ -31,7 +30,6 @@ export default function Overview() {
   const [ liquidates, setLiquidates ] = useState([]);
   const [ isBorrowOpen, setBorrowOpen ] = useState(false);
   const [ reborrow, setReborrow ] = useState({ show: false, data: {} });
-  const [ recharge, setRecharge ] = useState({ show: false, data: {} });
   const [ page, setPage ] = useState(1);
 
   useEffect(() => {
@@ -71,7 +69,7 @@ export default function Overview() {
     const currentPrice = +utils.formatUnits(hexFeed);
     const originalPrice = +utils.formatUnits(initialFeed);
     
-    return formatterFloat((currentPrice / originalPrice) * 100);
+    return formatterFloat(Math.round((currentPrice / originalPrice) * 100));
   }
 
   const getProfitLoss = (row) => {
@@ -100,10 +98,6 @@ export default function Overview() {
     setReborrow({ show: true, data: {...row, currentFeed: hexFeed} });
   }
 
-  const onClickRecharge = (row) => {
-    setRecharge({ show: true, data: row });
-  }
-
   const doMintHex = async () => {
 
     showLoading("Minting...");
@@ -126,10 +120,6 @@ export default function Overview() {
   }
 
   const doReborrow = () => {
-    getHistory();
-  }
-
-  const doRecharge = () => {
     getHistory();
   }
 
@@ -277,22 +267,6 @@ export default function Overview() {
                             target="mintHex1"
                           >
                             Mint more $HEX1 without adding any collateral
-                          </UncontrolledTooltip>
-                          <button
-                            type="button"
-                            rel="tooltip"
-                            id="addCollateral"
-                            className="btn btn-info btn-sm w-full"
-                            onClick={() => onClickRecharge(r)}
-                            disabled={r.liquidateAmount.lte(0)}
-                          >
-                            Re-Charge
-                          </button>
-                          <UncontrolledTooltip
-                            placement="bottom"
-                            target="addCollateral"
-                          >
-                            Add more collateral (HEX) without borrowing more $HEX1
                           </UncontrolledTooltip>
                         </td>
                       </tr>
@@ -489,12 +463,6 @@ export default function Overview() {
           data={reborrow.data}
           onReborrow={doReborrow}
           onClose={() => setReborrow({ show: false, data: {} })}
-        />}
-        {recharge.show && <RechargeModal 
-          show={recharge.show}
-          data={recharge.data}
-          onRecharge={doRecharge}
-          onClose={() => setRecharge({ show: false, data: {} })}
         />}
       </div>
     </>
