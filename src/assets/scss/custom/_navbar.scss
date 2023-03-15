@@ -26,6 +26,14 @@
         padding: 0px 16px;
         margin: 0px 8px;
         cursor: pointer;
+        max-width: 150px;
+      }
+
+      @media screen and (max-width: 991px) {
+        &.wallet {
+          padding: 6px 16px;
+          margin: 8px 8px 8px 0px;
+        }
       }
 
       .nav-link {
