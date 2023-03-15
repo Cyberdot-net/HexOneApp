@@ -75,6 +75,19 @@ export default (function() {
             return shareRate;
         },
 
+        allowance: async (address) => {
+            let amount = BigNumber.from(0);
+            if (!contract) return amount;
+    
+            try {
+                amount = await contract.allowance(address, HexOneProtocol_Addr.contract);
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return amount;
+        },
+
         approve: async (amount) => {
             if (!contract) return { status: "failed" };
     

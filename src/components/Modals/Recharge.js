@@ -87,13 +87,18 @@ export default function Recharge({ show, data, onClose, onRecharge }) {
 
     showLoading("Re-Charging...");
 
+    let res = null;
+
     const amount = collateralAmt['bignum'].div(utils.parseUnits("1", 18 - hexDecimals));
 
-    let res = await HexContract.approve(amount);
-    if (res.status !== "success") {
-      hideLoading();
-      showMessage(res.error ?? "Re-Charge failed! HEX Approve error!", "error");
-      return;
+    const allowanceAmount = await HexContract.allowance(address);
+    if (allowanceAmount.lt(amount)) {
+      res = await HexContract.approve(amount);
+      if (res.status !== "success") {
+        hideLoading();
+        showMessage(res.error ?? "Re-Charge failed! HEX Approve error!", "error");
+        return;
+      }
     }
 
     res = await HexOneProtocol.addCollateralForLiquidate(amount, data.depositId, +stakeDays);

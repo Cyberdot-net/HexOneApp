@@ -126,13 +126,18 @@ export default function Borrow({ show, onClose, onBorrow }) {
 
     showLoading("Borrowing...");
 
+    let res = null;
+
     const amount = collateralAmt['bignum'].div(utils.parseUnits("1", 18 - hexDecimals));
 
-    let res = await HexContract.approve(amount);
-    if (res.status !== "success") {
-      hideLoading();
-      showMessage(res.error ?? "Borrow failed! HEX Approve error!", "error");
-      return;
+    const allowanceAmount = await HexContract.allowance(address);
+    if (allowanceAmount.lt(amount)) {
+      res = await HexContract.approve(amount);
+      if (res.status !== "success") {
+        hideLoading();
+        showMessage(res.error ?? "Borrow failed! HEX Approve error!", "error");
+        return;
+      }
     }
 
     res = await HexOneProtocol.depositCollateral(amount, +stakeDays, commit);
