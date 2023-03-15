@@ -1,5 +1,6 @@
 import moment from "moment";
 import React, { useState, useEffect, useContext} from "react";
+import { toast } from "react-hot-toast";
 import { DateRange } from "react-date-range";
 import {
   Modal,
@@ -17,7 +18,7 @@ import {
   Alert
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
-import { WalletContext, MessageContext, LoadingContext } from "providers/Contexts";
+import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneVault, HexOneProtocol, HexContract } from "contracts";
 import { HEX_SHARERATE_DEC, STAKEDAYS_MIN, STAKEDAYS_MAX } from "contracts/Constants";
 import { formatDecimal, formatterFloat, isEmpty } from "common/utilities";
@@ -25,7 +26,6 @@ import { formatDecimal, formatterFloat, isEmpty } from "common/utilities";
 export default function Recharge({ show, data, onClose, onRecharge }) {
 
   const { address, provider } = useContext(WalletContext);
-  const { showMessage } = useContext(MessageContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ hexDecimals, setHexDecimals ] = useState(8);
   const [ isOpen, setOpen ] = useState(false);
@@ -96,7 +96,7 @@ export default function Recharge({ show, data, onClose, onRecharge }) {
       res = await HexContract.approve(amount);
       if (res.status !== "success") {
         hideLoading();
-        showMessage(res.error ?? "Re-Charge failed! HEX Approve error!", "error");
+        toast.error("Re-Charge failed! HEX Approve error!");
         return;
       }
     }
@@ -104,7 +104,7 @@ export default function Recharge({ show, data, onClose, onRecharge }) {
     res = await HexOneProtocol.addCollateralForLiquidate(amount, data.depositId, +stakeDays);
     if (res.status !== "success") {
       hideLoading();
-      showMessage(res.error ?? "Re-Charge failed! Charge Hex One error!", "error");
+      toast.error("Re-Charge failed! Charge Hex One error!");
       return;
     }
 
@@ -115,7 +115,7 @@ export default function Recharge({ show, data, onClose, onRecharge }) {
     setTotalHex(await HexOneVault.getLiquidableTotalHex(data.depositId));
 
     hideLoading();
-    showMessage("Re-Charge success!", "info");
+    toast.success("Re-Charge success!");
   }
 
   return (

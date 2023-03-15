@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { toast } from "react-hot-toast";
 import {
   Button,
   ListGroupItem,
@@ -12,7 +13,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
-import { WalletContext, MessageContext, LoadingContext } from "providers/Contexts";
+import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import BorrowModal from "components/Modals/Borrow";
@@ -23,7 +24,6 @@ import { isEmpty, formatterFloat } from "common/utilities";
 
 export default function Overview() {
   const { address, provider } = useContext(WalletContext);
-  const { showMessage } = useContext(MessageContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ hexDecimals, setHexDecimals ] = useState(BigNumber.from(0));
   const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
@@ -88,12 +88,12 @@ export default function Overview() {
     const res = await HexOneProtocol.claimCollateral(depositId);
     if (res.status !== "success") {
       hideLoading();
-      showMessage(res.error ?? "Claim failed!", "error");
+      toast.error("Claim failed!");
       return;
     }
 
     hideLoading();
-    showMessage("Claim success!", "info");
+    toast.success("Claim success!");
   }
 
   const onClickReborrow = (row) => {
@@ -113,12 +113,12 @@ export default function Overview() {
     let res = await HexContract.mint();
     if (res.status !== "success") {
       hideLoading();
-      showMessage(res.error ?? "Mint failed!", "error");
+      toast.error("Mint failed!");
       return;
     }
     
     hideLoading();
-    showMessage("Mint hex success!", "info");
+    toast.success("Mint hex success!");
   }
 
   const doBorrow = async () => {

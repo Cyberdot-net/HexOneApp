@@ -8,7 +8,6 @@ export default function Loading() {
 
   return (
     show && <div className="loading">
-      <div className="backdrop fade show"></div>
       <div className="walletInfo">
         <img
           alt="loading"

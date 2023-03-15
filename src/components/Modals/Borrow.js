@@ -1,5 +1,6 @@
 import moment from "moment";
 import React, { useState, useEffect, useContext } from "react";
+import { toast } from "react-hot-toast";
 import { DateRange } from "react-date-range";
 import {
   Modal,
@@ -40,8 +41,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
   const [ stakeDays, setStakeDays ] = useState("");
   const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
   const [ commit, setCommit ] = useState(false);
-  const [ result, setResult ] = useState({ show: false, type: "error" , msg: ""});
-  const [ alert, setAlert ] = useState({ show: false, error: "", msg: "" });
+  const [ result, showResult ] = useState(false);
 
   useEffect(() => {
     const bodyMouseDowntHandler = e => {
@@ -85,14 +85,6 @@ export default function Borrow({ show, onClose, onBorrow }) {
     // eslint-disable-next-line
   }, [ address, provider ]);
 
-  const showMessage = (msg, type = "error") => {
-    setResult({ show: true, msg, type });
-  }
-
-  const hideMessage = () => {
-    setResult({ show: false, msg: "", type: "error" });
-  }
-
   const getBorrowAmt = () => {
     return collateralAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"));
   }
@@ -135,7 +127,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
       res = await HexContract.approve(amount);
       if (res.status !== "success") {
         hideLoading();
-        showMessage(res.error ?? "Borrow failed! HEX Approve error!", "error");
+        toast.error("Borrow failed! HEX Approve error!");
         return;
       }
     }
@@ -143,7 +135,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
     res = await HexOneProtocol.depositCollateral(amount, +stakeDays, commit);
     if (res.status !== "success") {
       hideLoading();
-      showMessage(res.error ?? "Borrow failed! Deposit Collateral error!", "error");
+      toast.error("Borrow failed! Deposit Collateral error!");
       return;
     }
 
@@ -154,7 +146,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
     setTotalHex(await HexContract.getBalance(address));
     
     hideLoading();
-    showMessage("Borrow success!", "info");
+    showResult(true);
     // onClose();
   }
 
@@ -163,7 +155,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
     if (!address) return;
 
     if (typeof window.ethereum === 'undefined') {
-      setAlert({ show: true, error: "<b>No MetaMask! - </b>Please, install MetaMask", msg: "" });
+      toast.error("<b>No MetaMask! - </b>Please, install MetaMask");
       return;
     }
 
@@ -185,18 +177,18 @@ export default function Borrow({ show, onClose, onBorrow }) {
      
       hideLoading();
       if (wasAdded) {
-        setAlert({ show: true, msg: "Added hexone to MetaMask", error: "" });
+        toast.success("Added hexone to MetaMask");
       } else {
-        setAlert({ show: true, error: "Failed to add hexone to MetaMask", msg: "" });
+        toast.error("Failed to add hexone to MetaMask");
       }
 
     } catch (error) {
       hideLoading();
 
       if (error.code === 4001) {
-        setAlert({ show: true, error: `Add failed! ${error.message}`, msg: "" });
+        toast.error(`Add failed! ${error.message}`);
       } else {
-        setAlert({ show: true, error: `Add failed! ${error.message}`, msg: "" });
+        toast.error(`Add failed! ${error.message}`);
       }
 
       return;
@@ -365,29 +357,18 @@ export default function Borrow({ show, onClose, onBorrow }) {
         </div>
       </Modal>
       <Modal
-        isOpen={result.show}
-        toggle={() => hideMessage()}
-        backdrop={result.type === "info" ? "static" : true}
+        isOpen={result}
+        toggle={() => showResult(false)}
+        backdrop="static"
       >
         <div className="modal-header justify-content-center">
-          <button className="close" onClick={() => hideMessage()} style={{ padding: "10px", top: "10px", right: "16px" }}>
+          <button className="close" onClick={() => showResult(false)} style={{ padding: "10px", top: "10px", right: "16px" }}>
             <i className="tim-icons icon-simple-remove" />
           </button>
-          <h4 className="title title-up">{result.msg}</h4>
+          <h4 className="title title-up">Borrow success!</h4>
         </div>
-        {alert.show && <div className="modal-body">
-          <Alert
-            className="alert-with-icon"
-            color={alert.msg ? "success" : "danger"}
-            isOpen={alert.show}
-            toggle={() => setAlert({ show: false, error: "", msg: "" })}
-          >
-            <span data-notify="icon" className={`tim-icons ${alert.msg ? "icon-check-2" : "icon-alert-circle-exc"}`} />
-            <span dangerouslySetInnerHTML={{__html: alert.msg ? alert.msg : alert.error }}></span>
-          </Alert>
-        </div>}
         <div className="modal-footer" style={{ justifyContent: "flex-end" }}>
-          {result.type === "info" && <Button
+          <Button
             className="mr-2"
             color="success"
             type="button"
@@ -395,12 +376,12 @@ export default function Borrow({ show, onClose, onBorrow }) {
             onClick={() => onClickAddHexOneToken()}
           >
             Add Hexone
-          </Button>}
+          </Button>
           <Button
             color="default"
             type="button"
             size="sm"
-            onClick={() => hideMessage()}
+            onClick={() => showResult(false)}
           >
             Close
           </Button>

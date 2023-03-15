@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { toast } from "react-hot-toast";
 import {
   Modal,
   Button,
@@ -15,14 +16,13 @@ import {
   Alert
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
-import { WalletContext, MessageContext, LoadingContext } from "providers/Contexts";
+import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneVault, HexOneProtocol } from "contracts";
 import { formatDecimal, isEmpty } from "common/utilities";
 
 export default function Reborrow({ show, data, onClose, onReborrow }) {
 
   const { address, provider } = useContext(WalletContext);
-  const { showMessage } = useContext(MessageContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ amount, setAmount ] = useState({ value: "", bignum: BigNumber.from(0) });
   const [ totalHex,  setTotalHex ] = useState(0);
@@ -57,7 +57,7 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
     let res = await HexOneProtocol.borrowHexOne(data.depositId, amount["bignum"]);
     if (res.status !== "success") {
       hideLoading();
-      showMessage(res.error ?? "Re-Borrow failed! Borrow Hex One error!", "error");
+      toast.error("Re-Borrow failed! Borrow Hex One error!");
       return;
     }
 
@@ -67,7 +67,7 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
     setTotalHex(await HexOneVault.getBorrowableAmount(address, data.depositId));
 
     hideLoading();
-    showMessage("Re-Borrow success!", "info");
+    toast.success("Re-Borrow success!");
   }
 
   return (
