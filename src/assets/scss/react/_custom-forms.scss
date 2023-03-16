@@ -1,6 +1,7 @@
 .custom-switch {
   .custom-control-label {
     vertical-align: middle;
+    cursor: pointer;
     &::before {
       height: 22px;
       width: 45px;

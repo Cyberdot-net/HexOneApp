@@ -6,11 +6,10 @@
   0% {
     opacity: 0;
   }
-  20% {
+  30% {
     opacity: 0;
   }
   100% {
-    visibility: visible;
     opacity: 1;
   }
 }
@@ -23,7 +22,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  animation: fadeIn 3s;
+  animation: fadeIn 2s;
   backdrop-filter: blur(2px);
 
   .walletInfo {

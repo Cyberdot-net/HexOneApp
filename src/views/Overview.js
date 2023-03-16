@@ -36,8 +36,6 @@ export default function Overview() {
   useEffect(() => {
     if (!address) return;
 
-    // console.log(new BigNumber("1.2345"));
-
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
     HexOneVault.setProvider(provider);
@@ -196,7 +194,7 @@ export default function Overview() {
             className="path"
             src={require("assets/img/path3.png")}
           />
-          <Container className="w-full">
+          <Container>
             <Row>
               <Col md="4">
                 <hr className="line-info" />

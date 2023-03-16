@@ -721,3 +721,18 @@
     max-width: 1400px;
   }
 }
+
+.filter-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: rgba(255,255,255,0.8);
+
+  .filter-component {
+    padding: 0 15px;
+
+    span {
+      color: rgba(255,255,255,0.5);
+    }
+  }
+}
