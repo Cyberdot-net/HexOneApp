@@ -4,7 +4,7 @@
   flex-direction: row;
   align-items: center;
   border-radius: 0.625rem;
-  background-image: url($asset-base-path + "/img/darken-night-sky.png");
+  background-image: url($asset-base-path + "/img/darken-night-sky.jpg");
   background-position: center center;
   background-size: cover;
 
@@ -13,7 +13,7 @@
     padding: 0 1em;
     border-radius: 0.625rem;
     user-select: none;
-    height: 20px;
+    height: 22px;
     z-index: 1;
   }
 
@@ -23,12 +23,12 @@
     box-sizing: content-box;
     border: #303030 solid 1px;
     border-radius: 0.625rem;
-    background-image: url($asset-base-path + "/img/night-sky.png");
+    background-image: url($asset-base-path + "/img/night-sky.jpg");
     background-position: center center;
     background-size: cover;
     transition: all 0.25s ease-in;
     cursor: pointer;
-    height: 20px;
+    height: 22px;
     z-index: 1;
   }
 }

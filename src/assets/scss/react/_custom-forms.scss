@@ -6,7 +6,7 @@
       height: 22px;
       width: 45px;
       border: none;
-      background-image: url($asset-base-path + "/img/darken-night-sky.png");
+      background-image: url($asset-base-path + "/img/darken-night-sky.jpg");
       background-position: center center;
       background-size: cover;
     }
@@ -19,7 +19,7 @@
   }
   .custom-control-input:checked {
     ~ .custom-control-label::before {
-      background-image: url($asset-base-path + "/img/night-sky.png");
+      background-image: url($asset-base-path + "/img/night-sky.jpg");
     }
     ~ .custom-control-label::after {
       background-color: $white;
