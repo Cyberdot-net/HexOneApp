@@ -15,7 +15,6 @@ import {
   InputGroupAddon,
   InputGroupText,
   UncontrolledTooltip,
-  CustomInput,
   Alert
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
