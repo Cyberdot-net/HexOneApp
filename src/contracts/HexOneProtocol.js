@@ -30,11 +30,11 @@ export default (function() {
             return fee;
         },
 
-        depositCollateral: async (amount, duration, commit) => {
+        depositCollateral: async (amount, duration) => {
             if (!contract) return { status: "failed" };
     
             try {
-                const tx = await contract.depositCollateral(HexMockToken_Addr.contract, amount, duration, commit);
+                const tx = await contract.depositCollateral(HexMockToken_Addr.contract, amount, duration);
                 await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {
@@ -85,27 +85,6 @@ export default (function() {
                     return { status: "failed", error: "Claim failed! " + e.error?.message };
                 } else if (e.code === 4001) {
                     return { status: "failed", error: "Claim failed! User denied transaction." };
-                } else {
-                    return { status: "failed" };
-                }
-            }
-    
-            return { status: "success" };
-        },
-
-        addCollateralForLiquidate: async (depositId, amount, duration) => {
-            if (!contract) return { status: "failed" };
-    
-            try {
-                const tx = await contract.addCollateralForLiquidate(HexMockToken_Addr.contract, amount, depositId, duration);
-                await tx.wait();
-                // const [transferEvent] = tr.events;
-            } catch (e) {
-                console.error(e);
-                if (e.error?.code === -32603) {
-                    return { status: "failed", error: "Re-Charge failed! " + e.error?.message };
-                } else if (e.code === 4001) {
-                    return { status: "failed", error: "Re-Charge failed! User denied transaction." };
                 } else {
                     return { status: "failed" };
                 }

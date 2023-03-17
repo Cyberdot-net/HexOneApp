@@ -15307,14 +15307,12 @@ hr {
   background-color: rgba(23, 26, 28, 0.5);
 }
 
-@keyframes slideOut {
-  from {
-    padding: 0;
+@keyframes slide-description {
+  0% {
     min-height: 0px;
   }
-  to {
-    padding: 12px 7px;
-    min-height: 80px;
+  100% {
+    min-height: 100px;
   }
 }
 .table > tbody > tr > td {
@@ -15450,21 +15448,6 @@ hr {
 }
 .table .td-actions .td-toggler.active {
   transform: rotate(180deg);
-}
-.table .td-description {
-  padding: 0px;
-  border: 0;
-}
-.table .td-description .content {
-  min-height: 0px;
-}
-.table .td-description.active {
-  border-top: 0.0625rem solid rgba(255, 255, 255, 0.1);
-}
-.table .td-description.active .content {
-  padding: 12px 7px;
-  min-height: 80px;
-  animation: slideOut 0.5s;
 }
 .table > tbody > tr {
   position: relative;
@@ -21839,6 +21822,72 @@ td.rdtYear:hover {
 }
 .blockquote.blockquote-info small {
   color: #1d8cf8;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.8);
+}
+.filter-group .filter-component {
+  padding: 0 15px;
+}
+.filter-group .filter-component span {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.description {
+  padding: 0px;
+  border-top-width: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.description .content {
+  display: flex;
+  min-height: 0px;
+  transition: all 0.3s linear;
+}
+.description.active {
+  border-top-width: 0.0625rem;
+}
+.description.active .content {
+  min-height: 80px;
+}
+.description.active .content .description-wrapper {
+  padding: 12px 7px;
+  display: flex;
+  flex-direction: row;
+}
+.description.active .content .description-wrapper .links {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  height: 100%;
+}
+
+/* slide animations */
+.slide-enter {
+  height: 0%;
+  opacity: 0;
+}
+
+.slide-enter.slide-enter-active {
+  opacity: 1;
+  height: 100%;
+  transition: all 0.6s linear;
+}
+
+.slide-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-exit.slide-exit-active {
+  opacity: 0;
+  transform: translateY(-80px);
+  transition: all 0.2s linear;
 }
 
 /*# sourceMappingURL=index.css.map */

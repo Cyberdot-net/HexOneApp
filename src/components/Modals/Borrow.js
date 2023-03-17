@@ -40,7 +40,6 @@ export default function Borrow({ show, onClose, onBorrow }) {
   const [ collateralAmt, setCollateralAmt ] = useState({ value: "", bignum: BigNumber.from(0), fee: BigNumber.from(0) });
   const [ stakeDays, setStakeDays ] = useState("");
   const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
-  const [ commit, setCommit ] = useState(false);
   const [ result, showResult ] = useState(false);
 
   useEffect(() => {
@@ -132,7 +131,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
       }
     }
 
-    res = await HexOneProtocol.depositCollateral(amount, +stakeDays, commit);
+    res = await HexOneProtocol.depositCollateral(amount, +stakeDays);
     if (res.status !== "success") {
       hideLoading();
       toast.error("Borrow failed! Deposit Collateral error!");
@@ -324,14 +323,6 @@ export default function Borrow({ show, onClose, onBorrow }) {
                       <InputGroupText>HEX1</InputGroupText>
                     </InputGroupAddon>
                   </InputGroup>
-                </Col>
-              </Row>
-            </FormGroup>
-            <FormGroup className="mb-3">
-              <Row>
-                <Col sm="3"></Col>
-                <Col sm="8">
-                  <CustomInput type="switch" id="switch" label="Committed" checked={commit} onChange={e => setCommit(e.target.checked)} />
                 </Col>
               </Row>
             </FormGroup>

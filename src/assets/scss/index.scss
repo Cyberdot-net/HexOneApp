@@ -104,3 +104,6 @@ $asset-base-path: "../../../assets" !default;
 // React Differences
 
 @import "react/react-differences";
+
+// Pages
+@import "pages/staking.scss";

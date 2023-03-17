@@ -216,7 +216,6 @@ export default function Overview() {
                       <th>Initial HexPrice</th>
                       <th>Current HexPrice</th>
                       <th>Health Ratio</th>
-                      <th className="text-center">Committed</th>
                       <th className="text-center"></th>
                     </tr>
                   </thead>
@@ -236,34 +235,29 @@ export default function Overview() {
                         <td className={0 >= 100 ? "green" : "red"}>
                           {getHealthRatio(r.initialHexPrice)}%
                         </td>
-                        <td>{r.commitType ? "Yes" : "No"}</td>
                         <td className="td-actions" width="125">
-                          <button
-                            type="button"
-                            rel="tooltip"
+                          <Button
                             id="claim"
                             className="btn btn-primary btn-sm w-full mb-1"
                             onClick={() => onClickClaim(r.depositId)}
                             disabled={r.curHexDay.lte(r.endHexDay)}
                           >
                             Claim
-                          </button>
+                          </Button>
                           <UncontrolledTooltip
                             placement="bottom"
                             target="claim"
                           >
                             Claim HEX by burning HEX1
                           </UncontrolledTooltip>
-                          <button
-                            type="button"
-                            rel="tooltip"
+                          <Button
                             id="mintHex1"
                             className="btn btn-success btn-sm w-full mb-1"
                             onClick={() => onClickReborrow(r)}
                             disabled={r.borrowableAmount.lte(0)}
                           >
                             Re-Borrow
-                          </button>
+                          </Button>
                           <UncontrolledTooltip
                             placement="bottom"
                             target="mintHex1"
@@ -295,8 +289,8 @@ export default function Overview() {
                 />
               </Col>
             </Row>
-            <Row gutter="10" className="pl-4 pr-4 mt-2">
-              <Col md="4" className="mb-2">
+            <Row gutter="10" className="pl-4 pr-4 mt-2 center">
+              <Col md="4" sm="6" className="mb-2">
                 <Card className="card-coin card-plain p-2 h-100">
                   <CardBody>
                     <Row>
@@ -318,7 +312,7 @@ export default function Overview() {
                   </CardBody>
                 </Card>
               </Col>
-              <Col md="4" className="mb-2">
+              <Col md="4" sm="6" className="mb-2">
                 <Card className="card-coin card-plain p-2 h-100">
                   <CardBody>
                     <Row>
@@ -333,24 +327,6 @@ export default function Overview() {
                         <ListGroupItem>
                           adding additional collateral
                         </ListGroupItem>
-                      </ListGroup>
-                    </Row>
-                  </CardBody>
-                </Card>
-              </Col>
-              <Col md="4" className="mb-2">
-                <Card className="card-coin card-plain p-2 h-100">
-                  <CardBody>
-                    <Row>
-                      <Col className="text-center" md="12">
-                        <h4 className="text-uppercase">RE-CHARGE</h4>
-                        <hr className="line-primary" />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <ListGroup>
-                        <ListGroupItem>Add collateral (HEX)</ListGroupItem>
-                        <ListGroupItem>without minting HEX1</ListGroupItem>
                       </ListGroup>
                     </Row>
                   </CardBody>
@@ -399,16 +375,14 @@ export default function Overview() {
                         <td>${formatterFloat(+utils.formatUnits(r.currentValue))}</td>
                         <td>{getProfitLoss(r)}</td>
                         <td className="td-actions">
-                          <button
-                            type="button"
-                            rel="tooltip"
+                          <Button
                             id="liquidate"
                             className="btn btn-success btn-sm"
                             onClick={() => onClickClaim(r.depositId)}
                             disabled={!r.liquidable}
                           >
                             Liquidate
-                          </button>
+                          </Button>
                           <UncontrolledTooltip
                             placement="bottom"
                             target="liquidate"

@@ -1,12 +1,10 @@
 
-@keyframes slideOut {
-  from {
-    padding: 0;
+@keyframes slide-description {
+  0% {
     min-height: 0px;
   }
-  to {
-    padding: 12px 7px;
-    min-height: 80px;
+  100% {
+    min-height: 100px;
   }
 }
 
@@ -168,26 +166,6 @@
 
         &.active {
           transform: rotate(180deg);
-        }
-      }
-    }
-    
-    .td-description {
-      padding: 0px;
-      border: 0;
-
-      .content {
-        min-height: 0px;
-        // min-height: 0px;
-        // transition: all 0.3s linear;
-      }
-
-      &.active {
-        border-top: 0.0625rem solid rgba(255, 255, 255, 0.1);
-        .content {
-          padding: 12px 7px;
-          min-height: 80px;
-          animation: slideOut 0.5s;
         }
       }
     }
