@@ -75,6 +75,19 @@ export default (function() {
             return shareRate;
         },
 
+        getCurrentDay: async () => {
+            let currentDay = BigNumber.from(0);
+            if (!contract) return currentDay;
+    
+            try {
+                currentDay = await contract.currentDay();
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return currentDay;
+        },
+
         allowance: async (address) => {
             let amount = BigNumber.from(0);
             if (!contract) return amount;

@@ -57,7 +57,7 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
     let res = await HexOneProtocol.borrowHexOne(data.depositId, amount["bignum"]);
     if (res.status !== "success") {
       hideLoading();
-      toast.error("Re-Borrow failed! Borrow Hex One error!");
+      toast.error(res.error ?? "Re-Borrow failed! Borrow Hex One error!");
       return;
     }
 

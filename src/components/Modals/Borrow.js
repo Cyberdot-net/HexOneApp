@@ -125,7 +125,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
       res = await HexContract.approve(amount);
       if (res.status !== "success") {
         hideLoading();
-        toast.error("Borrow failed! HEX Approve error!");
+        toast.error(res.error ?? "Borrow failed! HEX Approve error!");
         return;
       }
     }
@@ -133,7 +133,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
     res = await HexOneProtocol.depositCollateral(amount, +stakeDays);
     if (res.status !== "success") {
       hideLoading();
-      toast.error("Borrow failed! Deposit Collateral error!");
+      toast.error(res.error ?? "Borrow failed! Deposit Collateral error!");
       return;
     }
 
