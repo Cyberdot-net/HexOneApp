@@ -34,5 +34,6 @@ export const formatZeroDecimal = (num, decimal = 18) => {
 
 export const formatterFloat = (num, decimal = 2) => {
   if (!num) return "0";
-  return new Intl.NumberFormat('en-US', { maximumFractionDigits: decimal }).format(num);
+  const result = new Intl.NumberFormat('en-US', { maximumFractionDigits: decimal }).format(num);
+  return result === "-0" ? "0" : result;
 }

@@ -76,7 +76,7 @@ export default function Overview() {
 
   const getProfitLoss = (row) => {
 
-    const profit = formatterFloat(+(row.currentUSDValue.sub(row.initUSDValue)));
+    const profit = formatterFloat(+(utils.formatUnits(row.currentUSDValue.sub(row.initUSDValue))));
     const percent = formatterFloat(+(row.currentUSDValue.div(row.initUSDValue).mul(100)), 0);
     
     return `${profit} (${percent}%)`;
@@ -364,10 +364,10 @@ export default function Overview() {
                   <tbody>
                     {liquidates.length > 0 ? liquidates.map((r, idx) => (
                       <tr key={idx}>
-                        <td className="text-center">{r.stakeid}</td>
+                        <td className="text-center">{r.depositId.toString()}</td>
                         <td className="text-center">{r.endDay.toString()}</td>
                         <td className="text-center">{r.curHexDay.toString()}</td>
-                        <td className={r.graceDay.lte(5) ? "green" : (r.graceDay.lte(7) ? "yellow" : "red")}>{r.graceDay.toString()}</td>
+                        <td className={r.graceDay <= 5 ? "green" : (r.graceDay <= 7 ? "yellow" : "red")}>{r.graceDay}</td>
                         <td>{formatterFloat(+utils.formatUnits(r.effectiveHex, hexDecimals))} HEX</td>
                         <td>{formatterFloat(+utils.formatUnits(r.borrowedHexOne))} HEX1</td>
                         <td>${formatterFloat(+utils.formatUnits(hexFeed))}</td>

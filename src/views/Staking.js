@@ -123,7 +123,7 @@ export default function Staking() {
                         <td>{formatterFloat(r.amount)}</td>
                         <td>{formatterFloat(r.share)}%</td>
                         <td>{`${r.apr_hex}%`} $HEX<br/>{formatterFloat(r.apr_hexit)} $HEXIT</td>
-                        <td>{`${r.earned_hex}`} $HEX<br/>{formatterFloat(r.earned_hexit)} $HEXIT</td>
+                        <td>{`${r.earned_hex}%`} $HEX<br/>{formatterFloat(r.earned_hexit)} $HEXIT</td>
                         <td>{formatterFloat(r.days)}</td>
                         <td>$ {formatterFloat(r.liquidity)}</td>
                         <td>{r.multiplier}x</td>
