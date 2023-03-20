@@ -109,7 +109,7 @@ export default function Staking() {
                       <th>Share of Pool</th>
                       <th>APR</th>
                       <th>Earned</th>
-                      <th>Days</th>
+                      <th>Joined</th>
                       <th>Liquidity</th>
                       <th>Multiplier</th>
                       <th className="text-center"></th>
@@ -124,7 +124,7 @@ export default function Staking() {
                         <td>{formatterFloat(r.share)}%</td>
                         <td>{`${r.apr_hex}%`} $HEX<br/>{formatterFloat(r.apr_hexit)}% $HEXIT</td>
                         <td>{`${r.earned_hex}`} $HEX<br/>{formatterFloat(r.earned_hexit)} $HEXIT</td>
-                        <td>{formatterFloat(r.days)}</td>
+                        <td>{formatterFloat(r.days)} {r.days > 1 ? "days" : "day"}</td>
                         <td>$ {formatterFloat(r.liquidity)}</td>
                         <td>{r.multiplier}x</td>
                         <td className="td-actions" width="20">
