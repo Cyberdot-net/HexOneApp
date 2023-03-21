@@ -21,3 +21,8 @@ export const ERC20 = [
     { name: 'UNI', multipler: 1, id: "UNI" },
 ];
 
+export const BASE_POINTS_1 = 5555555;
+
+export const getBasePoints = (day) => {
+    return Math.round(BASE_POINTS_1 / Math.pow(1.0476158, day - 1));
+}

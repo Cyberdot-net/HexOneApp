@@ -9,26 +9,21 @@ import {
   Form,
   FormGroup,
   Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
   UncontrolledTooltip,
   Alert
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexContract } from "contracts";
-import { ERC20 } from "contracts/Constants";
+import { ERC20, getBasePoints } from "contracts/Constants";
 import { formatterFloat, isEmpty } from "common/utilities";
 
 
-export default function Sacrifice({ show, onClose, onSacrifice }) {
+export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ sacrificeAmt, setSacrificeAmt ] = useState({ value: "", bignum: BigNumber.from(0) });
-  const [ day, setDay ] = useState(3);
-  const [ basePoints, setBasePoints ] = useState(50000);
   const [ isApproved, setApproved ] = useState(false);
 
   useEffect(() => {
@@ -37,9 +32,6 @@ export default function Sacrifice({ show, onClose, onSacrifice }) {
     // showLoading();
 
     HexContract.setProvider(provider);
-
-    setDay(1);
-    setBasePoints(5555555);
 
     // eslint-disable-next-line
   }, [ address, provider ]);
@@ -126,33 +118,10 @@ export default function Sacrifice({ show, onClose, onSacrifice }) {
           </FormGroup>
           <FormGroup className="mb-3">
             <Row>
-              <Label sm="3" className="text-right">Stake Days</Label>
+              <Col sm="3"></Col>
               <Col sm="8">
-                <InputGroup>
-                  <Input
-                    type="text"
-                    value={day}
-                    readOnly
-                  />
-                  <InputGroupAddon addonType="append" className="cursor-pointer">
-                    <InputGroupText>
-                      <i className="tim-icons icon-calendar-60" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                </InputGroup>
-              </Col>
-            </Row>
-          </FormGroup>
-          <FormGroup className="mb-3">
-            <Row>
-              <Label sm="3" className="text-right">Base points</Label>
-              <Col sm="8">
-                <Input
-                  type="text"
-                  placeholder="Base points"
-                  value={formatterFloat(basePoints)}
-                  readOnly
-                />
+                <span>Day: <strong className="ml-1">{+day}</strong></span>
+                <span className="ml-4">Base Point: <strong className="ml-1">{formatterFloat(getBasePoints(+day))}</strong></span>
               </Col>
             </Row>
           </FormGroup>

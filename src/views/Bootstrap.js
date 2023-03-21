@@ -7,12 +7,13 @@ import {
   Alert,
   UncontrolledTooltip,
 } from "reactstrap";
+import { Pie } from "react-chartjs-2";
 import { BigNumber, utils } from "ethers";
 import Pagination from "components/Common/Pagination";
 import SacrificeModal from "components/Modals/Sacrifice";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed } from "contracts";
-import { ITEMS_PER_PAGE } from "contracts/Constants";
+import { ITEMS_PER_PAGE, getBasePoints } from "contracts/Constants";
 import { isEmpty, formatterFloat } from "common/utilities";
 
 export default function Bootstrap() {
@@ -23,19 +24,47 @@ export default function Bootstrap() {
   const [ isOpen, setOpen ] = useState(false);
   const [ overviews, setOverview ] = useState([]);
   const [ collaterals, setCollateral ] = useState([]);
+  const [ chartData, setChartData ] = useState({});
   const [ page, setPage ] = useState(1);
   
   useEffect(() => {
     if (!address) return;
 
     setOverview([
-      { shareId: 4, day: 1, basePoints: 5555555, erc20: "ETH", bonus: 2, totalPoints: 11111110, sacrificedAmt: 2, usdValue: 3600 },
-      { shareId: 10, day: 3, basePoints: 5062014, erc20: "HEX", bonus: 5, totalPoints: 	28119488, sacrificedAmt: 50000, usdValue: 2500 },
+      { shareId: 4, day: 1, erc20: "ETH", bonus: 2, totalPoints: 11111110, sacrificedAmt: 2, usdValue: 3600 },
+      { shareId: 10, day: 3, erc20: "HEX", bonus: 5, totalPoints: 	28119488, sacrificedAmt: 50000, usdValue: 2500 },
     ]);
 
     setCollateral([
       { totalUSDValue: 4575, poolShare: 0.1, start: 549, end: 5543, collateralAmount: 46750000, effectiveAmount: 100000, borrowedAmount: 4575, initialHexPrice: utils.parseEther("0.2")  },
     ]);
+
+    setChartData({
+      labels: ['HEX', 'USDC', 'ETH', 'DAI', 'UNI'],
+      datasets: [
+        {
+          label: 'Total amount sacrificed for each ERC20',
+          data: [12, 19, 3, 5, 2],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    });
     
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
@@ -56,7 +85,6 @@ export default function Bootstrap() {
 
     // eslint-disable-next-line
   }, [ address, provider ]);
-
 
   const getHealthRatio = (initialFeed) => {
     if (isEmpty(initialFeed)) return 0;
@@ -147,7 +175,7 @@ export default function Bootstrap() {
                     <tr key={idx}>
                       <td className="text-center">{r.shareId}</td>
                       <td>{r.day}</td>
-                      <td>{formatterFloat(r.basePoints)}</td>
+                      <td>{formatterFloat(getBasePoints(r.day))}</td>
                       <td>{r.erc20}</td>
                       <td>{r.bonus}x</td>
                       <td>{formatterFloat(r.totalPoints)}</td>
@@ -198,7 +226,7 @@ export default function Bootstrap() {
           <Row>
             <Col md="4">
               <hr className="line-info" />
-              <h2>Collateral</h2>
+              <h2>Bootstrap Sacrifice Hex1 Share</h2>
             </Col>
           </Row>
           <Row>
@@ -216,6 +244,7 @@ export default function Bootstrap() {
                     <th>INITIAL HEX/USDC</th>
                     <th>CURRENT HEX/USDC</th>
                     <th>HEALTH RATIO</th>
+                    <th className="text-center"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -234,6 +263,20 @@ export default function Bootstrap() {
                       <td className={0 >= 100 ? "green" : "red"}>
                         {getHealthRatio(r.initialHexPrice)}%
                       </td>
+                      <td className="td-actions" width="100">
+                        <Button
+                          id="claim"
+                          className="btn btn-primary btn-sm w-full"
+                        >
+                          Claim<br/>Hex1
+                        </Button>
+                        <UncontrolledTooltip
+                          placement="bottom"
+                          target="claim"
+                        >
+                          Claim Hex1
+                        </UncontrolledTooltip>
+                      </td>
                     </tr>
                   )) : <tr>
                     <td colSpan={12} className="text-center">                
@@ -251,7 +294,7 @@ export default function Bootstrap() {
           </Row>
         </Container>
       </section>
-      <section className="section section-lg section-tables">
+      <section className="section section-lg section-tables center">
         <Container>
           <Row>
             <Col md="4">
@@ -259,15 +302,16 @@ export default function Bootstrap() {
               <h2>Analysis</h2>
             </Col>
           </Row>
-          <Row>
-            <Col md="12">
-              Pie chart containing the Total amount sacrificed for each ERC20.
+          <Row className="center">
+            <Col lg="8" md="12">
+              <Pie data={chartData} />
             </Col>
           </Row>
         </Container>
       </section>
       {isOpen && <SacrificeModal 
         show={isOpen}
+        day={currentDay}
         onSacrifice={doSacrifice}
         onClose={() => setOpen(false)}
       />}
