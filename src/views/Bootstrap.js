@@ -8,6 +8,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { Pie } from "react-chartjs-2";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import Pagination from "components/Common/Pagination";
@@ -44,7 +45,7 @@ export default function Bootstrap() {
       labels: ['HEX', 'USDC', 'ETH', 'DAI', 'UNI'],
       datasets: [
         {
-          label: 'Total amount sacrificed for each ERC20',
+          label: 'Sacrificed AMT',
           data: [12, 19, 3, 5, 2],
           backgroundColor: [
             'rgba(255, 99, 132, 0.2)',
@@ -299,7 +300,33 @@ export default function Bootstrap() {
           </Row>
           <Row className="center">
             <Col lg="8" md="12">
-              <Pie data={chartData} />
+              <Pie
+                data={chartData}
+                plugins={[ChartDataLabels, {
+                  beforeInit: function(chart, options) {
+                    chart.legend.afterFit = function() {
+                      this.height = this.height + 20;
+                    };
+                  }
+                }]}
+                legend={{
+                  labels: {
+                      padding: 20,
+                  },
+                }}
+                options= {{
+                  plugins: {
+                    datalabels: {
+                      color: "rgba(255, 255, 255, 0.8)",
+                      font: { size: 14 },
+                      formatter: function(value, context) {
+                        const sum = chartData.datasets[0]?.data?.reduce((s, o)=> s + o, 0);
+                        return `${sum ? Math.round(value / sum * 100) : 0}%`;
+                      }
+                    }
+                  }
+                }}
+                />
             </Col>
           </Row>
         </Container>

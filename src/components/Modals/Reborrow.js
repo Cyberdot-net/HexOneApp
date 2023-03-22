@@ -13,7 +13,6 @@ import {
   InputGroupAddon,
   InputGroupText,
   UncontrolledTooltip,
-  Alert
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
