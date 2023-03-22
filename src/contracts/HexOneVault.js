@@ -37,6 +37,7 @@ export default (function() {
     
             try {
                 list = await contract.getLiquidableDeposits();
+                list = [...list].sort((a, b) => (+a.depositId) - (+b.depositId));
                 console.log(list);
             } catch (e) {
                 console.error(e);
@@ -68,6 +69,7 @@ export default (function() {
     
             try {
                 list = await contract.getUserInfos(address);
+                list = [...list].sort((a, b) => (+a.depositId) - (+b.depositId));
                 console.log(list);
             } catch (e) {
                 console.error(e);
