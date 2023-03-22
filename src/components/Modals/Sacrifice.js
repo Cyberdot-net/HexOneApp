@@ -9,21 +9,26 @@ import {
   Form,
   FormGroup,
   Input,
-  UncontrolledTooltip
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  UncontrolledTooltip,
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
-import { HexContract } from "contracts";
+import { HexContract, HexOnePriceFeed } from "contracts";
 import { ERC20, getBasePoints } from "contracts/Constants";
-import { formatterFloat, isEmpty } from "common/utilities";
+import { formatDecimal, formatterFloat, isEmpty } from "common/utilities";
 
 
 export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
+  const [ hexFeed, setHexFeed ] = useState(0);
   const [ sacrificeAmt, setSacrificeAmt ] = useState({ value: "", bignum: BigNumber.from(0) });
+  const [ erc20, setErc20 ] = useState(ERC20[0].id);
   const [ isApproved, setApproved ] = useState(false);
 
   useEffect(() => {
@@ -32,12 +37,27 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
     // showLoading();
 
     HexContract.setProvider(provider);
+    HexOnePriceFeed.setProvider(provider);
+
+    const getHexData = async () => {
+      const decimals = await HexContract.getDecimals();
+      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
+
+      hideLoading();
+    }
+
+    getHexData();
 
     // eslint-disable-next-line
   }, [ address, provider ]);
 
   const changeSacrificeAmt = (e) => {
     setSacrificeAmt({ value: e.target.value, bignum: utils.parseEther(e.target.value || "0") });
+  }
+
+  const getTotalUSD = () => {
+    const selErc20 = ERC20.find(r => r.id === erc20);
+    return sacrificeAmt['bignum'].mul(hexFeed).mul(selErc20.multipler).div(utils.parseUnits("1"));
   }
 
   const onClickSacrifice = async () => {
@@ -87,7 +107,12 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
             <Row>
               <Label sm="3" className="text-right">ERC20</Label>
               <Col sm="8">
-                <Input type="select" name="select">
+                <Input
+                  type="select"
+                  name="select"
+                  value={erc20}
+                  onChange={e => setErc20(e.target.value)}
+                >
                   {ERC20.map(r => 
                     <option key={r.id} value={r.id}>{r.name}{r.multipler && ` (${r.multipler}x)`}</option>
                   )}
@@ -106,6 +131,24 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
                   onChange={changeSacrificeAmt} 
                   autoFocus
                 />
+              </Col>
+            </Row>
+          </FormGroup>
+          <FormGroup className="mb-4">
+            <Row>
+              <Label sm="3" className="text-right">Total Value USD</Label>
+              <Col sm="8">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Total Value USD"
+                    value={formatDecimal(getTotalUSD())}
+                    readOnly
+                  />
+                  <InputGroupAddon addonType="append">
+                    <InputGroupText>USD</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
               </Col>
             </Row>
           </FormGroup>
