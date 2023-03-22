@@ -9,13 +9,13 @@ import {
 } from "reactstrap";
 import { Pie } from "react-chartjs-2";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ChartDataOutLabels from 'chartjs-plugin-piechart-outlabels';
 import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
-import Pagination from "components/Common/Pagination";
 import SacrificeModal from "components/Modals/Sacrifice";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed } from "contracts";
-import { ITEMS_PER_PAGE, getBasePoints } from "contracts/Constants";
+import { getBasePoints } from "contracts/Constants";
 import { isEmpty, formatterFloat } from "common/utilities";
 
 export default function Bootstrap() {
@@ -27,7 +27,6 @@ export default function Bootstrap() {
   const [ overviews, setOverview ] = useState([]);
   const [ collaterals, setCollateral ] = useState([]);
   const [ chartData, setChartData ] = useState({});
-  const [ page, setPage ] = useState(1);
   
   useEffect(() => {
     if (!address) return;
@@ -56,14 +55,20 @@ export default function Bootstrap() {
             'rgba(255, 159, 64, 0.2)',
           ],
           borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)',
+            'rgba(255, 255, 255, 0.3)',
+            'rgba(255, 255, 255, 0.3)',
+            'rgba(255, 255, 255, 0.3)',
+            'rgba(255, 255, 255, 0.3)',
+            'rgba(255, 255, 255, 0.3)',
+            'rgba(255, 255, 255, 0.3)',
+            // 'rgba(255, 99, 132, 1)',
+            // 'rgba(54, 162, 235, 1)',
+            // 'rgba(255, 206, 86, 1)',
+            // 'rgba(75, 192, 192, 1)',
+            // 'rgba(153, 102, 255, 1)',
+            // 'rgba(255, 159, 64, 1)',
           ],
-          borderWidth: 1,
+          borderWidth: 2,
         },
       ],
     });
@@ -167,7 +172,7 @@ export default function Bootstrap() {
                 </thead>
                 <tbody>
                   {overviews.length > 0 ? 
-                    overviews.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE).map((r, idx) => (
+                    overviews.map((r, idx) => (
                     <tr key={idx}>
                       <td className="text-center">{r.shareId}</td>
                       <td>{r.day}</td>
@@ -204,15 +209,6 @@ export default function Bootstrap() {
                   </tr>}
                 </tbody>
               </table>
-            </Col>
-            <Col md="12">
-              <Pagination 
-                className="mb-3"
-                page={page}
-                count={overviews.length}
-                perPage={ITEMS_PER_PAGE}
-                onChange={p => setPage(p)}
-              />
             </Col>
           </Row>
         </Container>
@@ -302,26 +298,33 @@ export default function Bootstrap() {
             <Col lg="8" md="12">
               <Pie
                 data={chartData}
-                plugins={[ChartDataLabels, {
-                  beforeInit: function(chart, options) {
-                    chart.legend.afterFit = function() {
-                      this.height = this.height + 20;
-                    };
-                  }
-                }]}
+                plugins={[ ChartDataLabels, ChartDataOutLabels ]}
                 legend={{
                   labels: {
-                      padding: 20,
+                    padding: 20,
                   },
                 }}
                 options= {{
+                  layout: { padding: 50 },
+                  legend: { display: false },
                   plugins: {
                     datalabels: {
                       color: "rgba(255, 255, 255, 0.8)",
-                      font: { size: 14 },
+                      textAlign: 'center',
+                      opacity: 0.8,
                       formatter: function(value, context) {
                         const sum = chartData.datasets[0]?.data?.reduce((s, o)=> s + o, 0);
-                        return `${sum ? Math.round(value / sum * 100) : 0}%`;
+                        const label = context.chart.data.labels[context.dataIndex];
+                        return [label, `${sum ? Math.round(value / sum * 100) : 0}%`];
+                      }
+                    },
+                    outlabels: {
+                      font: { size: 15 },
+                      stretch: 20,
+                      text: (context) => {
+                        const label = context.chart.data.labels[context.dataIndex];
+                        const value = context.dataset.data[context.dataIndex];
+                        return `${label} ${value}`;
                       }
                     }
                   }
