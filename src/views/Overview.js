@@ -16,9 +16,10 @@ import { BigNumber, utils } from "ethers";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
+import MetaMaskAlert from "components/Common/MetaMaskAlert";
+import Pagination from "components/Common/Pagination";
 import BorrowModal from "components/Modals/Borrow";
 import ReborrowModal from "components/Modals/Reborrow";
-import Pagination from "components/Common/Pagination";
 import { isEmpty, formatterFloat } from "common/utilities";
 
 export default function Overview() {
@@ -137,13 +138,7 @@ export default function Overview() {
         <Container>
           {!address && <Row gutter="10" className="pl-4 pr-4 center">
             <Col lg="8" md="10" sm="12" className="mb-4">
-              <Alert
-                className="alert-with-icon"
-                color="danger"
-              >
-                <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
-                <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
-              </Alert>
+              <MetaMaskAlert isOpen={!address} />
             </Col>
           </Row>}
           <Row gutter="10" className="pl-4 pr-4">

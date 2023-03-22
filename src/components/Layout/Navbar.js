@@ -68,6 +68,7 @@ export default function IndexNavbar() {
       
       // Set up the provider and wallet
       const connectProvider = new ethers.providers.Web3Provider(window.ethereum);
+      if (!connectProvider) return;
 
       const network = await connectProvider.getNetwork();
 

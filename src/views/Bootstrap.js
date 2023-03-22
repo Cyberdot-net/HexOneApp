@@ -9,6 +9,7 @@ import {
 } from "reactstrap";
 import { Pie } from "react-chartjs-2";
 import { BigNumber, utils } from "ethers";
+import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import Pagination from "components/Common/Pagination";
 import SacrificeModal from "components/Modals/Sacrifice";
 import { WalletContext, LoadingContext } from "providers/Contexts";
@@ -20,7 +21,7 @@ export default function Bootstrap() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
-  const [ currentDay, setCurrentDay ] = useState(0);
+  const [ currentDay, setCurrentDay ] = useState(1);
   const [ isOpen, setOpen ] = useState(false);
   const [ overviews, setOverview ] = useState([]);
   const [ collaterals, setCollateral ] = useState([]);
@@ -110,13 +111,7 @@ export default function Bootstrap() {
         <Container>
           {!address && <Row gutter="10" className="pl-4 pr-4 center">
             <Col lg="8" md="10" sm="12" className="mb-4">
-              <Alert
-                className="alert-with-icon"
-                color="danger"
-              >
-                <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
-                <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
-              </Alert>
+              <MetaMaskAlert isOpen={!address} />
             </Col>
           </Row>}
           <h3 className="title text-left mb-2">Day: {currentDay.toString()}</h3>

@@ -16,6 +16,7 @@ import {
   Alert
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
+import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneVault, HexOneProtocol } from "contracts";
 import { formatDecimal, isEmpty } from "common/utilities";
@@ -86,14 +87,7 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
         </div>
       </div>
       <div className="modal-body">
-        <Alert
-          className="alert-with-icon"
-          color="danger"
-          isOpen={!address}
-        >
-          <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
-          <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
-        </Alert>
+        <MetaMaskAlert isOpen={!address} />
         <Form role="form">
           <FormGroup className="mb-3 mt-3">
             <Row>

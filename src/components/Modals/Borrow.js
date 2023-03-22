@@ -18,6 +18,7 @@ import {
   Alert
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
+import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexContract, HexOnePriceFeed, HexOneProtocol } from "contracts";
 import { HexOneToken_Addr } from "contracts/address";
@@ -210,14 +211,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
           </div>
         </div>
         <div className="modal-body">
-          <Alert
-            className="alert-with-icon"
-            color="danger"
-            isOpen={!address}
-          >
-            <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
-            <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
-          </Alert>
+          <MetaMaskAlert isOpen={!address} />
           <Form role="form">
             <FormGroup className={"mb-3 mt-3 " + (collateralAmt['bignum'].gt(totalHex) && " has-danger")}>
               <Row>

@@ -9,10 +9,10 @@ import {
   Form,
   FormGroup,
   Input,
-  UncontrolledTooltip,
-  Alert
+  UncontrolledTooltip
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
+import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexContract } from "contracts";
 import { ERC20, getBasePoints } from "contracts/Constants";
@@ -81,14 +81,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
         </div>
       </div>
       <div className="modal-body">
-        <Alert
-          className="alert-with-icon"
-          color="danger"
-          isOpen={!address}
-        >
-          <span data-notify="icon" className="tim-icons icon-alert-circle-exc" />
-          <span><b>No MetaMask! - </b>Please, connect MetaMask</span>
-        </Alert>
+        <MetaMaskAlert isOpen={!address} />
         <Form role="form">
           <FormGroup className="mb-3 mt-3">
             <Row>
