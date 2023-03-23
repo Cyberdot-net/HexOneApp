@@ -105,7 +105,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
         <MetaMaskAlert isOpen={!address} />
         <Form role="form">
           <FormGroup>
-            <Row>
+            <Row className="mt-3">
               <Label lg="3" md="5" className="text-right">Sacrifice multiplier</Label>
               <Col lg="2" md="6" className="mb-lg-0 mb-md-3">
                 <Input
