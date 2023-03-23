@@ -22,7 +22,12 @@ export const ERC20 = [
 ];
 
 export const BASE_POINTS_1 = 5555555;
+export const TOTAL_AIRDROP_SUPPLY = 50;
 
 export const getBasePoints = (day) => {
     return Math.round(BASE_POINTS_1 / Math.pow(1.0476158, day - 1));
+}
+
+export const getDailyPool = (day) => {
+    return TOTAL_AIRDROP_SUPPLY * Math.pow(0.5, day - 1);
 }

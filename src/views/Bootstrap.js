@@ -151,7 +151,7 @@ export default function Bootstrap() {
           <Row>
             <Col md="4">
               <hr className="line-info" />
-              <h2>OVERVIEW</h2>
+              <h2>Overview</h2>
             </Col>
           </Row>
           <Row>
