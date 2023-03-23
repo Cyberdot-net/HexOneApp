@@ -49,6 +49,10 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
     setAmount({ value: e.target.value, bignum: inputValue });
   }
 
+  const setMaxAmount = () => {
+    setAmount({ value: formatDecimal(totalHex), bignum: totalHex });
+  }
+
   const onClickReborrow = async () => {
     if (isEmpty(amount['bignum']) || amount['bignum'].gt(totalHex)) return;
 
@@ -104,7 +108,7 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
           <FormGroup className={"mb-3 " + (amount['bignum'].gt(totalHex) && " has-danger")}>
             <Row>
               <Label sm="3" className="text-right">Borrow Amount</Label>
-              <Col sm="8">
+              <Col sm="8" className="py-0">
                 <InputGroup>
                   <Input
                     type="text"
@@ -114,8 +118,8 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
                     autoFocus
                     {...(amount['bignum'].gt(totalHex)) && {className: "form-control-danger"}}
                   />
-                  <InputGroupAddon addonType="append">
-                    <InputGroupText>HEX1</InputGroupText>
+                  <InputGroupAddon addonType="append" className="cursor-pointer" onClick={setMaxAmount}>
+                    <InputGroupText>MAX</InputGroupText>
                   </InputGroupAddon>
                 </InputGroup>
               </Col>
