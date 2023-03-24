@@ -55,7 +55,7 @@ export default function Bootstrap() {
     // eslint-disable-next-line
   }, [ address, provider ]);
 
-  const getTotalUSD = (row) => {
+  const getTotalPower = (row) => {
     return row.sacrificedUSD * row.sacrificedBonus + row.stakedUSD * row.stakedBonus;
   }
 
@@ -127,7 +127,7 @@ export default function Bootstrap() {
                     <th>Sacrificed Bonus</th>
                     <th>Hex Staked USD</th>
                     <th>Hex Staked Bonus</th>
-                    <th>Total USD</th>
+                    <th>Total Power</th>
                     <th>Total Daily HEXIT</th>
                     <th>Share of Pool</th>
                     <th>Claimed HEXIT</th>
@@ -143,7 +143,7 @@ export default function Bootstrap() {
                       <td>{r.sacrificedBonus}x</td>
                       <td>${formatterFloat(r.stakedUSD)}</td>
                       <td>{r.stakedBonus}x</td>
-                      <td>${formatterFloat(getTotalUSD(r))}</td>
+                      <td>${formatterFloat(getTotalPower(r))}</td>
                       <td>{formatterFloat(r.totalDailyHexit)} HEXIT</td>
                       <td>{r.sharePool}%</td>
                       <td>{formatterFloat(r.claimedHexit)} HEXIT</td>
@@ -182,13 +182,12 @@ export default function Bootstrap() {
             </Col>
           </Row>
           <Row className="center">
-            <Col lg="8" md="12">
+            <Col lg="4" md="8" sm="12">
               <table className="table">
                 <thead>
                   <tr>
                     <th>Day</th>
-                    <th>Total Daily HEXIT</th>
-                    <th>Total Distributed HEXIT</th>
+                    <th>Total HEXIT</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -197,7 +196,6 @@ export default function Bootstrap() {
                     <tr key={idx}>
                       <td>{r.day}</td>
                       <td>{formatterFloat(r.totalDailyHexit)} HEXIT</td>
-                      <td>{formatterFloat(r.totalDistributedHexit)} HEXIT</td>
                     </tr>
                   )) : <tr>
                     <td colSpan={3} className="text-center">                
