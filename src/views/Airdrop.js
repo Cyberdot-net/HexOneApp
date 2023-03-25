@@ -7,6 +7,8 @@ import {
   Alert,
   UncontrolledTooltip,
 } from "reactstrap";
+import { Line } from 'react-chartjs-2';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import Pagination from "components/Common/Pagination";
 import ClaimHexitModal from "components/Modals/ClaimHexit";
@@ -20,7 +22,7 @@ export default function Bootstrap() {
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ currentDay, setCurrentDay ] = useState(1);
   const [ overviews, setOverview ] = useState([]);
-  const [ analysis, setAnalysis ] = useState([]);
+  const [ chartData, setChartData ] = useState({});
   const [ page, setPage ] = useState(1);
   const [ isOpen, setOpen ] = useState(false);
   
@@ -31,11 +33,17 @@ export default function Bootstrap() {
       { depositId: 4, day: 1, sacrificedUSD: 3600, sacrificedBonus: 9, stakedUSD: 10000, stakedBonus: 1, totalDailyHexit: 15000000, sharePool: 1, claimedHexit: 150000 },
     ]);
 
-    setAnalysis([
-      { day: 1, totalDailyHexit: 15000000, totalDistributedHexit: 10000000},
-      { day: 2, totalDailyHexit: 7500000, totalDistributedHexit: 7000000},
-      { day: 3, totalDailyHexit: 4250000, totalDistributedHexit: 2000000}
-    ]);
+    setChartData({
+      labels: ['1', '2', '3'],
+      datasets: [
+        {
+          label: 'Total Hexit',
+          data: [15000000, 7500000, 4250000],
+          borderColor: 'rgb(53, 162, 235)',
+          backgroundColor: 'transparent',
+        },
+      ],
+    });
     
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
@@ -182,42 +190,32 @@ export default function Bootstrap() {
             </Col>
           </Row>
           <Row className="center">
-            <Col lg="4" md="8" sm="12">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Day</th>
-                    <th>Total HEXIT</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {analysis.length > 0 ? 
-                    analysis.map((r, idx) => (
-                    <tr key={idx}>
-                      <td>{r.day}</td>
-                      <td>{formatterFloat(r.totalDailyHexit)} HEXIT</td>
-                    </tr>
-                  )) : <tr>
-                    <td colSpan={3} className="text-center">                
-                      <Alert
-                        className="alert-with-icon"
-                        color="default"
-                      >
-                        <span>There are no matching entries</span>
-                      </Alert>
-                    </td>
-                  </tr>}
-                </tbody>
-              </table>
-            </Col>
-            <Col md="12">
-              <Pagination 
-                className="mb-3"
-                page={page}
-                count={overviews.length}
-                perPage={ITEMS_PER_PAGE}
-                onChange={p => setPage(p)}
-              />
+            <Col lg="8" md="12">
+              <Line
+                data={chartData}
+                plugins={[ ChartDataLabels ]}
+                legend={{
+                  labels: {
+                    padding: 20,
+                  },
+                }}
+                options= {{
+                  layout: { padding: 50 },
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                    },
+                    datalabels: {
+                      color: "rgba(255, 255, 255, 0.8)",
+                      align: "top",                      
+                      formatter: function(value, context) {
+                        return formatterFloat(+value);
+                      },
+                    },
+                  },
+                }}
+                />
             </Col>
           </Row>
         </Container>
