@@ -227,7 +227,7 @@ export default function Overview() {
                       <td>{formatterFloat(+utils.formatUnits(r.mintAmount))} HEX1</td>
                       <td>${formatterFloat(+utils.formatUnits(r.initialHexPrice))}</td>
                       <td>${formatterFloat(+utils.formatUnits(hexFeed))}</td>
-                      <td className={0 >= 100 ? "green" : "red"}>
+                      <td className={+getHealthRatio(r.initialHexPrice) >= 100 ? "green" : "red"}>
                         {getHealthRatio(r.initialHexPrice)}%
                       </td>
                       <td className="td-actions" width="125">

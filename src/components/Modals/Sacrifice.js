@@ -29,6 +29,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
   const [ hexFeed, setHexFeed ] = useState(0);
   const [ sacrificeAmt, setSacrificeAmt ] = useState({ value: "", bignum: BigNumber.from(0) });
   const [ erc20, setErc20 ] = useState(ERC20[0].id);
+  const [ totalHex,  setTotalHex ] = useState(0);
   const [ isApproved, setApproved ] = useState(false);
 
   useEffect(() => {
@@ -42,6 +43,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
     const getHexData = async () => {
       const decimals = await HexContract.getDecimals();
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
+      setTotalHex(await HexContract.getBalance(address));
 
       hideLoading();
     }
@@ -120,16 +122,17 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
               </Col>
             </Row>
           </FormGroup>
-          <FormGroup className="mb-3">
+            <FormGroup className={"mb-3 " + (sacrificeAmt['bignum'].gt(totalHex) && " has-danger")}>
             <Row>
               <Label sm="3" className="text-right">Sacrifice Amount</Label>
               <Col sm="8">
                 <Input
                   type="text"
-                  placeholder="Sacrifice Amount"
+                  placeholder={`Sacrifice Amount in HEX (${formatDecimal(totalHex)} HEX available)`}
                   value={sacrificeAmt.value}
                   onChange={changeSacrificeAmt} 
                   autoFocus
+                  {...(sacrificeAmt['bignum'].gt(totalHex)) && {className: "form-control-danger"}}
                 />
               </Col>
             </Row>
