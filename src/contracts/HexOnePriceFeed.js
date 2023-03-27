@@ -1,6 +1,6 @@
 import { Contract, BigNumber } from "ethers";
 import { HexOnePriceFeedTest_Abi } from "./abis";
-import { HexOnePriceFeedTest_Addr } from "./address";
+import { HexOnePriceFeedTest_Addr, Erc20_Tokens_Addr } from "./address";
 
 export default (function() {
 
@@ -26,6 +26,19 @@ export default (function() {
     
             return feed;
         },
+
+        getBaseTokenPrice: async (tokenType, hexPrice) => {
+            let feed = BigNumber.from(0);
+            if (!contract) return feed;
+    
+            try {
+                feed = await contract.getBaseTokenPrice(Erc20_Tokens_Addr[tokenType].contract, hexPrice);
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return feed;
+        }
     }
 
 })();

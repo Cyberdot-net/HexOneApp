@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { toast } from "react-hot-toast";
 import {
   Button,
   Container,
@@ -14,9 +15,18 @@ import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import SacrificeModal from "components/Modals/Sacrifice";
 import { WalletContext, LoadingContext } from "providers/Contexts";
-import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed } from "contracts";
-import { getBasePoints } from "contracts/Constants";
+import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap, HexOneEscrow } from "contracts";
 import { isEmpty, formatterFloat } from "common/utilities";
+
+
+const backgroundColor = {
+  "HEX": 'rgba(255, 99, 132, 0.2)',
+  "USDC": 'rgba(54, 162, 235, 0.2)',
+  "ETH": 'rgba(255, 206, 86, 0.2)',
+  "DAI": 'rgba(75, 192, 192, 0.2)',
+  "UNI": 'rgba(153, 102, 255, 0.2)',
+  "": 'rgba(255, 159, 64, 0.2)'
+};
 
 export default function Bootstrap() {
   const { address, provider } = useContext(WalletContext);
@@ -24,66 +34,28 @@ export default function Bootstrap() {
   const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
   const [ currentDay, setCurrentDay ] = useState(1);
   const [ isOpen, setOpen ] = useState(false);
-  const [ overviews, setOverview ] = useState([]);
-  const [ collaterals, setCollateral ] = useState([]);
+  const [ sacrificeList, setSacrificeList ] = useState([]);
+  const [ shareInfo, setShareInfo ] = useState(null);
   const [ chartData, setChartData ] = useState({});
   
   useEffect(() => {
     if (!address) return;
-
-    setOverview([
-      { shareId: 4, day: 1, erc20: "ETH", bonus: 2, totalPoints: 11111110, sacrificedAmt: 2, usdValue: 3600 },
-      { shareId: 10, day: 3, erc20: "HEX", bonus: 5, totalPoints: 	28119488, sacrificedAmt: 50000, usdValue: 2500 },
-    ]);
-
-    setCollateral([
-      { totalUSDValue: 4575, poolShare: 0.1, start: 549, end: 5543, collateralAmount: 46750000, effectiveAmount: 100000, borrowedAmount: 4575, initialHexPrice: utils.parseEther("0.2")  },
-    ]);
-
-    setChartData({
-      labels: ['HEX', 'USDC', 'ETH', 'DAI', 'UNI'],
-      datasets: [
-        {
-          label: 'Sacrificed AMT',
-          data: [12, 19, 3, 5, 2],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)',
-          ],
-          borderColor: [
-            'rgba(255, 255, 255, 0.3)',
-            'rgba(255, 255, 255, 0.3)',
-            'rgba(255, 255, 255, 0.3)',
-            'rgba(255, 255, 255, 0.3)',
-            'rgba(255, 255, 255, 0.3)',
-            'rgba(255, 255, 255, 0.3)',
-            // 'rgba(255, 99, 132, 1)',
-            // 'rgba(54, 162, 235, 1)',
-            // 'rgba(255, 206, 86, 1)',
-            // 'rgba(75, 192, 192, 1)',
-            // 'rgba(153, 102, 255, 1)',
-            // 'rgba(255, 159, 64, 1)',
-          ],
-          borderWidth: 2,
-        },
-      ],
-    });
     
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
     HexOneVault.setProvider(provider);
     HexOneProtocol.setProvider(provider);
+    HexOneBootstrap.setProvider(provider);
+    HexOneEscrow.setProvider(provider);
 
     const getData = async () => {
       showLoading();
 
       const decimals = await HexContract.getDecimals();
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
-      setCurrentDay(await HexContract.getCurrentDay());
+      setCurrentDay(await HexOneBootstrap.getCurrentDay());
+      setSacrificeList(await HexOneBootstrap.getSacrificeList(address));
+      setShareInfo(await HexOneEscrow.getOverview(address));
       
       hideLoading();
     }
@@ -92,6 +64,32 @@ export default function Bootstrap() {
 
     // eslint-disable-next-line
   }, [ address, provider ]);
+
+
+  useEffect(() => {
+
+    const labels = sacrificeList.map(r => r.tokenName || "");
+    const data = sacrificeList.map(r => +utils.formatUnits(r.sacrificedAmount));
+    const backgroundColors = sacrificeList.map(r => r.tokenName in backgroundColor ? backgroundColor[r.tokenName] : backgroundColor[""]);
+
+    setChartData({
+      labels: labels,
+      datasets: [
+        {
+          label: 'Sacrificed AMT',
+          data: data,
+          backgroundColor: backgroundColors,
+          borderColor: sacrificeList.map(r => 'rgba(255, 255, 255, 0.3)'),
+          borderWidth: 2,
+        },
+      ],
+    });
+
+  }, [ sacrificeList ]);
+
+  const getSacrificeList = async () => {
+    setSacrificeList(await HexOneBootstrap.getSacrificeList());
+  }
 
   const getHealthRatio = (initialFeed) => {
     if (isEmpty(initialFeed)) return 0;
@@ -102,8 +100,23 @@ export default function Bootstrap() {
     return formatterFloat(Math.round((currentPrice / originalPrice) * 100));
   }
 
-  const doSacrifice = () => {
+  const onClickClaim = async (sacrificeId) => {
+    showLoading("Claiming $HEXIT...");
 
+    const res = await HexOneBootstrap.claimSacrifice(sacrificeId);
+    if (res.status !== "success") {
+      hideLoading();
+      toast.error(res.error ?? "Claim failed!");
+      return;
+    }
+
+    getSacrificeList();
+    hideLoading();
+    toast.success("Claim $HEXIT success!");
+  }
+
+  const doSacrifice = () => {
+    getSacrificeList();
   }
 
   return (
@@ -171,17 +184,18 @@ export default function Bootstrap() {
                   </tr>
                 </thead>
                 <tbody>
-                  {overviews.length > 0 ? 
-                    overviews.map((r, idx) => (
+                  {sacrificeList.length > 0 ? 
+                    sacrificeList.map((r, idx) => (
                     <tr key={idx}>
-                      <td className="text-center">{r.shareId}</td>
-                      <td>{r.day}</td>
-                      <td>{formatterFloat(getBasePoints(r.day))}</td>
-                      <td>{r.erc20}</td>
-                      <td>{r.bonus}x</td>
-                      <td>{formatterFloat(r.totalPoints)}</td>
-                      <td>{formatterFloat(r.sacrificedAmt)}</td>
-                      <td>${formatterFloat(r.usdValue)}</td>
+                      <td className="text-center">{r.sacrificeId.toString()}</td>
+                      <td className="text-center">{r.day.toString()}</td>
+                      <td>{formatterFloat(+utils.formatUnits(r.supplyAmount))}</td>
+                      {/* <td>{formatterFloat(getBasePoints(+r.day))}</td> */}
+                      <td></td>
+                      <td>{r.multiplier.toString()}x</td>
+                      <td></td>
+                      <td>{formatterFloat(+utils.formatUnits(r.sacrificedAmount))}</td>
+                      <td>{formatterFloat(+utils.formatUnits(r.usdValue))}</td>
                       <td className="td-actions" width="100">
                         <Button
                           id="claim"
@@ -192,6 +206,7 @@ export default function Bootstrap() {
                         <UncontrolledTooltip
                           placement="bottom"
                           target="claim"
+                          onClick={() => onClickClaim(r.sacrificeId)}
                         >
                           Claim $HEXIT
                         </UncontrolledTooltip>
@@ -240,25 +255,25 @@ export default function Bootstrap() {
                   </tr>
                 </thead>
                 <tbody>
-                  {collaterals.length > 0 ? 
-                    collaterals.map((r, idx) => (
-                    <tr key={idx}>
-                      <td>${formatterFloat(r.totalUSDValue)}</td>
-                      <td>{r.poolShare}%</td>
-                      <td>{formatterFloat(r.start)}</td>
-                      <td>{formatterFloat(r.end)}</td>
-                      <td>{formatterFloat(r.collateralAmount)} HEX</td>
-                      <td>{formatterFloat(r.effectiveAmount)} HEX</td>
-                      <td>{formatterFloat(r.borrowedAmount)} HEX1</td>
-                      <td>${formatterFloat(+utils.formatUnits(r.initialHexPrice))}</td>
+                  {shareInfo ? 
+                    <tr>
+                      <td>${formatterFloat(+utils.formatUnits(shareInfo.totalUSDValue))}</td>
+                      <td>{shareInfo.shareOfPool.toString()}%</td>
+                      <td>{shareInfo.startTime.toString()}</td>
+                      <td>{shareInfo.endTime.toString()}</td>
+                      <td>{formatterFloat(+utils.formatUnits(shareInfo.hexAmount))} HEX</td>
+                      <td>{formatterFloat(+utils.formatUnits(shareInfo.effectiveAmount))} HEX</td>
+                      <td>{formatterFloat(+utils.formatUnits(shareInfo.borrowedAmount))} HEX1</td>
+                      <td>${formatterFloat(+utils.formatUnits(shareInfo.initUSDValue))}</td>
                       <td>${formatterFloat(+utils.formatUnits(hexFeed))}</td>
-                      <td className={+getHealthRatio(r.initialHexPrice) >= 100 ? "green" : "red"}>
-                        {getHealthRatio(r.initialHexPrice)}%
+                      <td className={+getHealthRatio(shareInfo.initUSDValue) >= 100 ? "green" : "red"}>
+                        {getHealthRatio(shareInfo.initUSDValue)}%
                       </td>
                       <td className="td-actions" width="100">
                         <Button
                           id="claim"
                           className="btn btn-primary btn-sm w-full"
+                          disabled={shareInfo.borrowedAmount.lte(0)}
                         >
                           Claim<br/>Hex1
                         </Button>
@@ -269,8 +284,7 @@ export default function Bootstrap() {
                           Claim Hex1
                         </UncontrolledTooltip>
                       </td>
-                    </tr>
-                  )) : <tr>
+                    </tr> : <tr>
                     <td colSpan={12} className="text-center">                
                       <Alert
                         className="alert-with-icon"
@@ -315,7 +329,11 @@ export default function Bootstrap() {
                       formatter: function(value, context) {
                         const sum = chartData.datasets[0]?.data?.reduce((s, o)=> s + o, 0);
                         const label = context.chart.data.labels[context.dataIndex];
-                        return [label, `${sum ? Math.round(value / sum * 100) : 0}%`];
+                        if (sum) {
+                          return [label, `${sum ? Math.round(value / sum * 100) : 0}%`]; 
+                        } else {
+                          return "";
+                        }
                       }
                     },
                     outlabels: {

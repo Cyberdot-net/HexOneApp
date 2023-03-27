@@ -9,7 +9,7 @@ import HexOneStaking_Abi from "./HexOneStaking.json";
 import HexOneStakingMaster_Abi from "./HexOneStakingMaster.json";
 import HexOneToken_Abi from "./HexOneToken.json";
 import HexOneVault_Abi from "./HexOneVault.json";
-
+import ERC20_Abi from "./ERC20.json";
 
 export {
     Hexit_Abi,
@@ -23,4 +23,5 @@ export {
     HexOneStakingMaster_Abi,
     HexOneToken_Abi,
     HexOneVault_Abi,
+    ERC20_Abi
 }

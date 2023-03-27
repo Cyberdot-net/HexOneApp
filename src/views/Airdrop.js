@@ -7,13 +7,14 @@ import {
   Alert,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Line } from 'react-chartjs-2';
+import { Line } from "react-chartjs-2";
+import { BigNumber, utils } from "ethers";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import Pagination from "components/Common/Pagination";
 import ClaimHexitModal from "components/Modals/ClaimHexit";
 import { WalletContext, LoadingContext } from "providers/Contexts";
-import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed } from "contracts";
+import { HexOneBootstrap } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import { formatterFloat } from "common/utilities";
 
@@ -21,17 +22,13 @@ export default function Bootstrap() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ currentDay, setCurrentDay ] = useState(1);
-  const [ overviews, setOverview ] = useState([]);
+  const [ airdropList, setAirdropList ] = useState([]);
   const [ chartData, setChartData ] = useState({});
   const [ page, setPage ] = useState(1);
   const [ isOpen, setOpen ] = useState(false);
   
   useEffect(() => {
     if (!address) return;
-
-    setOverview([
-      { depositId: 4, day: 1, sacrificedUSD: 3600, sacrificedBonus: 9, stakedUSD: 10000, stakedBonus: 1, totalDailyHexit: 15000000, sharePool: 1, claimedHexit: 150000 },
-    ]);
 
     setChartData({
       labels: ['1', '2', '3'],
@@ -45,15 +42,13 @@ export default function Bootstrap() {
       ],
     });
     
-    HexContract.setProvider(provider);
-    HexOnePriceFeed.setProvider(provider);
-    HexOneVault.setProvider(provider);
-    HexOneProtocol.setProvider(provider);
+    HexOneBootstrap.setProvider(provider);
 
     const getData = async () => {
       showLoading();
 
-      setCurrentDay(await HexContract.getCurrentDay());
+      setCurrentDay(await HexOneBootstrap.getCurrentDay());
+      setAirdropList(await HexOneBootstrap.getAirdropList(address));
       
       hideLoading();
     }
@@ -142,19 +137,19 @@ export default function Bootstrap() {
                   </tr>
                 </thead>
                 <tbody>
-                  {overviews.length > 0 ? 
-                    overviews.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE).map((r, idx) => (
+                  {airdropList.length > 0 ? 
+                    airdropList.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE).map((r, idx) => (
                     <tr key={idx}>
-                      <td className="text-center">{r.depositId}</td>
-                      <td>{r.day.toString()}</td>
-                      <td>${formatterFloat(r.sacrificedUSD)}</td>
-                      <td>{r.sacrificedBonus}x</td>
-                      <td>${formatterFloat(r.stakedUSD)}</td>
-                      <td>{r.stakedBonus}x</td>
-                      <td>${formatterFloat(getTotalPower(r))}</td>
-                      <td>{formatterFloat(r.totalDailyHexit)} HEXIT</td>
-                      <td>{r.sharePool}%</td>
-                      <td>{formatterFloat(r.claimedHexit)} HEXIT</td>
+                      <td className="text-center">{r.airdropId.toString()}</td>
+                      <td>{r.requestedDay.toString()}</td>
+                      <td>${formatterFloat(+utils.formatUnits(r.sacrificeUSD))}</td>
+                      <td>{+r.sacrificeMultiplier}x</td>
+                      <td>${formatterFloat(+utils.formatUnits(r.hexShares))}</td>
+                      <td>{+r.hexShareMultiplier}x</td>
+                      <td>${formatterFloat(+utils.formatUnits(r.totalUSD))}</td>
+                      <td>{0} HEXIT</td>
+                      <td>{0}%</td>
+                      <td>{formatterFloat(r.claimedAmount)} HEXIT</td>
                     </tr>
                   )) : <tr>
                     <td colSpan={9} className="text-center">                
@@ -173,7 +168,7 @@ export default function Bootstrap() {
               <Pagination 
                 className="mb-3"
                 page={page}
-                count={overviews.length}
+                count={airdropList.length}
                 perPage={ITEMS_PER_PAGE}
                 onChange={p => setPage(p)}
               />

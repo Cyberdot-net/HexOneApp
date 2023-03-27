@@ -18,7 +18,7 @@ import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneVault, HexOneProtocol } from "contracts";
-import { formatDecimal, isEmpty } from "common/utilities";
+import { formatDecimal, formatZeroDecimal, isEmpty } from "common/utilities";
 
 export default function Reborrow({ show, data, onClose, onReborrow }) {
 
@@ -112,7 +112,7 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
                 <InputGroup>
                   <Input
                     type="text"
-                    placeholder={`Borrow Amount in HEX (${formatDecimal(totalHex) || 0} HEX available)`}
+                    placeholder={`Borrow Amount in HEX (${formatZeroDecimal(totalHex) || 0} HEX available)`}
                     value={amount.value}
                     onChange={changeAmount} 
                     autoFocus

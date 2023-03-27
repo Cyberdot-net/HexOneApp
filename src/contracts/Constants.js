@@ -14,11 +14,11 @@ export const networks = [
 ];
 
 export const ERC20 = [
-    { name: 'HEX', multipler: 5, id: "HEX" },
-    { name: 'USDC', multipler: 3, id: "USDC" },
-    { name: 'ETH', multipler: 2, id: "ETH" },
-    { name: 'DAI', multipler: 2, id: "DAI" },
-    { name: 'UNI', multipler: 1, id: "UNI" },
+    { name: 'HEX', symbol: 'HEX', multipler: 5, id: "HEX" },
+    { name: 'USDC', symbol: 'USDC', multipler: 3, id: "USDC" },
+    { name: 'ETH', symbol: 'ETH', multipler: 2, id: "ETH" },
+    { name: 'DAI', symbol: 'DAI', multipler: 2, id: "DAI" },
+    { name: 'UNI', symbol: 'UNI', multipler: 1, id: "UNI" },
 ];
 
 export const BASE_POINTS_1 = 5555555;

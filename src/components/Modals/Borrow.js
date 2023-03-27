@@ -219,7 +219,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
                   <InputGroup>
                     <Input
                       type="text"
-                      placeholder={`Collateral Amount in HEX (${formatDecimal(totalHex)} HEX available)`}
+                      placeholder={`Collateral Amount in HEX (${formatZeroDecimal(totalHex)} HEX available)`}
                       value={collateralAmt.value}
                       onChange={changeCollateralAmt} 
                       autoFocus
