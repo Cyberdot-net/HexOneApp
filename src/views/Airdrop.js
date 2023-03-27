@@ -48,7 +48,7 @@ export default function Bootstrap() {
       showLoading();
 
       setCurrentDay(await HexOneBootstrap.getCurrentDay());
-      setAirdropList(await HexOneBootstrap.getAirdropList(address));
+      setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
       
       hideLoading();
     }
