@@ -9,17 +9,25 @@ export const STAKEDAYS_MAX = 1200;
 export const ITEMS_PER_PAGE = 5;
 
 export const networks = [
-    { name: 'Ethereum', chainId: 1 },
-    { name: 'Goerli', chainId: 5 },
+    { name: "Ethereum", chainId: 1 },
+    { name: "Goerli", chainId: 5 },
 ];
 
 export const ERC20 = [
-    { name: 'HEX', symbol: 'HEX', multipler: 5, id: "HEX" },
-    { name: 'USDC', symbol: 'USDC', multipler: 3, id: "USDC" },
-    { name: 'ETH', symbol: 'ETH', multipler: 2, id: "ETH" },
-    { name: 'DAI', symbol: 'DAI', multipler: 2, id: "DAI" },
-    { name: 'UNI', symbol: 'UNI', multipler: 1, id: "UNI" },
+    { name: "HEX", symbol: "HEX", multipler: 5, id: "HEX" },
+    { name: "USDC", symbol: "USDC", multipler: 3, id: "USDC" },
+    { name: "ETH", symbol: "ETH", multipler: 2, id: "ETH" },
+    { name: "DAI", symbol: "DAI", multipler: 2, id: "DAI" },
+    { name: "UNI", symbol: "UNI", multipler: 1, id: "UNI" },
 ];
+
+export const TOKENS = [
+    { name: "HEX1", token: "0x0E74FFc05EC55D0799956784959DA31b593138c1" },
+    { name: "HEXIT", token: "0x77BdE748E75f79226f71878eE820ecA35ADc122A" },
+    { name: "HEX1/HEXIT", token: "0x0E74FFc05EC55D0799956784959DA31b593138c1" },
+    { name: "HEX1/HEX", token: "0xdF1906df64C5f3b13eFAA25729F5EA4b469db805" },
+    { name: "HEX1/USDC", token: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" }
+]
 
 export const BASE_POINTS_1 = 5555555;
 export const TOTAL_AIRDROP_SUPPLY = 50;

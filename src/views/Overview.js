@@ -106,8 +106,6 @@ export default function Overview() {
 
     showLoading("Minting...");
 
-    console.log(HexContract.provider);
-
     let res = await HexContract.mint();
     if (res.status !== "success") {
       hideLoading();

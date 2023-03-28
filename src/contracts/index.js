@@ -4,6 +4,7 @@ import HexOneProtocol from "./HexOneProtocol";
 import HexOneVault from "./HexOneVault";
 import HexOneBootstrap from "./HexOneBootstrap";
 import HexOneEscrow from "./HexOneEscrow";
+import HexOneStaking from "./HexOneStaking";
 import Erc20Contract from "./Erc20Contract";
 
 export {
@@ -13,5 +14,6 @@ export {
     HexOneVault,
     HexOneBootstrap,
     HexOneEscrow,
+    HexOneStaking,
     Erc20Contract
 }

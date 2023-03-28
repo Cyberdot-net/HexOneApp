@@ -44,7 +44,31 @@
       gap: 1.5rem;
 
       .stake-panel {
-        width: 50%;
+        width: 60%;
+        border: 1px solid rgba(white, 0.3);
+        border-radius: 8px;
+        padding: 0.6rem 1.5rem;
+
+        button {
+          width: 100%;
+        }
+
+        .input-panel {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .row {
+          padding: 0.4rem 1.5rem;
+        }
+      }
+
+      .claim-panel {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 40%;
         border: 1px solid rgba(white, 0.3);
         border-radius: 8px;
         padding: 0.6rem 1.5rem;
