@@ -88,16 +88,15 @@ export default (function() {
             if (!contract) return { status: "failed" };
     
             try {
-                console.log(Erc20_Tokens_Addr[type].contract);
                 const tx = await contract.sacrificeToken(Erc20_Tokens_Addr[type].contract, amount);
                 await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {
                 console.error(e);
-                if (e.code === 4001) {
+                if (e.error?.code) {
+                    return { status: "failed", error: "Sacrifice failed! " + e.error?.message };
+                } else if (e.code === 4001) {
                     return { status: "failed", error: "Sacrifice failed! User denied transaction." };
-                } else if (e.code === -32603) {
-                    return { status: "failed", error: "Sacrifice failed! Invalid duration." };
                 } else {
                     return { status: "failed" };
                 }
@@ -115,7 +114,7 @@ export default (function() {
                 // const [transferEvent] = tr.events;
             } catch (e) {
                 console.error(e);
-                if (e.error?.code === -32603) {
+                if (e.error?.code) {
                     return { status: "failed", error: "Claim failed! " + e.error?.message };
                 } else if (e.code === 4001) {
                     return { status: "failed", error: "Claim failed! User denied transaction." };
@@ -127,6 +126,47 @@ export default (function() {
             return { status: "success" };
         },
 
+        requestAirdrop: async () => {
+            if (!contract) return { status: "failed" };
+    
+            try {
+                const tx = await contract.requestAirdrop();
+                await tx.wait();
+                // const [transferEvent] = tr.events;
+            } catch (e) {
+                console.error(e);
+                if (e.error?.code) {
+                    return { status: "failed", error: "Request Airdrop failed! " + e.error?.message };
+                } else if (e.code === 4001) {
+                    return { status: "failed", error: "Request Airdrop failed! User denied transaction." };
+                } else {
+                    return { status: "failed", error: "Request Airdrop failed!" };
+                }
+            }
+    
+            return { status: "success" };
+        },
+
+        claimAirdrop: async () => {
+            if (!contract) return { status: "failed" };
+    
+            try {
+                const tx = await contract.claimAirdrop();
+                await tx.wait();
+                // const [transferEvent] = tr.events;
+            } catch (e) {
+                console.error(e);
+                if (e.error?.code) {
+                    return { status: "failed", error: "Claim Airdrop failed! " + e.error?.message };
+                } else if (e.code === 4001) {
+                    return { status: "failed", error: "Claim Airdrop failed! User denied transaction." };
+                } else {
+                    return { status: "failed", error: "Claim Airdrop failed!" };
+                }
+            }
+    
+            return { status: "success" };
+        }
     }
     
 })();

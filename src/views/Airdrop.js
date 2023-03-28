@@ -8,7 +8,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { Line } from "react-chartjs-2";
-import { BigNumber, utils } from "ethers";
+import { utils } from "ethers";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import Pagination from "components/Common/Pagination";
@@ -58,17 +58,12 @@ export default function Bootstrap() {
     // eslint-disable-next-line
   }, [ address, provider ]);
 
-  const getTotalPower = (row) => {
-    return row.sacrificedUSD * row.sacrificedBonus + row.stakedUSD * row.stakedBonus;
-  }
-
   const showClaim = () => {
-
     setOpen(true);
   }
 
-  const doClaimHexit = () => {
-
+  const doClaimHexit = async () => {
+    setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
   }
 
   return (
@@ -93,6 +88,7 @@ export default function Bootstrap() {
                 color="info btn-lg"
                 id="claim"
                 onClick={showClaim}
+                disabled={airdropList[0] && airdropList[0].claimed}
               >
                 Claim $HEXIT
               </Button>
@@ -137,7 +133,7 @@ export default function Bootstrap() {
                   </tr>
                 </thead>
                 <tbody>
-                  {airdropList.length > 0 ? 
+                  {airdropList.length > 0 && +airdropList[0].airdropId ? 
                     airdropList.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE).map((r, idx) => (
                     <tr key={idx}>
                       <td className="text-center">{r.airdropId.toString()}</td>
@@ -152,7 +148,7 @@ export default function Bootstrap() {
                       <td>{formatterFloat(r.claimedAmount)} HEXIT</td>
                     </tr>
                   )) : <tr>
-                    <td colSpan={9} className="text-center">                
+                    <td colSpan={10} className="text-center">                
                       <Alert
                         className="alert-with-icon"
                         color="default"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-// import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import {
   Modal,
   Button,
@@ -17,7 +17,7 @@ import {
 import { BigNumber } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
-import { HexContract, HexOnePriceFeed } from "contracts";
+import { HexOneBootstrap } from "contracts";
 import { getDailyPool } from "contracts/Constants";
 import { formatterFloat } from "common/utilities";
 
@@ -37,8 +37,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
 
     // showLoading();
 
-    HexContract.setProvider(provider);
-    HexOnePriceFeed.setProvider(provider);
+    HexOneBootstrap.setProvider(provider);
 
     const getHexData = async () => {
       setSacrificeMultiplier(9);
@@ -70,6 +69,13 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
 
       showLoading("Claiming...");
   
+      const res = await HexOneBootstrap.claimAirdrop();
+      if (res.status !== "success") {
+        hideLoading();
+        toast.error(res.error ?? "Claim failed!");
+        return;
+      }
+  
       onClaim();
       
       setApproved(false);
@@ -78,10 +84,15 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
     } else {
 
       showLoading("Approving...");
+      const res = await HexOneBootstrap.requestAirdrop();
+      if (res.status !== "success") {
+        hideLoading();
+        toast.error(res.error ?? "Approve failed! Request Airdrop error!");
+        return;
+      }
 
       setApproved(true);
       hideLoading();
-
     }
     // onClose();
   }

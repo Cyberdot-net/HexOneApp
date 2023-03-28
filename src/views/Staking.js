@@ -134,14 +134,7 @@ export default function Staking() {
                       <tr>
                         <td colSpan={9} className={`description ${r.open ? "active" : ""}`}>
                           <div className="description-wrapper">
-                            <div className="content">
-                              <div className="links">
-                                <Button
-                                  color="info"
-                                >
-                                  Join
-                                </Button>
-                              </div>
+                            <div className="content p-md-4">
                               <div className="stake-panel">
                                 <Row>Amount</Row>
                                 <Row>
@@ -157,9 +150,11 @@ export default function Staking() {
                                     </InputGroupAddon>
                                   </InputGroup>
                                 </Row>
+                              </div>
+                              <div className="stake-panel">
+                                <Row>Start Staking</Row>
                                 <Row className="center">
                                   <Button
-                                    className="btn-simple"
                                     color="info"
                                     type="button"
                                   >

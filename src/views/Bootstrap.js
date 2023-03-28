@@ -36,7 +36,7 @@ export default function Bootstrap() {
   const [ isOpen, setOpen ] = useState(false);
   const [ sacrificeList, setSacrificeList ] = useState([]);
   const [ shareInfo, setShareInfo ] = useState(null);
-  const [ chartData, setChartData ] = useState({});
+  const [ chartData, setChartData ] = useState(null);
   
   useEffect(() => {
     if (!address) return;
@@ -72,18 +72,22 @@ export default function Bootstrap() {
     const data = sacrificeList.map(r => +utils.formatUnits(r.sacrificedAmount));
     const backgroundColors = sacrificeList.map(r => r.tokenName in backgroundColor ? backgroundColor[r.tokenName] : backgroundColor[""]);
 
-    setChartData({
-      labels: labels,
-      datasets: [
-        {
-          label: 'Sacrificed AMT',
-          data: data,
-          backgroundColor: backgroundColors,
-          borderColor: sacrificeList.map(r => 'rgba(255, 255, 255, 0.3)'),
-          borderWidth: 2,
-        },
-      ],
-    });
+    if (data.length > 0) {
+      setChartData({
+        labels: labels,
+        datasets: [
+          {
+            label: 'Sacrificed AMT',
+            data: data,
+            backgroundColor: backgroundColors,
+            borderColor: sacrificeList.map(r => 'rgba(255, 255, 255, 0.3)'),
+            borderWidth: 2,
+          },
+        ],
+      });
+    } else {
+      setChartData(null);
+    }
 
   }, [ sacrificeList ]);
 
@@ -310,6 +314,7 @@ export default function Bootstrap() {
           </Row>
           <Row className="center">
             <Col lg="8" md="12">
+              {chartData ? 
               <Pie
                 data={chartData}
                 plugins={[ ChartDataLabels, ChartDataOutLabels ]}
@@ -347,7 +352,11 @@ export default function Bootstrap() {
                     }
                   }
                 }}
-                />
+                /> :
+                <h3 className="text-center">
+                  No Analysis Data
+                </h3>
+              }
             </Col>
           </Row>
         </Container>
