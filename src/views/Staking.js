@@ -12,27 +12,33 @@ import {
   InputGroupText
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
+import { Pie } from "react-chartjs-2";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ChartDataOutLabels from 'chartjs-plugin-piechart-outlabels';
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneStaking } from "contracts";
 import { TOKENS } from "contracts/Constants";
 import { formatFloat, isEmpty } from "common/utilities";
 
+
+const backgroundColor = {
+  "HEX1": 'rgba(255, 99, 132, 0.2)',
+  "HEXIT": 'rgba(54, 162, 235, 0.2)',
+  "HEX1/HEXIT": 'rgba(255, 206, 86, 0.2)',
+  "HEX1/HEX": 'rgba(75, 192, 192, 0.2)',
+  "HEX1/USDC": 'rgba(153, 102, 255, 0.2)',
+  "": 'rgba(255, 159, 64, 0.2)'
+};
+
 export default function Staking() {
 
   const { address } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ data, setData ] = useState([]);
+  const [ chartData, setChartData ] = useState(null);
 
   useEffect(() => {
-
-    // setData([
-    //   { token: "HEX1", amount: 10000, share: 0.1, apr_hex: 0, apr_hexit: 10, earned_hex: 0, earned_hexit: 52899, days: 80, liquidity: 10000000.00, multiplier: 1, open: false },
-    //   { token: "HEXIT", amount: 680000, share: 2, apr_hex: 0, apr_hexit: 14, earned_hex: 0, earned_hexit: 58000, days: 10, liquidity: 4000000.00, multiplier: 1, open: false },
-    //   { token: "HEX1/HEXIT", amount: 1239, share: 1.5, apr_hex: 2, apr_hexit: 30, earned_hex: 1000, earned_hexit: 50000, days: 92, liquidity: 3000000.00, multiplier: 2, open: false },
-    //   { token: "HEX1/HEX", amount: 590, share: 0.08, apr_hex: 1, apr_hexit: 20, earned_hex: 5000, earned_hexit: 100000, days: 61, liquidity: 6000000.00, multiplier: 2, open: false },
-    //   { token: "HEX1/USDC", amount: 1000, share: 0.006, apr_hex: 3, apr_hexit: 10, earned_hex: 3000, earned_hexit: 20000, days: 4, liquidity: 40000000.00, multiplier: 3, open: false },
-    // ]);
 
     const getData = async () => {
       showLoading();
@@ -41,6 +47,7 @@ export default function Staking() {
       setData(stakeList.map(r => {
         return { ...r, stakingAmt: { value: "", bignum: BigNumber.from(0) }, open: false }
       }));
+      drawPieChart(stakeList);
       
       hideLoading();
     }
@@ -49,6 +56,29 @@ export default function Staking() {
     
     // eslint-disable-next-line
   }, []);
+
+  const drawPieChart = async (stakeList) => {
+    const labels = stakeList.map(r => TOKENS.find(t => t.token === r.token)?.name || "");
+    const chartData = stakeList.map(r => +utils.formatUnits(r.totalLockedUSD));
+    const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
+
+    if (chartData.length > 0) {
+      setChartData({
+        labels: labels,
+        datasets: [
+          {
+            label: 'Total Value Locked USD',
+            data: chartData,
+            backgroundColor: backgroundColors,
+            borderColor: chartData.map(r => 'rgba(255, 255, 255, 0.3)'),
+            borderWidth: 2,
+          },
+        ],
+      });
+    } else {
+      setChartData(null);
+    }
+  }
 
   const getStakeList = async () => {
     const stakeList = await HexOneStaking.getStakingList();
@@ -59,7 +89,7 @@ export default function Staking() {
         return { ...r, stakingAmt: { value: "", bignum: BigNumber.from(0) }, open }
       })
     });
-    
+    drawPieChart(stakeList);
   }
 
   const onClickShow = (token) => {
@@ -188,7 +218,8 @@ export default function Staking() {
                       <th>APR</th>
                       <th>Earned</th>
                       <th>Joined</th>
-                      <th>Total locked USD</th>
+                      <th>Total Value Locked USD</th>
+                      <th>Total Value Locked ERC20</th>
                       <th>Multiplier</th>
                       <th className="text-center"></th>
                     </tr>
@@ -200,14 +231,15 @@ export default function Staking() {
                         <td>{TOKENS.find(t => t.token === r.token)?.name}</td>
                         <td>{formatFloat(+utils.formatUnits(r.stakedAmount))} HEX</td>
                         <td>{formatFloat(r.shareOfPool)}%</td>
-                        <td>{`${r.claimableHexAmount}%`} $HEX<br/>{formatFloat(r.claimableHexitAmount)}% $HEXIT</td>
+                        <td>{`${+r.hexAPR}%`} $HEX<br/>{+r.hexitAPR}% $HEXIT</td>
                         <td>
                             {formatFloat(+utils.formatUnits(r.earnedHexAmount))} $HEX
                             <br/>
                             {formatFloat(+utils.formatUnits(r.earnedHexitAmount))} $HEXIT
                         </td>
                         <td>{r.stakedTime.toString()} {+r.stakedTime > 1 ? "days" : "day"}</td>
-                        <td>$ {formatFloat(r.liquidity)}</td>
+                        <td>${formatFloat(+utils.formatUnits(r.totalLockedUSD))}</td>
+                        <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount))}</td>
                         <td>
                             {r.hexMultiplier.gt(0) && `${r.hexMultiplier.toString()}x`}
                             {r.hexMultiplier.gt(0) && <br />}
@@ -294,6 +326,63 @@ export default function Staking() {
                     </tr>}
                   </tbody>
                 </table>
+              </Col>
+            </Row>
+          </Container>
+        </section>
+        <section className="section section-lg section-tables center">
+          <Container>
+            <Row>
+              <Col md="4">
+                <hr className="line-info" />
+                <h2>Analysis</h2>
+              </Col>
+            </Row>
+            <Row className="center">
+              <Col lg="8" md="12">
+                {chartData ? 
+                <Pie
+                  data={chartData}
+                  plugins={[ ChartDataLabels, ChartDataOutLabels ]}
+                  legend={{
+                    labels: {
+                      padding: 20,
+                    },
+                  }}
+                  options= {{
+                    layout: { padding: 50 },
+                    legend: { display: false },
+                    plugins: {
+                      datalabels: {
+                        color: "rgba(255, 255, 255, 0.8)",
+                        textAlign: 'center',
+                        opacity: 0.8,
+                        formatter: function(value, context) {
+                          const sum = chartData.datasets[0]?.data?.reduce((s, o)=> s + o, 0);
+                          const label = context.chart.data.labels[context.dataIndex];
+                          if (sum) {
+                            return [label, `${sum ? Math.round(value / sum * 100) : 0}%`]; 
+                          } else {
+                            return "";
+                          }
+                        }
+                      },
+                      outlabels: {
+                        font: { size: 15 },
+                        stretch: 20,
+                        text: (context) => {
+                          const label = context.chart.data.labels[context.dataIndex];
+                          const value = context.dataset.data[context.dataIndex];
+                          return `${label} ${value}`;
+                        }
+                      }
+                    }
+                  }}
+                  /> :
+                  <h3 className="text-center">
+                    No Analysis Data
+                  </h3>
+                }
               </Col>
             </Row>
           </Container>

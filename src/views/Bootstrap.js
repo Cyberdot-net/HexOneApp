@@ -69,7 +69,7 @@ export default function Bootstrap() {
 
     const labels = sacrificeList.map(r => r.sacrificeTokenSymbol || "");
     const data = sacrificeList.map(r => +utils.formatUnits(r.sacrificedAmount));
-    const backgroundColors = sacrificeList.map(r => r.sacrificeTokenSymbol in backgroundColor ? backgroundColor[r.sacrificeTokenSymbol] : backgroundColor[""]);
+    const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
     if (data.length > 0) {
       setChartData({
@@ -79,7 +79,7 @@ export default function Bootstrap() {
             label: 'Sacrificed AMT',
             data: data,
             backgroundColor: backgroundColors,
-            borderColor: sacrificeList.map(r => 'rgba(255, 255, 255, 0.3)'),
+            borderColor: data.map(r => 'rgba(255, 255, 255, 0.3)'),
             borderWidth: 2,
           },
         ],

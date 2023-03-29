@@ -73,7 +73,7 @@ export default (function() {
             if (!contract) return list;
     
             try {
-                // list = await contract.getAirdropClaimHistory(address);
+                list = await contract.getAirdropClaimHistory(address);
                 // list = [...list].sort((a, b) => (+a.sacrificeId) - (+b.sacrificeId));
             } catch (e) {
                 console.error(e);
@@ -87,7 +87,7 @@ export default (function() {
             if (!contract) return currentInfo;
     
             try {
-                // currentInfo = await contract.getCurrentAirdropInfo(address);
+                currentInfo = await contract.getCurrentAirdropInfo(address);
             } catch (e) {
                 console.error(e);
             }
@@ -100,7 +100,7 @@ export default (function() {
             if (!contract) return list;
     
             try {
-                // list = await contract.getAirdropSupplyAmount(address);
+                list = await contract.getAirdropSupplyAmount(address);
             } catch (e) {
                 console.error(e);
             }
