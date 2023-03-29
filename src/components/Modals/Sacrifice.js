@@ -110,6 +110,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       setApproved(false);
       hideLoading();
 
+      toast.success("Sacrifice success!");
     } else {
 
       showLoading("Approving...");
@@ -127,6 +128,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       setApproved(true);
       hideLoading();
 
+      toast.success("Approve success!");
     }
     // onClose();
   }

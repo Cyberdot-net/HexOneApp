@@ -71,11 +71,12 @@ export default (function() {
                 await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {
-                console.error(e);
-                if (e.code === 4001) {
-                    return { status: "failed", error: "Approve failed! User denied transaction." };
+                if (e.error?.message) {
+                    return { status: "failed", error: "Approve failed! " + e.error?.message };
+                } else if (e.message) {
+                    return { status: "failed", error: "Approve failed! " + e.message };
                 } else {
-                    return { status: "failed" };
+                    return { status: "failed", error: "Approve failed!" };
                 }
             }
     

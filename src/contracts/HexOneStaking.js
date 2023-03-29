@@ -49,13 +49,12 @@ export default (function() {
                 await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {
-                console.error(e);
-                if (e.error?.code) {
+                if (e.error?.message) {
                     return { status: "failed", error: "Stake failed! " + e.error?.message };
-                } else if (e.code === 4001) {
-                    return { status: "failed", error: "Stake failed! User denied transaction." };
+                } else if (e.message) {
+                    return { status: "failed", error: "Stake failed! " + e.message };
                 } else {
-                    return { status: "failed" };
+                    return { status: "failed", error: "Stake failed!" };
                 }
             }
     
@@ -70,13 +69,12 @@ export default (function() {
                 await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {
-                console.error(e);
-                if (e.error?.code) {
+                if (e.error?.message) {
                     return { status: "failed", error: "Unstake failed! " + e.error?.message };
-                } else if (e.code === 4001) {
-                    return { status: "failed", error: "Unstake failed! User denied transaction." };
+                } else if (e.message) {
+                    return { status: "failed", error: "Unstake failed! " + e.message };
                 } else {
-                    return { status: "failed" };
+                    return { status: "failed", error: "Unstake failed!" };
                 }
             }
     
@@ -91,13 +89,12 @@ export default (function() {
                 await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {
-                console.error(e);
-                if (e.error?.code) {
+                if (e.error?.message) {
                     return { status: "failed", error: "Claim failed! " + e.error?.message };
-                } else if (e.code === 4001) {
-                    return { status: "failed", error: "Claim failed! User denied transaction." };
+                } else if (e.message) {
+                    return { status: "failed", error: "Claim failed! " + e.message };
                 } else {
-                    return { status: "failed" };
+                    return { status: "failed", error: "Claim failed!" };
                 }
             }
     

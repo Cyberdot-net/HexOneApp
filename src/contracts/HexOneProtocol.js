@@ -39,14 +39,12 @@ export default (function() {
                 // const [transferEvent] = tr.events;
             } catch (e) {
                 console.error(e);
-                if (e.error?.code) {
+                if (e.error?.message) {
                     return { status: "failed", error: "Borrow failed! " + e.error?.message };
-                } else if (e.code === 4001) {
-                    return { status: "failed", error: "Borrow failed! User denied transaction." };
-                } else if (e.code === -32603) {
-                    return { status: "failed", error: "Borrow failed! Invalid duration." };
+                } else if (e.message) {
+                    return { status: "failed", error: "Borrow failed! " + e.message };
                 } else {
-                    return { status: "failed" };
+                    return { status: "failed", error: "Borrow failed!" };
                 }
             }
     
@@ -61,13 +59,12 @@ export default (function() {
                 await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {
-                console.error(e);
-                if (e.error?.code) {
+                if (e.error?.message) {
                     return { status: "failed", error: "Claim failed! " + e.error?.message };
-                } else if (e.code === 4001) {
-                    return { status: "failed", error: "Claim failed! User denied transaction." };
+                } else if (e.message) {
+                    return { status: "failed", error: "Claim failed! " + e.message };
                 } else {
-                    return { status: "failed" };
+                    return { status: "failed", error: "Claim failed!" };
                 }
             }
     

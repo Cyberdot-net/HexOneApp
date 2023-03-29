@@ -56,7 +56,7 @@ export default function Bootstrap() {
       setCurrentDay(await HexOneBootstrap.getCurrentDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
       
-      const sacrificeData = await HexOneBootstrap.getSacrificeList();
+      const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData);
       
@@ -93,7 +93,7 @@ export default function Bootstrap() {
   }
 
   const getSacrificeList = async () => {
-    const sacrificeData = await HexOneBootstrap.getSacrificeList();
+    const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
     setSacrificeList(sacrificeData);
     drawPieChart(sacrificeData);
   }
