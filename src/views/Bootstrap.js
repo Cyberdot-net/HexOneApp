@@ -54,8 +54,11 @@ export default function Bootstrap() {
       const decimals = await HexContract.getDecimals();
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
       setCurrentDay(await HexOneBootstrap.getCurrentDay());
-      setSacrificeList(await HexOneBootstrap.getSacrificeList(address));
       setShareInfo(await HexOneEscrow.getOverview(address));
+      
+      const sacrificeData = await HexOneBootstrap.getSacrificeList();
+      setSacrificeList(sacrificeData);
+      drawPieChart(sacrificeData);
       
       hideLoading();
     }
@@ -65,10 +68,10 @@ export default function Bootstrap() {
     // eslint-disable-next-line
   }, [ address, provider ]);
 
-  useEffect(() => {
 
-    const labels = sacrificeList.map(r => r.sacrificeTokenSymbol || "");
-    const data = sacrificeList.map(r => +utils.formatUnits(r.sacrificedAmount));
+  const drawPieChart = async (sacrificeData) => {
+    const labels = sacrificeData.map(r => r.sacrificeTokenSymbol || "");
+    const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
     if (data.length > 0) {
@@ -87,11 +90,12 @@ export default function Bootstrap() {
     } else {
       setChartData(null);
     }
-
-  }, [ sacrificeList ]);
+  }
 
   const getSacrificeList = async () => {
-    setSacrificeList(await HexOneBootstrap.getSacrificeList());
+    const sacrificeData = await HexOneBootstrap.getSacrificeList();
+    setSacrificeList(sacrificeData);
+    drawPieChart(sacrificeData);
   }
 
   const getHealthRatio = (initialFeed) => {
