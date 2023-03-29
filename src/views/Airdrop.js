@@ -16,7 +16,7 @@ import ClaimHexitModal from "components/Modals/ClaimHexit";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneBootstrap } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
-import { formatterFloat } from "common/utilities";
+import { formatFloat } from "common/utilities";
 
 export default function Bootstrap() {
   const { address, provider } = useContext(WalletContext);
@@ -162,14 +162,14 @@ export default function Bootstrap() {
                     <tr key={idx}>
                       <td className="text-center">{r.airdropId.toString()}</td>
                       <td>{r.requestedDay.toString()}</td>
-                      <td>${formatterFloat(+utils.formatUnits(r.sacrificeUSD))}</td>
+                      <td>${formatFloat(+utils.formatUnits(r.sacrificeUSD))}</td>
                       <td>{+r.sacrificeMultiplier}x</td>
-                      <td>${formatterFloat(+utils.formatUnits(r.hexShares))}</td>
+                      <td>${formatFloat(+utils.formatUnits(r.hexShares))}</td>
                       <td>{+r.hexShareMultiplier}x</td>
-                      <td>${formatterFloat(+utils.formatUnits(r.totalUSD))}</td>
-                      <td>${formatterFloat(+utils.formatUnits(r.dailySupplyAmount))} HEXIT</td>
+                      <td>${formatFloat(+utils.formatUnits(r.totalUSD))}</td>
+                      <td>${formatFloat(+utils.formatUnits(r.dailySupplyAmount))} HEXIT</td>
                       <td>{+r.shareOfPool}%</td>
-                      <td>{formatterFloat(r.claimedAmount)} HEXIT</td>
+                      <td>{formatFloat(r.claimedAmount)} HEXIT</td>
                     </tr>
                   )) : <tr>
                     <td colSpan={10} className="text-center">                
@@ -226,7 +226,7 @@ export default function Bootstrap() {
                       color: "rgba(255, 255, 255, 0.8)",
                       align: "top",                      
                       formatter: function(value) {
-                        return formatterFloat(+value);
+                        return formatFloat(+value);
                       },
                     },
                   },
