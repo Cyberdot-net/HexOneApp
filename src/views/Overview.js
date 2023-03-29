@@ -52,7 +52,7 @@ export default function Overview() {
       setLiquidates(await HexOneVault.getLiquidableDeposits());
       
       const network = await provider.getNetwork();
-      setIsTestNet(network.chainId === 5);
+      setIsTestNet(network.chainId !== 1);
 
       hideLoading();
     }

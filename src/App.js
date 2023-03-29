@@ -63,9 +63,9 @@ export default function App() {
               style: {
                 position: "relative",
                 top: "4rem",
-                padding: ".7rem 1.5rem",
+                padding: ".7rem 1.2rem",
                 color: "white",
-                fontSize: "1rem",
+                fontSize: "0.8rem",
                 borderRadius: "20px",
                 border: "2px solid #10172a",
                 maxWidth: "500px",
