@@ -47,9 +47,10 @@ export default function Bootstrap() {
     const getData = async () => {
       showLoading();
 
-      setCurrentDay(await HexOneBootstrap.getCurrentDay());
+      const day = await HexOneBootstrap.getCurrentDay();
+      setCurrentDay(day);
       setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
-      getAnalsysis();
+      await getAnalsysis(day);
       
       hideLoading();
     }
@@ -57,12 +58,12 @@ export default function Bootstrap() {
     getData();
 
     // eslint-disable-next-line
-  }, []);
+  }, [ address, provider ]);
   
 
-  const getAnalsysis = async () => {
+  const getAnalsysis = async (day) => {
 
-    const analysisList = await HexOneBootstrap.getAirdropDailyHistory(address);
+    const analysisList = await HexOneBootstrap.getAirdropDailyHistory(day);
 
     const labels = analysisList.map(r => r.day.toString() || "");
     const data = analysisList.map(r => +utils.formatUnits(r.supplyAmount));
@@ -92,7 +93,7 @@ export default function Bootstrap() {
 
   const doClaimHexit = async () => {
     setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
-    getAnalsysis();
+    getAnalsysis(currentDay);
   }
 
   return (

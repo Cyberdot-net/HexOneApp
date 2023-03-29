@@ -33,12 +33,15 @@ const backgroundColor = {
 
 export default function Staking() {
 
-  const { address } = useContext(WalletContext);
+  const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ data, setData ] = useState([]);
   const [ chartData, setChartData ] = useState(null);
 
   useEffect(() => {
+    if (!address) return;
+
+    HexOneStaking.setProvider(provider);
 
     const getData = async () => {
       showLoading();
@@ -55,7 +58,7 @@ export default function Staking() {
     getData();
     
     // eslint-disable-next-line
-  }, []);
+  }, [ address, provider ]);
 
   const drawPieChart = async (stakeList) => {
     const labels = stakeList.map(r => TOKENS.find(t => t.token === r.token)?.name || "");

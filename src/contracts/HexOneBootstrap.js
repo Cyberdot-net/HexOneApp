@@ -95,12 +95,12 @@ export default (function() {
             return currentInfo;
         },
 
-        getAirdropDailyHistory: async (address) => {
+        getAirdropDailyHistory: async (day) => {
             let list = [];
             if (!contract) return list;
     
             try {
-                list = await contract.getAirdropSupplyAmount(address);
+                list = await contract.getAirdropSupplyAmount(day);
             } catch (e) {
                 console.error(e);
             }
