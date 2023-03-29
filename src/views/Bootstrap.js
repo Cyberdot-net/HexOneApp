@@ -16,7 +16,7 @@ import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import SacrificeModal from "components/Modals/Sacrifice";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap, HexOneEscrow } from "contracts";
-import { isEmpty, formatterFloat } from "common/utilities";
+import { isEmpty, formatFloat } from "common/utilities";
 
 
 const backgroundColor = {
@@ -65,12 +65,11 @@ export default function Bootstrap() {
     // eslint-disable-next-line
   }, [ address, provider ]);
 
-
   useEffect(() => {
 
-    const labels = sacrificeList.map(r => r.tokenName || "");
+    const labels = sacrificeList.map(r => r.sacrificeTokenSymbol || "");
     const data = sacrificeList.map(r => +utils.formatUnits(r.sacrificedAmount));
-    const backgroundColors = sacrificeList.map(r => r.tokenName in backgroundColor ? backgroundColor[r.tokenName] : backgroundColor[""]);
+    const backgroundColors = sacrificeList.map(r => r.sacrificeTokenSymbol in backgroundColor ? backgroundColor[r.sacrificeTokenSymbol] : backgroundColor[""]);
 
     if (data.length > 0) {
       setChartData({
@@ -101,7 +100,7 @@ export default function Bootstrap() {
     const currentPrice = +utils.formatUnits(hexFeed);
     const originalPrice = +utils.formatUnits(initialFeed);
     
-    return formatterFloat(Math.round((currentPrice / originalPrice) * 100));
+    return formatFloat(Math.round((currentPrice / originalPrice) * 100));
   }
 
   const onClickClaim = async (sacrificeId) => {
@@ -193,13 +192,12 @@ export default function Bootstrap() {
                     <tr key={idx}>
                       <td className="text-center">{r.sacrificeId.toString()}</td>
                       <td className="text-center">{r.day.toString()}</td>
-                      <td>{formatterFloat(+utils.formatUnits(r.supplyAmount))}</td>
-                      {/* <td>{formatterFloat(getBasePoints(+r.day))}</td> */}
-                      <td></td>
+                      <td>{formatFloat(+utils.formatUnits(r.supplyAmount))}</td>
+                      <td>{r.sacrificeTokenSymbol}</td>
                       <td>{r.multiplier.toString()}x</td>
-                      <td></td>
-                      <td>{formatterFloat(+utils.formatUnits(r.sacrificedAmount))}</td>
-                      <td>{formatterFloat(+utils.formatUnits(r.usdValue))}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.sacrificedWeight))}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount))}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.usdValue))}</td>
                       <td className="td-actions" width="100">
                         <Button
                           id="claim"
@@ -261,15 +259,15 @@ export default function Bootstrap() {
                 <tbody>
                   {shareInfo ? 
                     <tr>
-                      <td>${formatterFloat(+utils.formatUnits(shareInfo.totalUSDValue))}</td>
+                      <td>${formatFloat(+utils.formatUnits(shareInfo.totalUSDValue))}</td>
                       <td>{shareInfo.shareOfPool.toString()}%</td>
                       <td>{shareInfo.startTime.toString()}</td>
                       <td>{shareInfo.endTime.toString()}</td>
-                      <td>{formatterFloat(+utils.formatUnits(shareInfo.hexAmount))} HEX</td>
-                      <td>{formatterFloat(+utils.formatUnits(shareInfo.effectiveAmount))} HEX</td>
-                      <td>{formatterFloat(+utils.formatUnits(shareInfo.borrowedAmount))} HEX1</td>
-                      <td>${formatterFloat(+utils.formatUnits(shareInfo.initUSDValue))}</td>
-                      <td>${formatterFloat(+utils.formatUnits(hexFeed))}</td>
+                      <td>{formatFloat(+utils.formatUnits(shareInfo.hexAmount))} HEX</td>
+                      <td>{formatFloat(+utils.formatUnits(shareInfo.effectiveAmount))} HEX</td>
+                      <td>{formatFloat(+utils.formatUnits(shareInfo.borrowedAmount))} HEX1</td>
+                      <td>${formatFloat(+utils.formatUnits(shareInfo.initUSDValue))}</td>
+                      <td>${formatFloat(+utils.formatUnits(hexFeed))}</td>
                       <td className={+getHealthRatio(shareInfo.initUSDValue) >= 100 ? "green" : "red"}>
                         {getHealthRatio(shareInfo.initUSDValue)}%
                       </td>

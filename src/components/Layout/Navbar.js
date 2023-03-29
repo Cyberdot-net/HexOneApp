@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import {
   Button,
   Collapse,
@@ -22,6 +21,12 @@ import { WalletContext, ConnectWalletContext } from "providers/Contexts";
 import { getShortAddress } from "common/utilities";
 import { networks } from "contracts/Constants";
 
+const menus = [
+  { label: "Bootstrap", url: "/bootstrap" },
+  { label: "Airdrop", url: "/airdrop" },
+  { label: "Staking", url: "/staking" },
+];
+
 export default function IndexNavbar() {
   
   const history = useHistory();
@@ -30,6 +35,7 @@ export default function IndexNavbar() {
   const [ collapseOpen, setCollapseOpen ] = useState(false);
   const [ collapseOut, setCollapseOut ] = useState("");
   const [ color, setColor ] = useState("navbar-transparent");
+  const [ selected, setSelected ] = useState(history.location.pathname);
 
   useEffect(() => {
     const { ethereum } = window;
@@ -90,6 +96,14 @@ export default function IndexNavbar() {
     
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+
+    history.listen((location) => {
+      setSelected(location.pathname);
+    });
+
+  }, [ history ]);
 
   const gotoPage = (url) => {
     history.push(url);
@@ -192,36 +206,18 @@ export default function IndexNavbar() {
                 Learn
               </Button>
             </NavItem>
-            <NavItem>
+            {menus.map(menu => 
+            <NavItem key={menu.label}>
               <Button
                 className="nav-link d-lg-block"
                 style={{width: 120}}
-                color="primary"
-                onClick={() => gotoPage("/bootstrap")}
+                color={selected === menu.url ? "success" : "primary" }
+                onClick={() => gotoPage(menu.url)}
               >
-                Bootstrap
+                {menu.label}
               </Button>
             </NavItem>
-            <NavItem>
-              <Button
-                className="nav-link d-lg-block"
-                style={{width: 120}}
-                color="primary"
-                onClick={() => gotoPage("/airdrop")}
-              >
-                Airdrop
-              </Button>
-            </NavItem>
-            <NavItem>
-              <Button
-                className="nav-link d-lg-block"
-                style={{width: 120}}
-                color="primary"
-                onClick={() => gotoPage("/staking")}
-              >
-                Staking
-              </Button>
-            </NavItem>
+            )}
             <NavItem {...address && {className: "wallet"}}>
               {address ? <>
                 <img

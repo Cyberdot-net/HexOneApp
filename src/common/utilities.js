@@ -32,7 +32,7 @@ export const formatZeroDecimal = (num, decimal = 18) => {
   return utils.commify(utils.formatUnits(num, decimal));
 }
 
-export const formatterFloat = (num, decimal = 2) => {
+export const formatFloat = (num, decimal = 2) => {
   if (!num) return "0";
   const result = new Intl.NumberFormat('en-US', { maximumFractionDigits: decimal }).format(num);
   return result === "-0" ? "0" : result;

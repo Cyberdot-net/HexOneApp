@@ -73,7 +73,7 @@ export default (function() {
             if (!contract) return list;
     
             try {
-                list = await contract.requestAirdropInfo(address);
+                // list = await contract.getAirdropClaimHistory(address);
                 // list = [...list].sort((a, b) => (+a.sacrificeId) - (+b.sacrificeId));
             } catch (e) {
                 console.error(e);
@@ -82,6 +82,32 @@ export default (function() {
             return list;
         },
 
+        getCurrentAirdropInfo: async (address) => {
+            let currentInfo = {};
+            if (!contract) return currentInfo;
+    
+            try {
+                // currentInfo = await contract.getCurrentAirdropInfo(address);
+            } catch (e) {
+                console.error(e);
+            }
+
+            return currentInfo;
+        },
+
+        getAirdropDailyHistory: async (address) => {
+            let list = [];
+            if (!contract) return list;
+    
+            try {
+                // list = await contract.getAirdropSupplyAmount(address);
+            } catch (e) {
+                console.error(e);
+            }
+
+            return list;
+        },
+        
         sacrificeToken: async (type, amount) => {
             if (!contract) return { status: "failed" };
     
@@ -101,7 +127,7 @@ export default (function() {
             }
     
             return { status: "success" };
-        },        
+        },
 
         claimSacrifice: async (sacrificeId) => {
             if (!contract) return { status: "failed" };
@@ -164,7 +190,8 @@ export default (function() {
             }
     
             return { status: "success" };
-        }
+        },
+        
     }
     
 })();

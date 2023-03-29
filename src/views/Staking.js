@@ -16,7 +16,7 @@ import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneStaking } from "contracts";
 import { TOKENS } from "contracts/Constants";
-import { formatterFloat, isEmpty } from "common/utilities";
+import { formatFloat, isEmpty } from "common/utilities";
 
 export default function Staking() {
 
@@ -188,7 +188,7 @@ export default function Staking() {
                       <th>APR</th>
                       <th>Earned</th>
                       <th>Joined</th>
-                      <th>Liquidity</th>
+                      <th>Total locked USD</th>
                       <th>Multiplier</th>
                       <th className="text-center"></th>
                     </tr>
@@ -198,16 +198,16 @@ export default function Staking() {
                     <React.Fragment key={r.token}>
                       <tr>
                         <td>{TOKENS.find(t => t.token === r.token)?.name}</td>
-                        <td>{formatterFloat(+utils.formatUnits(r.stakedAmount))} HEX</td>
-                        <td>{formatterFloat(r.shareOfPool)}%</td>
-                        <td>{`${r.claimableHexAmount}%`} $HEX<br/>{formatterFloat(r.claimableHexitAmount)}% $HEXIT</td>
+                        <td>{formatFloat(+utils.formatUnits(r.stakedAmount))} HEX</td>
+                        <td>{formatFloat(r.shareOfPool)}%</td>
+                        <td>{`${r.claimableHexAmount}%`} $HEX<br/>{formatFloat(r.claimableHexitAmount)}% $HEXIT</td>
                         <td>
-                            {formatterFloat(+utils.formatUnits(r.earnedHexAmount))} $HEX
+                            {formatFloat(+utils.formatUnits(r.earnedHexAmount))} $HEX
                             <br/>
-                            {formatterFloat(+utils.formatUnits(r.earnedHexitAmount))} $HEXIT
+                            {formatFloat(+utils.formatUnits(r.earnedHexitAmount))} $HEXIT
                         </td>
                         <td>{r.stakedTime.toString()} {+r.stakedTime > 1 ? "days" : "day"}</td>
-                        <td>$ {formatterFloat(r.liquidity)}</td>
+                        <td>$ {formatFloat(r.liquidity)}</td>
                         <td>
                             {r.hexMultiplier.gt(0) && `${r.hexMultiplier.toString()}x`}
                             {r.hexMultiplier.gt(0) && <br />}

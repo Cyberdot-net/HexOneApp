@@ -16,31 +16,31 @@ import ClaimHexitModal from "components/Modals/ClaimHexit";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneBootstrap } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
-import { formatterFloat } from "common/utilities";
+import { formatFloat } from "common/utilities";
 
 export default function Bootstrap() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ currentDay, setCurrentDay ] = useState(1);
   const [ airdropList, setAirdropList ] = useState([]);
-  const [ chartData, setChartData ] = useState({});
+  const [ chartData, setChartData ] = useState(null);
   const [ page, setPage ] = useState(1);
   const [ isOpen, setOpen ] = useState(false);
-  
+
   useEffect(() => {
     if (!address) return;
 
-    setChartData({
-      labels: ['1', '2', '3'],
-      datasets: [
-        {
-          label: 'Total Hexit',
-          data: [15000000, 7500000, 4250000],
-          borderColor: 'rgb(53, 162, 235)',
-          backgroundColor: 'transparent',
-        },
-      ],
-    });
+    // setChartData({
+    //   labels: ['1', '2', '3'],
+    //   datasets: [
+    //     {
+    //       label: 'Total Hexit',
+    //       data: [15000000, 7500000, 4250000],
+    //       borderColor: 'rgb(53, 162, 235)',
+    //       backgroundColor: 'transparent',
+    //     },
+    //   ],
+    // });
     
     HexOneBootstrap.setProvider(provider);
 
@@ -49,6 +49,7 @@ export default function Bootstrap() {
 
       setCurrentDay(await HexOneBootstrap.getCurrentDay());
       setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
+      getAnalsysis();
       
       hideLoading();
     }
@@ -56,7 +57,34 @@ export default function Bootstrap() {
     getData();
 
     // eslint-disable-next-line
-  }, [ address, provider ]);
+  }, []);
+  
+
+  const getAnalsysis = async () => {
+
+    const analysisList = await HexOneBootstrap.getAirdropDailyHistory(address);
+
+    const labels = analysisList.map(r => r.day.toString() || "");
+    const data = analysisList.map(r => +utils.formatUnits(r.supplyAmount));
+
+    if (data.length > 0) {
+      setChartData({
+        labels: labels,
+        datasets: [
+          {
+            label: 'Total Hexit',
+            data: data,
+            
+            borderColor: 'rgb(53, 162, 235)',
+            backgroundColor: 'transparent',
+          },
+        ],
+      });
+    } else {
+      setChartData(null);
+    }
+
+  };
 
   const showClaim = () => {
     setOpen(true);
@@ -64,6 +92,7 @@ export default function Bootstrap() {
 
   const doClaimHexit = async () => {
     setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
+    getAnalsysis();
   }
 
   return (
@@ -103,11 +132,6 @@ export default function Bootstrap() {
         </Container>
       </section>
       <section className="section section-lg section-tables">
-        <img
-          alt="..."
-          className="path"
-          src={require("assets/img/path3.png")}
-        />
         <Container>
           <Row>
             <Col md="4">
@@ -138,14 +162,14 @@ export default function Bootstrap() {
                     <tr key={idx}>
                       <td className="text-center">{r.airdropId.toString()}</td>
                       <td>{r.requestedDay.toString()}</td>
-                      <td>${formatterFloat(+utils.formatUnits(r.sacrificeUSD))}</td>
+                      <td>${formatFloat(+utils.formatUnits(r.sacrificeUSD))}</td>
                       <td>{+r.sacrificeMultiplier}x</td>
-                      <td>${formatterFloat(+utils.formatUnits(r.hexShares))}</td>
+                      <td>${formatFloat(+utils.formatUnits(r.hexShares))}</td>
                       <td>{+r.hexShareMultiplier}x</td>
-                      <td>${formatterFloat(+utils.formatUnits(r.totalUSD))}</td>
-                      <td>{0} HEXIT</td>
-                      <td>{0}%</td>
-                      <td>{formatterFloat(r.claimedAmount)} HEXIT</td>
+                      <td>${formatFloat(+utils.formatUnits(r.totalUSD))}</td>
+                      <td>${formatFloat(+utils.formatUnits(r.dailySupplyAmount))} HEXIT</td>
+                      <td>{+r.shareOfPool}%</td>
+                      <td>{formatFloat(r.claimedAmount)} HEXIT</td>
                     </tr>
                   )) : <tr>
                     <td colSpan={10} className="text-center">                
@@ -182,6 +206,7 @@ export default function Bootstrap() {
           </Row>
           <Row className="center">
             <Col lg="8" md="12">
+              {chartData ? 
               <Line
                 data={chartData}
                 plugins={[ ChartDataLabels ]}
@@ -200,13 +225,17 @@ export default function Bootstrap() {
                     datalabels: {
                       color: "rgba(255, 255, 255, 0.8)",
                       align: "top",                      
-                      formatter: function(value, context) {
-                        return formatterFloat(+value);
+                      formatter: function(value) {
+                        return formatFloat(+value);
                       },
                     },
                   },
                 }}
-                />
+                /> :
+                <h3 className="text-center mb-5">
+                  No Analysis Data
+                </h3>
+              }
             </Col>
           </Row>
         </Container>

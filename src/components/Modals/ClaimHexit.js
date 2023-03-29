@@ -14,12 +14,10 @@ import {
   InputGroupText,
   UncontrolledTooltip,
 } from "reactstrap";
-import { BigNumber } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneBootstrap } from "contracts";
-import { getDailyPool } from "contracts/Constants";
-import { formatterFloat } from "common/utilities";
+import { formatFloat, formatDecimal, formatZeroDecimal } from "common/utilities";
 
 
 export default function ClaimHexit({ show, onClose, onClaim, day }) {
@@ -27,25 +25,16 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ isApproved, setApproved ] = useState(false);
-  const [ sacrificedMultiplier, setSacrificeMultiplier ] = useState(9);
-  const [ sacrificeUSD, setSacrificeUSD ] = useState(BigNumber.from("0"));
-  const [ stakingMultiplier, setStakingMultiplier ] = useState(1);
-  const [ stakingUSD, setStakingUSD ] = useState(BigNumber.from("0"));
+  const [ airdropInfo, setAirdropInfo ] = useState({});
 
   useEffect(() => {
     if (!address) return;
 
-    // showLoading();
-
     HexOneBootstrap.setProvider(provider);
 
     const getHexData = async () => {
-      setSacrificeMultiplier(9);
-      setSacrificeUSD(BigNumber.from("2500"));
-
-      setStakingMultiplier(1);
-      setStakingUSD(BigNumber.from("1700"));
-
+      showLoading();
+      setAirdropInfo(await HexOneBootstrap.getCurrentAirdropInfo(address));
       hideLoading();
     }
 
@@ -53,15 +42,6 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
 
     // eslint-disable-next-line
   }, [ address, provider ]);
-
-  const getShareOfPool = () => {
-    const totalUSD = stakingUSD.mul(stakingMultiplier).add(sacrificeUSD.mul(sacrificedMultiplier));
-    return getDailyPool(day) * 100 / totalUSD.toString();
-  }
-
-  const getTotalHexit = () => {
-    return getShareOfPool() * getDailyPool(day);
-  }
 
   const onClickClaimHexit = async () => {
 
@@ -122,7 +102,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                 <Input
                   type="text"
                   placeholder="Sacrifice multiplier"
-                  value={`${sacrificedMultiplier}x`}
+                  value={`${formatFloat(+airdropInfo.sacrificeDistRate)}x`}
                   readOnly
                 />
               </Col>
@@ -132,7 +112,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                   <Input
                     type="text"
                     placeholder="Total Sacrificed"
-                    value={formatterFloat(+sacrificeUSD)}
+                    value={formatDecimal(airdropInfo.sacrificedAmount)}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -149,7 +129,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                 <Input
                   type="text"
                   placeholder="Staking multiplier"
-                  value={`${stakingMultiplier}x`}
+                  value={`${formatFloat(+airdropInfo.stakingDistRate)}x`}
                   readOnly
                 />
               </Col>
@@ -159,7 +139,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                   <Input
                     type="text"
                     placeholder="Hex Staking"
-                    value={formatterFloat(+stakingUSD)}
+                    value={formatDecimal(airdropInfo.stakingShareAmount)}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -173,8 +153,8 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
             <Row>
               <Col sm="3"></Col>
               <Col sm="8">
-                <span>Day: <strong className="ml-1">{+day}</strong></span>
-                <span className="ml-4">Daily Pool Total: <strong className="ml-1">{getDailyPool(+day)}</strong></span>
+                <span>Day: <strong className="ml-1">{formatFloat(+airdropInfo.curAirdropDay)}</strong></span>
+                <span className="ml-4">Daily Pool Total: <strong className="ml-1">{formatZeroDecimal(airdropInfo.curDayPoolAmount)}</strong></span>
               </Col>
             </Row>
           </FormGroup>
@@ -186,7 +166,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                   <Input
                     type="text"
                     placeholder="Share of Pool"
-                    value={getShareOfPool()}
+                    value={formatDecimal(airdropInfo.shareOfPool)}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -204,7 +184,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                   <Input
                     type="text"
                     placeholder="Total Hexit"
-                    value={getTotalHexit()}
+                    value={formatDecimal(airdropInfo.curDaySupplyHEXIT)}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">

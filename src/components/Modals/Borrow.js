@@ -22,7 +22,7 @@ import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexContract, HexOnePriceFeed, HexOneProtocol } from "contracts";
 import { HexOneToken_Addr } from "contracts/address";
 import { HEX_SHARERATE_DEC, STAKEDAYS_MIN, STAKEDAYS_MAX } from "contracts/Constants";
-import { formatDecimal, formatZeroDecimal, formatterFloat, isEmpty } from "common/utilities";
+import { formatDecimal, formatZeroDecimal, formatFloat, isEmpty } from "common/utilities";
 
 
 export default function Borrow({ show, onClose, onBorrow }) {
@@ -246,7 +246,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
                   <InputGroup>
                     <Input
                       type="text"
-                      placeholder={`Stake Length in Days (${formatterFloat(STAKEDAYS_MIN)} ~ ${formatterFloat(STAKEDAYS_MAX)})`}
+                      placeholder={`Stake Length in Days (${formatFloat(STAKEDAYS_MIN)} ~ ${formatFloat(STAKEDAYS_MAX)})`}
                       value={stakeDays}
                       onChange={e => setStakeDays(e.target.value)} 
                       {...(stakeDays && (+stakeDays < STAKEDAYS_MIN || +stakeDays > STAKEDAYS_MAX)) && {className: "form-control-danger"}}

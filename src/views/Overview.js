@@ -20,7 +20,7 @@ import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import Pagination from "components/Common/Pagination";
 import BorrowModal from "components/Modals/Borrow";
 import ReborrowModal from "components/Modals/Reborrow";
-import { isEmpty, formatterFloat } from "common/utilities";
+import { isEmpty, formatFloat } from "common/utilities";
 
 export default function Overview() {
   const { address, provider } = useContext(WalletContext);
@@ -72,13 +72,13 @@ export default function Overview() {
     const currentPrice = +utils.formatUnits(hexFeed);
     const originalPrice = +utils.formatUnits(initialFeed);
     
-    return formatterFloat(Math.round((currentPrice / originalPrice) * 100));
+    return formatFloat(Math.round((currentPrice / originalPrice) * 100));
   }
 
   const getProfitLoss = (row) => {
 
-    const profit = formatterFloat(+(utils.formatUnits(row.currentUSDValue.sub(row.initUSDValue))));
-    const percent = formatterFloat(+(row.currentUSDValue.div(row.initUSDValue).mul(100)), 0);
+    const profit = formatFloat(+(utils.formatUnits(row.currentUSDValue.sub(row.initUSDValue))));
+    const percent = formatFloat(+(row.currentUSDValue.div(row.initUSDValue).mul(100)), 0);
     
     return `${profit} (${percent}%)`;
   }
@@ -220,11 +220,11 @@ export default function Overview() {
                       <td className="text-center">{r.lockedHexDay.toString()}</td>
                       <td className="text-center">{r.endHexDay.toString()}</td>
                       <td className="text-center">{r.curHexDay.toString()}</td>
-                      <td>{formatterFloat(+utils.formatUnits(r.depositAmount, hexDecimals))} HEX</td>
-                      <td>{formatterFloat(+utils.formatUnits(r.effectiveAmount, hexDecimals))} HEX</td>
-                      <td>{formatterFloat(+utils.formatUnits(r.mintAmount))} HEX1</td>
-                      <td>${formatterFloat(+utils.formatUnits(r.initialHexPrice))}</td>
-                      <td>${formatterFloat(+utils.formatUnits(hexFeed))}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.depositAmount, hexDecimals))} HEX</td>
+                      <td>{formatFloat(+utils.formatUnits(r.effectiveAmount, hexDecimals))} HEX</td>
+                      <td>{formatFloat(+utils.formatUnits(r.mintAmount))} HEX1</td>
+                      <td>${formatFloat(+utils.formatUnits(r.initialHexPrice))}</td>
+                      <td>${formatFloat(+utils.formatUnits(hexFeed))}</td>
                       <td className={+getHealthRatio(r.initialHexPrice) >= 100 ? "green" : "red"}>
                         {getHealthRatio(r.initialHexPrice)}%
                       </td>
@@ -361,11 +361,11 @@ export default function Overview() {
                       <td className="text-center">{r.endDay.toString()}</td>
                       <td className="text-center">{r.curHexDay.toString()}</td>
                       <td className={r.graceDay <= 5 ? "green" : (r.graceDay <= 7 ? "yellow" : "red")}>{r.graceDay}</td>
-                      <td>{formatterFloat(+utils.formatUnits(r.effectiveHex, hexDecimals))} HEX</td>
-                      <td>{formatterFloat(+utils.formatUnits(r.borrowedHexOne))} HEX1</td>
-                      <td>${formatterFloat(+utils.formatUnits(hexFeed))}</td>
-                      <td>{formatterFloat(+utils.formatUnits(r.effectiveHex, hexDecimals))} HEX</td>
-                      <td>${formatterFloat(+utils.formatUnits(r.currentValue))}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.effectiveHex, hexDecimals))} HEX</td>
+                      <td>{formatFloat(+utils.formatUnits(r.borrowedHexOne))} HEX1</td>
+                      <td>${formatFloat(+utils.formatUnits(hexFeed))}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.effectiveHex, hexDecimals))} HEX</td>
+                      <td>${formatFloat(+utils.formatUnits(r.currentValue))}</td>
                       <td>{getProfitLoss(r)}</td>
                       <td className="td-actions">
                         <Button

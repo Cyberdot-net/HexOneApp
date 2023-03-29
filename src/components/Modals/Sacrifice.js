@@ -19,7 +19,7 @@ import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOnePriceFeed, HexOneBootstrap, Erc20Contract } from "contracts";
 import { ERC20 } from "contracts/Constants";
-import { formatDecimal, formatZeroDecimal, formatterFloat, isEmpty } from "common/utilities";
+import { formatDecimal, formatZeroDecimal, formatFloat, isEmpty } from "common/utilities";
 
 
 export default function Sacrifice({ show, onClose, onSacrifice, day }) {
@@ -204,7 +204,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
               <Col sm="3"></Col>
               <Col sm="8">
                 <span>Day: <strong className="ml-1">{+day}</strong></span>
-                <span className="ml-4">Base Point: <strong className="ml-1">{formatterFloat(+utils.formatUnits(basePoint))}</strong></span>
+                <span className="ml-4">Base Point: <strong className="ml-1">{formatFloat(+utils.formatUnits(basePoint))}</strong></span>
               </Col>
             </Row>
           </FormGroup>
