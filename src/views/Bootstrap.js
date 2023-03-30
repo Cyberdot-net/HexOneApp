@@ -15,7 +15,8 @@ import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import SacrificeModal from "components/Modals/Sacrifice";
 import { WalletContext, LoadingContext } from "providers/Contexts";
-import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap, HexOneEscrow } from "contracts";
+import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap, HexOneEscrow, Erc20Contract } from "contracts";
+import { ERC20 } from "contracts/Constants";
 import { isEmpty, formatFloat } from "common/utilities";
 
 
@@ -31,6 +32,7 @@ const backgroundColor = {
 export default function Bootstrap() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
+  const [ decimals, setDecimals ] = useState({});
   const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
   const [ currentDay, setCurrentDay ] = useState(1);
   const [ isOpen, setOpen ] = useState(false);
@@ -47,12 +49,19 @@ export default function Bootstrap() {
     HexOneProtocol.setProvider(provider);
     HexOneBootstrap.setProvider(provider);
     HexOneEscrow.setProvider(provider);
+    Erc20Contract.setProvider(provider);
 
     const getData = async () => {
       showLoading();
 
-      const decimals = await HexContract.getDecimals();
-      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
+      const ercDecimals = {};
+      for (let erc of ERC20) {
+        Erc20Contract.setTokenType(erc.id);
+        ercDecimals[erc.id] = await Erc20Contract.getDecimals();
+      }
+      setDecimals(ercDecimals);
+
+      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", ercDecimals["HEX"])));
       setCurrentDay(await HexOneBootstrap.getCurrentDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
       
@@ -71,7 +80,7 @@ export default function Bootstrap() {
 
   const drawPieChart = async (sacrificeData) => {
     const labels = sacrificeData.map(r => r.sacrificeTokenSymbol || "");
-    const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount));
+    const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount, 18 - (decimals[r.tosacrificeTokenSymbol] || 0)));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
     if (data.length > 0) {
@@ -132,7 +141,7 @@ export default function Bootstrap() {
         <img
           alt="..."
           className="path"
-          src={require("assets/img/path3.png")}
+          src={require("assets/img/path1.png")}
         />
         <Container>
           {!address && <Row gutter="10" className="pl-4 pr-4 center">
@@ -165,7 +174,7 @@ export default function Bootstrap() {
         <img
           alt="..."
           className="path"
-          src={require("assets/img/path3.png")}
+          src={require("assets/img/path2.png")}
         />
         <Container>
           <Row>
@@ -198,9 +207,9 @@ export default function Bootstrap() {
                       <td className="text-center">{r.day.toString()}</td>
                       <td>{formatFloat(+utils.formatUnits(r.supplyAmount))}</td>
                       <td>{r.sacrificeTokenSymbol}</td>
-                      <td>{r.multiplier.toString()}x</td>
+                      <td>{utils.formatUnits(r.multiplier, 3).toString()}x</td>
                       <td>{formatFloat(+utils.formatUnits(r.sacrificedWeight))}</td>
-                      <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount))}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount, 18 - (decimals[r.tosacrificeTokenSymbol] || 0)))}</td>
                       <td>{formatFloat(+utils.formatUnits(r.usdValue))}</td>
                       <td className="td-actions" width="100">
                         <Button

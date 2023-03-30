@@ -61,6 +61,7 @@ export default (function() {
             try {
                 list = await contract.getUserSacrificeInfo(address);
                 list = [...list].sort((a, b) => (+a.sacrificeId) - (+b.sacrificeId));
+                console.log(list);
             } catch (e) {
                 console.error(e);
             }

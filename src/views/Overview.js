@@ -131,7 +131,7 @@ export default function Overview() {
         <img
           alt="..."
           className="path"
-          src={require("assets/img/path3.png")}
+          src={require("assets/img/path1.png")}
         />
         <Container>
           {!address && <Row gutter="10" className="pl-4 pr-4 center">
@@ -185,7 +185,7 @@ export default function Overview() {
         <img
           alt="..."
           className="path"
-          src={require("assets/img/path3.png")}
+          src={require("assets/img/path2.png")}
         />
         <Container>
           <Row>
