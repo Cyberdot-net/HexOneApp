@@ -233,16 +233,3 @@ code {
     }
 
 }
-
-.profile-page {
-  .btcwdgt {
-    background-color: $background-black !important;
-
-    .btcwdgt-header {
-      background-color: transparent!important;
-    }
-  }
-  .btcwdgt-headlines .btcwdgt-body ul li:nth-child(2n) {
-      background-color: #2a2f63 !important;
-  }
-}
