@@ -80,7 +80,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
   }
 
   const getTotalUSD = () => {
-    const selErc20 = ERC20.find(r => r.id === erc20);
+    // const selErc20 = ERC20.find(r => r.id === erc20);
     return sacrificeAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"));
   }
 

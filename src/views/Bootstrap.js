@@ -67,8 +67,8 @@ export default function Bootstrap() {
       
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
-      drawPieChart(sacrificeData);
-      
+      drawPieChart(sacrificeData, ercDecimals)
+
       hideLoading();
     }
 
@@ -78,9 +78,9 @@ export default function Bootstrap() {
   }, [ address, provider ]);
 
 
-  const drawPieChart = async (sacrificeData) => {
+  const drawPieChart = async (sacrificeData, ercDecimals) => {
     const labels = sacrificeData.map(r => r.sacrificeTokenSymbol || "");
-    const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount, decimals[r.sacrificeTokenSymbol] || 0));
+    const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount, ercDecimals[r.sacrificeTokenSymbol] || 0));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
     if (data.length > 0) {
@@ -104,7 +104,7 @@ export default function Bootstrap() {
   const getSacrificeList = async () => {
     const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
     setSacrificeList(sacrificeData);
-    drawPieChart(sacrificeData);
+    drawPieChart(sacrificeData, decimals);
   }
 
   const getHealthRatio = (initialFeed) => {
@@ -270,7 +270,7 @@ export default function Bootstrap() {
                   </tr>
                 </thead>
                 <tbody>
-                  {shareInfo ? 
+                  {shareInfo && shareInfo.totalUSDValue?.gt(0) ? 
                     <tr>
                       <td>${formatFloat(+utils.formatUnits(shareInfo.totalUSDValue))}</td>
                       <td>{shareInfo.shareOfPool.toString()}%</td>
@@ -330,6 +330,7 @@ export default function Bootstrap() {
                 data={chartData}
                 plugins={[ ChartDataLabels, ChartDataOutLabels ]}
                 legend={{
+                  display: false,
                   labels: {
                     padding: 20,
                   },
