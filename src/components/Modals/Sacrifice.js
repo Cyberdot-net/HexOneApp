@@ -81,7 +81,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
   const getTotalUSD = () => {
     const selErc20 = ERC20.find(r => r.id === erc20);
-    return sacrificeAmt['bignum'].mul(hexFeed).mul(selErc20.multipler).div(utils.parseUnits("1"));
+    return sacrificeAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"));
   }
 
   const onClickSacrifice = async () => {
@@ -225,7 +225,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
               placement="bottom"
               target="borrow"
             >
-              {isApproved ? "Sacrifice tokens" : "Approve tokends"}
+              {isApproved ? "Sacrifice tokens" : "Approve tokens"}
             </UncontrolledTooltip>
           </div>
         </Form>

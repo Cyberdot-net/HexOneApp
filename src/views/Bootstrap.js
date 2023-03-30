@@ -80,7 +80,7 @@ export default function Bootstrap() {
 
   const drawPieChart = async (sacrificeData) => {
     const labels = sacrificeData.map(r => r.sacrificeTokenSymbol || "");
-    const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount, 18 - (decimals[r.tosacrificeTokenSymbol] || 0)));
+    const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount, decimals[r.sacrificeTokenSymbol] || 0));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
     if (data.length > 0) {
@@ -209,19 +209,19 @@ export default function Bootstrap() {
                       <td>{r.sacrificeTokenSymbol}</td>
                       <td>{utils.formatUnits(r.multiplier, 3).toString()}x</td>
                       <td>{formatFloat(+utils.formatUnits(r.sacrificedWeight))}</td>
-                      <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount, 18 - (decimals[r.tosacrificeTokenSymbol] || 0)))}</td>
-                      <td>{formatFloat(+utils.formatUnits(r.usdValue))}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount, decimals[r.sacrificeTokenSymbol] || 0))}</td>
+                      <td>${formatFloat(+utils.formatUnits(r.usdValue))}</td>
                       <td className="td-actions" width="100">
                         <Button
                           id="claim"
                           className="btn btn-primary btn-sm w-full"
+                          onClick={() => onClickClaim(r.sacrificeId)}
                         >
                           Claim<br/>$HEXIT
                         </Button>
                         <UncontrolledTooltip
                           placement="bottom"
                           target="claim"
-                          onClick={() => onClickClaim(r.sacrificeId)}
                         >
                           Claim $HEXIT
                         </UncontrolledTooltip>
