@@ -14,11 +14,11 @@ import {
   InputGroupText,
   UncontrolledTooltip,
 } from "reactstrap";
-import { utils, BigNumber } from "ethers";
+import { utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneBootstrap } from "contracts";
-import { formatFloat, formatDecimal, formatZeroDecimal } from "common/utilities";
+import { formatFloat } from "common/utilities";
 
 
 export default function ClaimHexit({ show, onClose, onClaim }) {
@@ -36,6 +36,8 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
     const getHexData = async () => {
       showLoading();
       setAirdropInfo(await HexOneBootstrap.getCurrentAirdropInfo(address));
+      setApproved(await HexOneBootstrap.checkAirdropInfo(address));
+
       hideLoading();
     }
 
@@ -58,8 +60,8 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       }
   
       onClaim();
-      
-      setApproved(false);
+      onClose();
+            
       hideLoading();
 
     } else {
@@ -103,7 +105,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
                 <Input
                   type="text"
                   placeholder="Sacrifice multiplier"
-                  value={`${formatFloat(+utils.formatUnits(airdropInfo.sacrificeDistRate ?? BigNumber.from(0), 2))}x`}
+                  value={airdropInfo.sacrificeDistRate ? `${formatFloat(+utils.formatUnits(airdropInfo.sacrificeDistRate, 2))}x` : '0x'}
                   readOnly
                 />
               </Col>
@@ -113,7 +115,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
                   <Input
                     type="text"
                     placeholder="Total Sacrificed"
-                    value={formatZeroDecimal(airdropInfo.sacrificedAmount)}
+                    value={airdropInfo.sacrificedAmount ? formatFloat(+utils.formatUnits(airdropInfo.sacrificedAmount)) : '0'}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -130,7 +132,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
                 <Input
                   type="text"
                   placeholder="Staking multiplier"
-                  value={`${formatFloat(+utils.formatUnits(airdropInfo.stakingDistRate ?? BigNumber.from(0), 2))}x`}
+                  value={airdropInfo.stakingDistRate ? `${formatFloat(+utils.formatUnits(airdropInfo.stakingDistRate, 2))}x` : '0x'}
                   readOnly
                 />
               </Col>
@@ -140,7 +142,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
                   <Input
                     type="text"
                     placeholder="Hex Staking"
-                    value={formatZeroDecimal(airdropInfo.stakingShareAmount, 9)}
+                    value={airdropInfo.stakingShareAmount ? formatFloat(+utils.formatUnits(airdropInfo.stakingShareAmount, 9)) : "0"}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -155,7 +157,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
               <Col sm="3"></Col>
               <Col sm="8">
                 <span>Day: <strong className="ml-1">{formatFloat(airdropInfo.curAirdropDay)}</strong></span>
-                <span className="ml-4">Daily Pool Total: <strong className="ml-1">{formatZeroDecimal(airdropInfo.curDayPoolAmount)}</strong></span>
+                <span className="ml-4">Daily Pool Total: <strong className="ml-1">{airdropInfo.curDayPoolAmount ? formatFloat(+utils.formatUnits(airdropInfo.curDayPoolAmount)) : "0"}</strong></span>
               </Col>
             </Row>
           </FormGroup>
@@ -167,7 +169,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
                   <Input
                     type="text"
                     placeholder="Share of Pool"
-                    value={formatFloat(+utils.formatUnits(airdropInfo.shareOfPool ?? BigNumber.from(0), 1))}
+                    value={airdropInfo.shareOfPool ? formatFloat(+utils.formatUnits(airdropInfo.shareOfPool, 1)) : "0"}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -185,7 +187,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
                   <Input
                     type="text"
                     placeholder="Total Hexit"
-                    value={formatDecimal(airdropInfo.curDaySupplyHEXIT)}
+                    value={airdropInfo.curDaySupplyHEXIT ? formatFloat(+utils.formatUnits(airdropInfo.curDaySupplyHEXIT)) : "0"}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">

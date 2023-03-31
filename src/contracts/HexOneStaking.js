@@ -55,7 +55,7 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Stake failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Stake failed! " + e.message };
+                    return { status: "failed", error: "Stake failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Stake failed!" };
                 }
@@ -75,7 +75,7 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Unstake failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Unstake failed! " + e.message };
+                    return { status: "failed", error: "Unstake failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Unstake failed!" };
                 }
@@ -95,7 +95,7 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Claim failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Claim failed! " + e.message };
+                    return { status: "failed", error: "Claim failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Claim failed!" };
                 }

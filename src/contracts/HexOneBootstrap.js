@@ -32,12 +32,25 @@ export default (function() {
             return result;
         },
 
-        getCurrentDay: async () => {
+        getCurrentSacrificeDay: async () => {
             let currentDay = BigNumber.from(1);
             if (!contract) return currentDay;
     
             try {
                 currentDay = await contract.getCurrentSacrificeDay();
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return currentDay;
+        },
+
+        getCurrentAirdropDay: async () => {
+            let currentDay = BigNumber.from(1);
+            if (!contract) return currentDay;
+    
+            try {
+                currentDay = await contract.getCurrentAirdropDay();
             } catch (e) {
                 console.error(e);
             }
@@ -123,7 +136,7 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Sacrifice failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Sacrifice failed! " + e.message };
+                    return { status: "failed", error: "Sacrifice failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Sacrifice failed!" };
                 }
@@ -143,13 +156,29 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Claim failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Claim failed! " + e.message };
+                    return { status: "failed", error: "Claim failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Claim failed!"};
                 }
             }
     
             return { status: "success" };
+        },
+
+        checkAirdropInfo: async (address) => {
+            let requested = false;
+            if (!contract) return requested;
+    
+            try {
+                const info = await contract.requestAirdropInfo(address);
+                if (!info.airdropId.isZero()) {
+                    requested = true;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+
+            return requested;
         },
 
         requestAirdrop: async () => {
@@ -163,7 +192,7 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Request Airdrop failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Request Airdrop failed! " + e.message };
+                    return { status: "failed", error: "Request Airdrop failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Request Airdrop failed!" };
                 }
@@ -183,7 +212,7 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Claim Airdrop failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Claim Airdrop failed! " + e.message };
+                    return { status: "failed", error: "Claim Airdrop failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Claim Airdrop failed!" };
                 }

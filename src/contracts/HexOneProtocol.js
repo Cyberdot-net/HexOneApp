@@ -46,7 +46,7 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Borrow failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Borrow failed! " + e.message };
+                    return { status: "failed", error: "Borrow failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Borrow failed!" };
                 }
@@ -66,7 +66,7 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Claim failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Claim failed! " + e.message };
+                    return { status: "failed", error: "Claim failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Claim failed!" };
                 }

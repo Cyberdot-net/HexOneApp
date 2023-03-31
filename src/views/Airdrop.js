@@ -7,9 +7,7 @@ import {
   Alert,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Line } from "react-chartjs-2";
 import { utils } from "ethers";
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import Pagination from "components/Common/Pagination";
 import ClaimHexitModal from "components/Modals/ClaimHexit";
@@ -24,7 +22,6 @@ export default function Bootstrap() {
   const { timer } = useContext(TimerContext);
   const [ currentDay, setCurrentDay ] = useState(1);
   const [ airdropList, setAirdropList ] = useState([]);
-  const [ chartData, setChartData ] = useState(null);
   const [ page, setPage ] = useState(1);
   const [ isOpen, setOpen ] = useState(false);
 
@@ -33,10 +30,9 @@ export default function Bootstrap() {
     if (!timer || !HexOneBootstrap.connected()) return;
 
     const getData = async () => {
-      const day = await HexOneBootstrap.getCurrentDay();
+      const day = await HexOneBootstrap.getCurrentAirdropDay();
       setCurrentDay(day);
       setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
-      await getAnalsysis(day);
     }
 
     getData();
@@ -47,28 +43,15 @@ export default function Bootstrap() {
 
   useEffect(() => {
     if (!address) return;
-
-    // setChartData({
-    //   labels: ['1', '2', '3'],
-    //   datasets: [
-    //     {
-    //       label: 'Total Hexit',
-    //       data: [15000000, 7500000, 4250000],
-    //       borderColor: 'rgb(53, 162, 235)',
-    //       backgroundColor: 'transparent',
-    //     },
-    //   ],
-    // });
     
     HexOneBootstrap.setProvider(provider);
 
     const getData = async () => {
       showLoading();
 
-      const day = await HexOneBootstrap.getCurrentDay();
+      const day = await HexOneBootstrap.getCurrentAirdropDay();
       setCurrentDay(day);
       setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
-      await getAnalsysis(day);
       
       hideLoading();
     }
@@ -78,39 +61,13 @@ export default function Bootstrap() {
     // eslint-disable-next-line
   }, [ address, provider ]);
 
-  const getAnalsysis = async (day) => {
-
-    const analysisList = await HexOneBootstrap.getAirdropDailyHistory(day);
-
-    const labels = analysisList.map(r => r.day.toString() || "");
-    const data = analysisList.map(r => +utils.formatUnits(r.supplyAmount));
-
-    if (data.length > 0) {
-      setChartData({
-        labels: labels,
-        datasets: [
-          {
-            label: 'Total Hexit',
-            data: data,
-            
-            borderColor: 'rgb(53, 162, 235)',
-            backgroundColor: 'transparent',
-          },
-        ],
-      });
-    } else {
-      setChartData(null);
-    }
-
-  };
-
+  
   const showClaim = () => {
     setOpen(true);
   }
 
   const doClaimHexit = async () => {
     setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
-    getAnalsysis(currentDay);
   }
 
   return (
@@ -181,13 +138,13 @@ export default function Bootstrap() {
                       <td className="text-center">{r.airdropId.toString()}</td>
                       <td>{r.requestedDay.toString()}</td>
                       <td>${formatFloat(+utils.formatUnits(r.sacrificeUSD))}</td>
-                      <td>{+r.sacrificeMultiplier}x</td>
-                      <td>${formatFloat(+utils.formatUnits(r.hexShares))}</td>
-                      <td>{+r.hexShareMultiplier}x</td>
+                      <td>{formatFloat(+utils.formatUnits(r.sacrificeMultiplier, 2))}x</td>
+                      <td>${formatFloat(+utils.formatUnits(r.hexShares, 9))}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.hexShareMultiplier, 2))}x</td>
                       <td>${formatFloat(+utils.formatUnits(r.totalUSD))}</td>
                       <td>${formatFloat(+utils.formatUnits(r.dailySupplyAmount))} HEXIT</td>
-                      <td>{+r.shareOfPool}%</td>
-                      <td>{formatFloat(r.claimedAmount)} HEXIT</td>
+                      <td>{formatFloat(+utils.formatUnits(r.shareOfPool, 1))}%</td>
+                      <td>{formatFloat(+utils.formatUnits(r.claimedAmount, 9))} HEXIT</td>
                     </tr>
                   )) : <tr>
                     <td colSpan={10} className="text-center">                
@@ -210,50 +167,6 @@ export default function Bootstrap() {
                 perPage={ITEMS_PER_PAGE}
                 onChange={p => setPage(p)}
               />
-            </Col>
-          </Row>
-        </Container>
-      </section>
-      <section className="section section-lg section-tables">
-        <Container>
-          <Row>
-            <Col md="4">
-              <hr className="line-info" />
-              <h2>Analysis</h2>
-            </Col>
-          </Row>
-          <Row className="center">
-            <Col lg="8" md="12">
-              {chartData ? 
-              <Line
-                data={chartData}
-                plugins={[ ChartDataLabels ]}
-                legend={{
-                  labels: {
-                    padding: 20,
-                  },
-                }}
-                options= {{
-                  layout: { padding: 50 },
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      position: 'top',
-                    },
-                    datalabels: {
-                      color: "rgba(255, 255, 255, 0.8)",
-                      align: "top",                      
-                      formatter: function(value) {
-                        return formatFloat(+value);
-                      },
-                    },
-                  },
-                }}
-                /> :
-                <h3 className="text-center mb-5">
-                  No Analysis Data
-                </h3>
-              }
             </Col>
           </Row>
         </Container>

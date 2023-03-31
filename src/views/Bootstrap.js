@@ -47,7 +47,7 @@ export default function Bootstrap() {
 
     const getData = async () => {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals["HEX"])));
-      setCurrentDay(await HexOneBootstrap.getCurrentDay());
+      setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
       
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
@@ -82,7 +82,7 @@ export default function Bootstrap() {
       setDecimals(ercDecimals);
 
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", ercDecimals["HEX"])));
-      setCurrentDay(await HexOneBootstrap.getCurrentDay());
+      setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
       
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
@@ -236,6 +236,7 @@ export default function Bootstrap() {
                           id="claim"
                           className="btn btn-primary btn-sm w-full"
                           onClick={() => onClickClaim(r.sacrificeId)}
+                          disabled={r.claimed}
                         >
                           Claim<br/>$HEXIT
                         </Button>

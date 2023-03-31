@@ -114,7 +114,7 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Approve failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Approve failed! " + e.message };
+                    return { status: "failed", error: "Approve failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Approve failed!" };
                 }
@@ -134,7 +134,7 @@ export default (function() {
                 if (e.error?.message) {
                     return { status: "failed", error: "Mint failed! " + e.error?.message };
                 } else if (e.message) {
-                    return { status: "failed", error: "Mint failed! " + e.message };
+                    return { status: "failed", error: "Mint failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
                     return { status: "failed", error: "Mint failed!" };
                 }
