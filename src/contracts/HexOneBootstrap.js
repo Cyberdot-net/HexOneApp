@@ -9,6 +9,10 @@ export default (function() {
 
     return {
 
+        connected: () => {
+            return contract !== null;
+        },
+
         setProvider: (provider) => {
             if (provider) {
                 contract = new Contract(HexOneBootstrap_Addr.contract, HexOneBootstrap_Abi, provider.getSigner());
@@ -61,7 +65,6 @@ export default (function() {
             try {
                 list = await contract.getUserSacrificeInfo(address);
                 list = [...list].sort((a, b) => (+a.sacrificeId) - (+b.sacrificeId));
-                console.log(list);
             } catch (e) {
                 console.error(e);
             }

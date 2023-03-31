@@ -11,6 +11,10 @@ export default (function() {
 
     return {
 
+        connected: () => {
+            return contract !== null;
+        },
+
         setProvider: (newProvider) => {
             provider = newProvider;
         },

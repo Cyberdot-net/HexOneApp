@@ -16,7 +16,7 @@ import { Pie } from "react-chartjs-2";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import ChartDataOutLabels from 'chartjs-plugin-piechart-outlabels';
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
-import { WalletContext, LoadingContext } from "providers/Contexts";
+import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
 import { HexOneStaking } from "contracts";
 import { TOKENS } from "contracts/Constants";
 import { formatFloat, isEmpty } from "common/utilities";
@@ -35,8 +35,27 @@ export default function Staking() {
 
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
+  const { timer } = useContext(TimerContext);
   const [ data, setData ] = useState([]);
   const [ chartData, setChartData ] = useState(null);
+
+  
+  useEffect(() => {
+    if (!timer || !HexOneStaking.connected()) return;
+
+    const getData = async () => {
+      const stakeList = await HexOneStaking.getStakingList();
+      setData(stakeList.map(r => {
+        return { ...r, stakingAmt: { value: "", bignum: BigNumber.from(0) }, open: false }
+      }));
+      drawPieChart(stakeList);
+    }
+
+    getData();
+
+    // eslint-disable-next-line
+  }, [ timer ]);
+
 
   useEffect(() => {
     if (!address) return;

@@ -13,7 +13,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
-import { WalletContext, LoadingContext } from "providers/Contexts";
+import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
 import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
@@ -24,15 +24,31 @@ import { isEmpty, formatFloat } from "common/utilities";
 
 export default function Overview() {
   const { address, provider } = useContext(WalletContext);
+  const { timer } = useContext(TimerContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [ isTestNet, setIsTestNet ] = useState(false);
-  const [ hexDecimals, setHexDecimals ] = useState(BigNumber.from(0));
+  const [ hexDecimals, setHexDecimals ] = useState(0);
   const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
   const [ history, setHistory ] = useState([]);
   const [ liquidates, setLiquidates ] = useState([]);
   const [ isBorrowOpen, setBorrowOpen ] = useState(false);
   const [ reborrow, setReborrow ] = useState({ show: false, data: {} });
   const [ page, setPage ] = useState(1);
+
+  
+  useEffect(() => {
+    if (!timer || !HexOnePriceFeed.connected() || !hexDecimals) return;
+
+    const getData = async () => {
+      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", hexDecimals)));
+      setHistory(await HexOneVault.getHistory(address));
+      setLiquidates(await HexOneVault.getLiquidableDeposits());
+    }
+
+    getData();    
+    // eslint-disable-next-line
+  }, [ timer ]);
+
 
   useEffect(() => {
     if (!address) return;

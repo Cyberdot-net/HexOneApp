@@ -13,7 +13,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import Pagination from "components/Common/Pagination";
 import ClaimHexitModal from "components/Modals/ClaimHexit";
-import { WalletContext, LoadingContext } from "providers/Contexts";
+import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
 import { HexOneBootstrap } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import { formatFloat } from "common/utilities";
@@ -21,11 +21,29 @@ import { formatFloat } from "common/utilities";
 export default function Bootstrap() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
+  const { timer } = useContext(TimerContext);
   const [ currentDay, setCurrentDay ] = useState(1);
   const [ airdropList, setAirdropList ] = useState([]);
   const [ chartData, setChartData ] = useState(null);
   const [ page, setPage ] = useState(1);
   const [ isOpen, setOpen ] = useState(false);
+
+  
+  useEffect(() => {
+    if (!timer || !HexOneBootstrap.connected()) return;
+
+    const getData = async () => {
+      const day = await HexOneBootstrap.getCurrentDay();
+      setCurrentDay(day);
+      setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
+      await getAnalsysis(day);
+    }
+
+    getData();
+    
+    // eslint-disable-next-line
+  }, [ timer ]);
+
 
   useEffect(() => {
     if (!address) return;
@@ -59,7 +77,6 @@ export default function Bootstrap() {
 
     // eslint-disable-next-line
   }, [ address, provider ]);
-  
 
   const getAnalsysis = async (day) => {
 
@@ -243,7 +260,6 @@ export default function Bootstrap() {
       </section>
       {isOpen && <ClaimHexitModal 
         show={isOpen}
-        day={currentDay}
         onClaim={doClaimHexit}
         onClose={() => setOpen(false)}
       />}

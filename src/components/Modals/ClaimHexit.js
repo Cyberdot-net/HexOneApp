@@ -14,13 +14,14 @@ import {
   InputGroupText,
   UncontrolledTooltip,
 } from "reactstrap";
+import { utils, BigNumber } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneBootstrap } from "contracts";
 import { formatFloat, formatDecimal, formatZeroDecimal } from "common/utilities";
 
 
-export default function ClaimHexit({ show, onClose, onClaim, day }) {
+export default function ClaimHexit({ show, onClose, onClaim }) {
 
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
@@ -102,7 +103,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                 <Input
                   type="text"
                   placeholder="Sacrifice multiplier"
-                  value={`${formatFloat(+airdropInfo.sacrificeDistRate)}x`}
+                  value={`${formatFloat(+utils.formatUnits(airdropInfo.sacrificeDistRate ?? BigNumber.from(0), 2))}x`}
                   readOnly
                 />
               </Col>
@@ -112,7 +113,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                   <Input
                     type="text"
                     placeholder="Total Sacrificed"
-                    value={formatDecimal(airdropInfo.sacrificedAmount)}
+                    value={formatZeroDecimal(airdropInfo.sacrificedAmount)}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -129,7 +130,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                 <Input
                   type="text"
                   placeholder="Staking multiplier"
-                  value={`${formatFloat(+airdropInfo.stakingDistRate)}x`}
+                  value={`${formatFloat(+utils.formatUnits(airdropInfo.stakingDistRate ?? BigNumber.from(0), 2))}x`}
                   readOnly
                 />
               </Col>
@@ -139,7 +140,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                   <Input
                     type="text"
                     placeholder="Hex Staking"
-                    value={formatDecimal(airdropInfo.stakingShareAmount)}
+                    value={formatZeroDecimal(airdropInfo.stakingShareAmount, 9)}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -153,7 +154,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
             <Row>
               <Col sm="3"></Col>
               <Col sm="8">
-                <span>Day: <strong className="ml-1">{formatFloat(+airdropInfo.curAirdropDay)}</strong></span>
+                <span>Day: <strong className="ml-1">{formatFloat(airdropInfo.curAirdropDay)}</strong></span>
                 <span className="ml-4">Daily Pool Total: <strong className="ml-1">{formatZeroDecimal(airdropInfo.curDayPoolAmount)}</strong></span>
               </Col>
             </Row>
@@ -166,7 +167,7 @@ export default function ClaimHexit({ show, onClose, onClaim, day }) {
                   <Input
                     type="text"
                     placeholder="Share of Pool"
-                    value={formatDecimal(airdropInfo.shareOfPool)}
+                    value={formatFloat(+utils.formatUnits(airdropInfo.shareOfPool ?? BigNumber.from(0), 1))}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">

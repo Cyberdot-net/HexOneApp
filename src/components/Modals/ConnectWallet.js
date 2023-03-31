@@ -6,13 +6,12 @@ import {
 } from "reactstrap";
 import { ethers } from "ethers";
 import { useState } from "react";
-import { WalletContext, ConnectWalletContext } from "providers/Contexts";
+import { WalletContext } from "providers/Contexts";
 import { networks } from "contracts/Constants";
 
 export default function ConnectWallet() {
   
-  const { setProvider, address } = useContext(WalletContext);
-  const { open, showModal } = useContext(ConnectWalletContext);
+  const { setProvider, showModal, address, open } = useContext(WalletContext);
   const [ message, setMessage ] = useState({ show: false, error: "", msg: "" });
   const [ connecting, setConnecting ] = useState(false);
 

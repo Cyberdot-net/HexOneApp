@@ -23,17 +23,17 @@ export const isEmpty = (value) => {
 }
 
 export const formatDecimal = (num, decimal = 18) => {
-  if (!+num) return "";
+  if (isNaN(num) || !+num) return "";
   return utils.commify(utils.formatUnits(num, decimal));
 }
 
 export const formatZeroDecimal = (num, decimal = 18) => {
-  if (!+num) return "0";
+  if (isNaN(num) || !+num) return "0";
   return utils.commify(utils.formatUnits(num, decimal));
 }
 
 export const formatFloat = (num, decimal = 2) => {
-  if (!num) return "0";
+  if (!num || isNaN(num)) return "0";
   const result = new Intl.NumberFormat('en-US', { maximumFractionDigits: decimal }).format(num);
   return result === "-0" ? "0" : result;
 }

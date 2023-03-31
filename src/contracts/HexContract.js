@@ -11,6 +11,10 @@ export default (function() {
 
     return {
 
+        connected: () => {
+            return contract !== null;
+        },
+
         setProvider: (provider) => {
             if (provider) {
                 contract = new Contract(HexMockToken_Addr.contract, HexMockToken_Abi, provider.getSigner());

@@ -17,7 +17,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { ethers } from "ethers";
-import { WalletContext, ConnectWalletContext } from "providers/Contexts";
+import { WalletContext } from "providers/Contexts";
 import { getShortAddress } from "common/utilities";
 import { networks } from "contracts/Constants";
 
@@ -30,8 +30,7 @@ const menus = [
 export default function IndexNavbar() {
   
   const history = useHistory();
-  const { setProvider, setAddress, address } = useContext(WalletContext);
-  const { showModal } = useContext(ConnectWalletContext);
+  const { setProvider, setAddress, showModal, address } = useContext(WalletContext);
   const [ collapseOpen, setCollapseOpen ] = useState(false);
   const [ collapseOut, setCollapseOut ] = useState("");
   const [ color, setColor ] = useState("navbar-transparent");

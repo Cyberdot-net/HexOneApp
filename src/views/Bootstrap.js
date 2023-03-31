@@ -14,7 +14,7 @@ import ChartDataOutLabels from 'chartjs-plugin-piechart-outlabels';
 import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import SacrificeModal from "components/Modals/Sacrifice";
-import { WalletContext, LoadingContext } from "providers/Contexts";
+import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
 import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap, HexOneEscrow, Erc20Contract } from "contracts";
 import { ERC20 } from "contracts/Constants";
 import { isEmpty, formatFloat } from "common/utilities";
@@ -32,6 +32,7 @@ const backgroundColor = {
 export default function Bootstrap() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
+  const { timer } = useContext(TimerContext);
   const [ decimals, setDecimals ] = useState({});
   const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
   const [ currentDay, setCurrentDay ] = useState(1);
@@ -39,6 +40,25 @@ export default function Bootstrap() {
   const [ sacrificeList, setSacrificeList ] = useState([]);
   const [ shareInfo, setShareInfo ] = useState(null);
   const [ chartData, setChartData ] = useState(null);
+  
+
+  useEffect(() => {
+    if (!timer || !HexOneBootstrap.connected() || Object.keys(decimals).length === 0) return;
+
+    const getData = async () => {
+      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals["HEX"])));
+      setCurrentDay(await HexOneBootstrap.getCurrentDay());
+      setShareInfo(await HexOneEscrow.getOverview(address));
+      
+      const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
+      setSacrificeList(sacrificeData);
+      drawPieChart(sacrificeData, decimals)
+    }
+
+    getData();    
+    // eslint-disable-next-line
+  }, [ timer ]);
+
   
   useEffect(() => {
     if (!address) return;

@@ -8,6 +8,10 @@ export default (function() {
 
     return {
 
+        connected: () => {
+            return contract !== null;
+        },
+
         setProvider: (provider) => {
             if (provider) {
                 contract = new Contract(HexOneProtocol_Addr.contract, HexOneProtocol_Abi, provider.getSigner());

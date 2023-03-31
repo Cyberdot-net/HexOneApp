@@ -8,6 +8,10 @@ export default (function() {
 
     return {
 
+        connected: () => {
+            return contract !== null;
+        },
+
         setProvider: (provider) => {
             if (provider) {
                 contract = new Contract(HexOneEscrow_Addr.contract, HexOneEscrow_Abi, provider.getSigner());

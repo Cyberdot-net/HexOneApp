@@ -5,24 +5,11 @@ import { WalletContext } from "./Contexts";
 const WalletProvider = ({ children }) => {
   const [ provider, setWalletProvider ] = useState(null);
   const [ address, setWalletAddress ] = useState("");
+  const [ open, setOpen ] = useState(false);
 
-  // useEffect(() => {
-  //   async function getWalletAddress() {
-  //     if (typeof window.ethereum !== 'undefined') {
-  //       // Enable Ethereum
-  //       await window.ethereum.enable();
-
-  //       // Get wallet address
-  //       const walletProvider = new ethers.providers.Web3Provider(window.ethereum);
-  //       const walletAddress = await walletProvider.getSigner().getAddress();
-
-  //       setWalletProvider(walletProvider);
-  //       setWalletAddress(walletAddress);
-  //     }
-  //   }
-
-  //   getWalletAddress();
-  // }, []);
+  function showModal(show) {
+    setOpen(show);
+  }
 
   async function setProvider(provider) {
     setWalletProvider(provider);
@@ -43,6 +30,8 @@ const WalletProvider = ({ children }) => {
       value={{
         provider,
         address,
+        open,
+        showModal,
         setProvider,
         setAddress
       }}

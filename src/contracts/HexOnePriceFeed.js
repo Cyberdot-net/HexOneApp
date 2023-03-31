@@ -7,6 +7,10 @@ export default (function() {
     let contract = null;
 
     return {
+
+        connected: () => {
+            return contract !== null;
+        },
         
         setProvider: (provider) => {
             if (provider) {

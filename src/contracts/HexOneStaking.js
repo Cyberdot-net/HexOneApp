@@ -8,6 +8,10 @@ export default (function() {
 
     return {
 
+        connected: () => {
+            return contract !== null;
+        },
+
         setProvider: (provider) => {
             if (provider) {
                 contract = new Contract(HexOneStakingMaster_Addr.contract, HexOneStaking_Abi, provider.getSigner());
