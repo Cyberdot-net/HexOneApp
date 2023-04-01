@@ -144,7 +144,7 @@ export default function Bootstrap() {
                       <td>${formatFloat(+utils.formatUnits(r.totalUSD))}</td>
                       <td>${formatFloat(+utils.formatUnits(r.dailySupplyAmount))} HEXIT</td>
                       <td>{formatFloat(+utils.formatUnits(r.shareOfPool, 1))}%</td>
-                      <td>{formatFloat(+utils.formatUnits(r.claimedAmount, 9))} HEXIT</td>
+                      <td>{formatFloat(+utils.formatUnits(r.claimedAmount))} HEXIT</td>
                     </tr>
                   )) : <tr>
                     <td colSpan={10} className="text-center">                
