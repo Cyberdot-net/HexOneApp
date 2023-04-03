@@ -267,7 +267,7 @@ export default function Staking() {
                         <td>{r.tokenSymbol}</td>
                         <td>{formatFloat(+utils.formatUnits(r.stakedAmount, r.decimals))} {r.tokenSymbol}</td>
                         <td>{formatFloat(r.shareOfPool / 10)}%</td>
-                        <td>{`${+r.hexAPR}%`} $HEX<br/>{+r.hexitAPR}% $HEXIT</td>
+                        <td>{`${formatFloat(+r.hexAPR / 100)}%`} $HEX<br/>{formatFloat(+r.hexitAPR / 100)}% $HEXIT</td>
                         <td>
                             {formatFloat(+utils.formatUnits(r.earnedHexAmount))} $HEX
                             <br/>
@@ -305,7 +305,7 @@ export default function Staking() {
                                         onChange={e => changeStakingAmt(r.token, e.target.value)} 
                                       />
                                       <InputGroupAddon addonType="append">
-                                        <InputGroupText>$</InputGroupText>
+                                        <InputGroupText>{r.tokenSymbol}</InputGroupText>
                                       </InputGroupAddon>
                                     </InputGroup>
                                   </Col>
