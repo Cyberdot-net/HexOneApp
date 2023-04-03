@@ -45,12 +45,25 @@ export default (function() {
             return balance;
         },
 
+        getSymbol: async () => {
+            let symbol = "";
+            if (!contract) return symbol;
+    
+            try {
+                symbol = await contract.symbol();
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return symbol;
+        },
+
         allowance: async (owner, spender) => {
             let amount = BigNumber.from(0);
             if (!contract) return amount;
     
             try {
-                amount = await contract.allowance(owner, spender); // HexOneBootstrap_Addr.contract
+                amount = await contract.allowance(owner, spender);
             } catch (e) {
                 console.error(e);
             }

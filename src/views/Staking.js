@@ -19,7 +19,6 @@ import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
 import { HexOneStaking, ERC20Contract } from "contracts";
 import { HexOneStakingMaster_Addr } from "contracts/address";
-import { TOKENS } from "contracts/Constants";
 import { formatFloat, isEmpty } from "common/utilities";
 
 
@@ -45,18 +44,13 @@ export default function Staking() {
     if (!timer || !HexOneStaking.connected()) return;
 
     const getData = async () => {
-      const stakeList = await HexOneStaking.getStakingList(address);
-      setData(stakeList.map(r => {
-        return { ...r, stakingAmt: { value: "", bignum: BigNumber.from(0) }, open: false }
-      }));
-      drawPieChart(stakeList);
+      await getStakeList();
     }
 
     getData();
 
     // eslint-disable-next-line
   }, [ timer ]);
-
 
   useEffect(() => {
     if (!address) return;
@@ -66,11 +60,7 @@ export default function Staking() {
     const getData = async () => {
       showLoading();
 
-      const stakeList = await HexOneStaking.getStakingList(address);
-      setData(stakeList.map(r => {
-        return { ...r, stakingAmt: { value: "", bignum: BigNumber.from(0) }, open: false }
-      }));
-      drawPieChart(stakeList);
+      await getStakeList();
       
       hideLoading();
     }
@@ -81,8 +71,8 @@ export default function Staking() {
   }, [ address, provider ]);
 
   const drawPieChart = async (stakeList) => {
-    const labels = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => TOKENS.find(t => t.token === r.token)?.name || "");
-    const data = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => +utils.formatUnits(r.totalLockedUSD));
+    const labels = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => r.tokenSymbol);
+    const data = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => formatFloat(+utils.formatUnits(r.totalLockedUSD)));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
     if (data.length > 0) {
@@ -104,15 +94,33 @@ export default function Staking() {
   }
 
   const getStakeList = async () => {
-    const stakeList = await HexOneStaking.getStakingList(address);
 
-    setData(prevData => {
-      return stakeList.map(r => {
-        const open = prevData.find(row => row.token === r.token)?.open || false;
-        return { ...r, stakingAmt: { value: "", bignum: BigNumber.from(0) }, open }
-      })
-    });
-    drawPieChart(stakeList);
+    try {
+  
+      const result = await HexOneStaking.getStakingList(address);
+      let stakeList = result.map(r => {
+        return { ...r }
+      });
+  
+      for (let k in stakeList) {
+        ERC20Contract.setProvider(provider, stakeList[k].token);
+        stakeList[k]['tokenSymbol'] = await ERC20Contract.getSymbol();
+        stakeList[k]['decimals'] = await ERC20Contract.getDecimals();
+      }
+  
+      setData(prevData => {
+        return stakeList.map(r => {
+          const open = prevData.find(row => row.token === r.token)?.open || false;
+          return { ...r, stakingAmt: { value: "", bignum: BigNumber.from(0) }, open }
+        })
+      });
+
+      drawPieChart(stakeList);
+    } catch (e) {
+      console.error(e);
+      setData([]);
+      drawPieChart([]);
+    }
   }
 
   const onClickShow = (token) => {
@@ -142,8 +150,7 @@ export default function Staking() {
 
     ERC20Contract.setProvider(provider, row.token);
 
-    const decimals = await ERC20Contract.getDecimals();
-    const amount = row.stakingAmt['bignum'].div(utils.parseUnits("1", 18 - decimals));
+    const amount = row.stakingAmt['bignum'].div(utils.parseUnits("1", 18 - row.decimals));
     
     let res = await ERC20Contract.approve(HexOneStakingMaster_Addr.contract, amount);
     if (res.status !== "success") {
@@ -162,7 +169,7 @@ export default function Staking() {
     getStakeList();
     hideLoading();
 
-    toast.info("Stake success!");
+    toast.success("Stake success!");
   }
 
   const onUnstake = async (row) => {
@@ -172,8 +179,7 @@ export default function Staking() {
 
     ERC20Contract.setProvider(provider, row.token);
 
-    const decimals = await ERC20Contract.getDecimals();
-    const amount = row.stakingAmt['bignum'].div(utils.parseUnits("1", 18 - decimals));
+    const amount = row.stakingAmt['bignum'].div(utils.parseUnits("1", 18 - row.decimals));
 
     const res = await HexOneStaking.unstakeToken(row.token, amount)
     if (res.status !== "success") {
@@ -185,7 +191,7 @@ export default function Staking() {
     getStakeList();
     hideLoading();
 
-    toast.info("Unstake success!");
+    toast.success("Unstake success!");
   }
 
   const onClaim = async (row) => {
@@ -208,7 +214,7 @@ export default function Staking() {
     getStakeList();
     hideLoading();
 
-    toast.info("Claim success!");
+    toast.success("Claim success!");
   }
 
   return (
@@ -258,8 +264,8 @@ export default function Staking() {
                   {data.length > 0 ? data.map((r) => (
                     <React.Fragment key={r.token}>
                       <tr>
-                        <td>{TOKENS.find(t => t.token === r.token)?.name}</td>
-                        <td>{formatFloat(+utils.formatUnits(r.stakedAmount, 8))} HEX</td>
+                        <td>{r.tokenSymbol}</td>
+                        <td>{formatFloat(+utils.formatUnits(r.stakedAmount, r.decimals))} {r.tokenSymbol}</td>
                         <td>{formatFloat(r.shareOfPool / 10)}%</td>
                         <td>{`${+r.hexAPR}%`} $HEX<br/>{+r.hexitAPR}% $HEXIT</td>
                         <td>
@@ -269,7 +275,7 @@ export default function Staking() {
                         </td>
                         <td>{r.stakedTime.toString()} {+r.stakedTime > 1 ? "days" : "day"}</td>
                         <td>${formatFloat(+utils.formatUnits(r.totalLockedUSD))}</td>
-                        <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount, 8))}</td>
+                        <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals))} {r.tokenSymbol}</td>
                         <td>
                             {r.hexMultiplier > 0 && `${formatFloat(r.hexMultiplier / 1000)}x`}
                             {r.hexMultiplier > 0 && <br />}
