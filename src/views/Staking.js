@@ -80,8 +80,8 @@ export default function Staking() {
   }, [ address, provider ]);
 
   const drawPieChart = async (stakeList) => {
-    const labels = stakeList.map(r => TOKENS.find(t => t.token === r.token)?.name || "");
-    const data = stakeList.map(r => +utils.formatUnits(r.totalLockedUSD));
+    const labels = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => TOKENS.find(t => t.token === r.token)?.name || "");
+    const data = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => +utils.formatUnits(r.totalLockedUSD));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
     if (data.length > 0) {
