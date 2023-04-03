@@ -267,7 +267,7 @@ export default function Staking() {
                         <td>{r.tokenSymbol}</td>
                         <td>{formatFloat(+utils.formatUnits(r.stakedAmount, r.decimals))} {r.tokenSymbol}</td>
                         <td>{formatFloat(r.shareOfPool / 10)}%</td>
-                        <td>{`${formatFloat(+r.hexAPR / 100)}%`} $HEX<br/>{formatFloat(+r.hexitAPR / 100)}% $HEXIT</td>
+                        <td>{`${formatFloat(+r.hexAPR / 1000)}%`} $HEX<br/>{formatFloat(+r.hexitAPR / 1000)}% $HEXIT</td>
                         <td>
                             {formatFloat(+utils.formatUnits(r.earnedHexAmount))} $HEX
                             <br/>
