@@ -17,7 +17,8 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import ChartDataOutLabels from 'chartjs-plugin-piechart-outlabels';
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
-import { HexOneStaking } from "contracts";
+import { HexOneStaking, ERC20Contract } from "contracts";
+import { HexOneStakingMaster_Addr } from "contracts/address";
 import { TOKENS } from "contracts/Constants";
 import { formatFloat, isEmpty } from "common/utilities";
 
@@ -138,13 +139,20 @@ export default function Staking() {
     if (isEmpty(row.stakingAmt['bignum'])) return;
 
     showLoading("Staking...");
-  
-    //const decimals = await Erc20Contract.getDecimals();
-    const decimals = 8;
 
+    ERC20Contract.setProvider(provider, row.token);
+
+    const decimals = await ERC20Contract.getDecimals();
     const amount = row.stakingAmt['bignum'].div(utils.parseUnits("1", 18 - decimals));
+    
+    let res = await ERC20Contract.approve(HexOneStakingMaster_Addr.contract, amount);
+    if (res.status !== "success") {
+      hideLoading();
+      toast.error(res.error ?? "Stake failed! Approve error!");
+      return;
+    }
 
-    const res = await HexOneStaking.stakeToken(row.token, amount)
+    res = await HexOneStaking.stakeToken(row.token, amount)
     if (res.status !== "success") {
       hideLoading();
       toast.error(res.error ?? "Stake failed!");
@@ -153,19 +161,21 @@ export default function Staking() {
 
     getStakeList();
     hideLoading();
+
+    toast.info("Stake success!");
   }
 
   const onUnstake = async (row) => {
     if (isEmpty(row.stakingAmt['bignum'])) return;
 
     showLoading("Unstaking...");
-  
-    //const decimals = await Erc20Contract.getDecimals();
-    const decimals = 8;
 
+    ERC20Contract.setProvider(provider, row.token);
+
+    const decimals = await ERC20Contract.getDecimals();
     const amount = row.stakingAmt['bignum'].div(utils.parseUnits("1", 18 - decimals));
 
-    const res = await HexOneStaking.unstakeToken(address, row.token, amount)
+    const res = await HexOneStaking.unstakeToken(row.token, amount)
     if (res.status !== "success") {
       hideLoading();
       toast.error(res.error ?? "Unstake failed!");
@@ -174,20 +184,21 @@ export default function Staking() {
 
     getStakeList();
     hideLoading();
+
+    toast.info("Unstake success!");
   }
 
   const onClaim = async (row) => {
     showLoading("Claiming...");
 
     const claimable = await HexOneStaking.claimable(address, row.token);
-
     if (!claimable) {
       hideLoading();
       toast.error("Can't Claimable!");
       return;
     }
 
-    const res = await HexOneStaking.claimRewards(address, row.token)
+    const res = await HexOneStaking.claimRewards(row.token)
     if (res.status !== "success") {
       hideLoading();
       toast.error(res.error ?? "Claim failed!");
@@ -196,6 +207,8 @@ export default function Staking() {
 
     getStakeList();
     hideLoading();
+
+    toast.info("Claim success!");
   }
 
   return (
@@ -246,8 +259,8 @@ export default function Staking() {
                     <React.Fragment key={r.token}>
                       <tr>
                         <td>{TOKENS.find(t => t.token === r.token)?.name}</td>
-                        <td>{formatFloat(+utils.formatUnits(r.stakedAmount))} HEX</td>
-                        <td>{formatFloat(r.shareOfPool)}%</td>
+                        <td>{formatFloat(+utils.formatUnits(r.stakedAmount, 8))} HEX</td>
+                        <td>{formatFloat(r.shareOfPool / 10)}%</td>
                         <td>{`${+r.hexAPR}%`} $HEX<br/>{+r.hexitAPR}% $HEXIT</td>
                         <td>
                             {formatFloat(+utils.formatUnits(r.earnedHexAmount))} $HEX
@@ -256,7 +269,7 @@ export default function Staking() {
                         </td>
                         <td>{r.stakedTime.toString()} {+r.stakedTime > 1 ? "days" : "day"}</td>
                         <td>${formatFloat(+utils.formatUnits(r.totalLockedUSD))}</td>
-                        <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount))}</td>
+                        <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount, 8))}</td>
                         <td>
                             {r.hexMultiplier > 0 && `${formatFloat(r.hexMultiplier / 1000)}x`}
                             {r.hexMultiplier > 0 && <br />}

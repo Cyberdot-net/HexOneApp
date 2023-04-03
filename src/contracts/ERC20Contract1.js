@@ -1,13 +1,10 @@
 import { Contract, BigNumber, utils } from "ethers";
 import { ERC20_Abi } from "./abis";
-import { Erc20_Tokens_Addr, HexOneBootstrap_Addr } from "./address";
 
 export default (function() {
     
-    let provider = null;
     let contract = null;
-    let decimals = 0;
-    let tokenType = "HEX";
+    let decimals = 8;
 
     return {
 
@@ -15,15 +12,9 @@ export default (function() {
             return contract !== null;
         },
 
-        setProvider: (newProvider) => {
-            provider = newProvider;
-        },
-
-        setTokenType: (type) => {
-            tokenType = type;
-            decimals = 0;
+        setProvider: (provider, token) => {
             if (provider) {
-                contract = new Contract(Erc20_Tokens_Addr[tokenType].contract, ERC20_Abi, provider.getSigner());
+                contract = new Contract(token, ERC20_Abi, provider.getSigner());
             }
         },
 
@@ -54,12 +45,12 @@ export default (function() {
             return balance;
         },
 
-        allowance: async (address) => {
+        allowance: async (owner, spender) => {
             let amount = BigNumber.from(0);
             if (!contract) return amount;
     
             try {
-                amount = await contract.allowance(address, HexOneBootstrap_Addr.contract);
+                amount = await contract.allowance(owner, spender); // HexOneBootstrap_Addr.contract
             } catch (e) {
                 console.error(e);
             }
@@ -67,11 +58,11 @@ export default (function() {
             return amount;
         },
 
-        approve: async (amount) => {
+        approve: async (spender, amount) => {
             if (!contract) return { status: "failed" };
     
             try {
-                const tx = await contract.approve(HexOneBootstrap_Addr.contract, amount);
+                const tx = await contract.approve(spender, amount);
                 await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {

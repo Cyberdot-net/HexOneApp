@@ -17,7 +17,8 @@ import {
 import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
-import { HexOnePriceFeed, HexOneBootstrap, Erc20Contract } from "contracts";
+import { HexOnePriceFeed, HexOneBootstrap, ERC20Contract } from "contracts";
+import { HexOneBootstrap_Addr, Erc20_Tokens_Addr } from "contracts/address";
 import { ERC20 } from "contracts/Constants";
 import { formatDecimal, formatZeroDecimal, formatFloat, isEmpty } from "common/utilities";
 
@@ -41,7 +42,6 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
     HexOnePriceFeed.setProvider(provider);
     HexOneBootstrap.setProvider(provider);
-    Erc20Contract.setProvider(provider);
 
     const getHexData = async () => {
       showLoading();
@@ -58,14 +58,15 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
   }, [ address, provider ]);
 
   useEffect(() => {
+    if (!address) return;
 
     const getHexData = async () => {
       showLoading();
 
-      Erc20Contract.setTokenType(erc20);
-      const decimals = await Erc20Contract.getDecimals();
+      ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
+      const decimals = await ERC20Contract.getDecimals();
+      setTotalHex(await ERC20Contract.getBalance(address));
       setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
-      setTotalHex(await Erc20Contract.getBalance(address));
 
       hideLoading();
     }
@@ -87,7 +88,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
   const onClickSacrifice = async () => {
     if (isEmpty(sacrificeAmt['bignum']) || sacrificeAmt['bignum'].gt(totalHex)) return;
 
-    const decimals = await Erc20Contract.getDecimals();
+    const decimals = await ERC20Contract.getDecimals();
 
     const amount = sacrificeAmt['bignum'].div(utils.parseUnits("1", 18 - decimals));
 
@@ -105,7 +106,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       setSacrificeAmt({ value: "", bignum: BigNumber.from(0) });
   
       onSacrifice();
-      setTotalHex(await Erc20Contract.getBalance(address));
+      setTotalHex(await ERC20Contract.getBalance(address));
       
       setApproved(false);
       hideLoading();
@@ -115,9 +116,9 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
       showLoading("Approving...");
 
-      const allowanceAmount = await Erc20Contract.allowance(address);
+      const allowanceAmount = await ERC20Contract.allowance(address, HexOneBootstrap_Addr.contract);
       if (allowanceAmount.lt(amount)) {
-        const res = await Erc20Contract.approve(amount);
+        const res = await ERC20Contract.approve(HexOneBootstrap_Addr.contract, amount);
         if (res.status !== "success") {
           hideLoading();
           toast.error(res.error ?? "Borrow failed! HEX Approve error!");

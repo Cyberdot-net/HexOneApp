@@ -15,7 +15,8 @@ import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import SacrificeModal from "components/Modals/Sacrifice";
 import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
-import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap, HexOneEscrow, Erc20Contract } from "contracts";
+import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap, HexOneEscrow, ERC20Contract } from "contracts";
+import { Erc20_Tokens_Addr } from "contracts/address";
 import { ERC20 } from "contracts/Constants";
 import { isEmpty, formatFloat } from "common/utilities";
 
@@ -69,15 +70,14 @@ export default function Bootstrap() {
     HexOneProtocol.setProvider(provider);
     HexOneBootstrap.setProvider(provider);
     HexOneEscrow.setProvider(provider);
-    Erc20Contract.setProvider(provider);
 
     const getData = async () => {
       showLoading();
 
       const ercDecimals = {};
       for (let erc of ERC20) {
-        Erc20Contract.setTokenType(erc.id);
-        ercDecimals[erc.id] = await Erc20Contract.getDecimals();
+        ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc.id].contract);
+        ercDecimals[erc.id] = await ERC20Contract.getDecimals();
       }
       setDecimals(ercDecimals);
 

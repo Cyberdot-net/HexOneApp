@@ -65,11 +65,11 @@ export default (function() {
             return { status: "success" };
         },
 
-        unstakeToken: async (address, token, amount) => {  
+        unstakeToken: async (token, amount) => {  
             if (!contract) return { status: "failed" };
     
             try {
-                const tx = await contract.unstake(address, token, amount);
+                const tx = await contract.unstake(token, amount);
                 await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {
@@ -85,11 +85,11 @@ export default (function() {
             return { status: "success" };
         },
 
-        claimRewards: async (address, token) => {  
+        claimRewards: async (token) => {  
             if (!contract) return { status: "failed" };
     
             try {
-                const tx = await contract.claimRewards(address, token);
+                const tx = await contract.claimRewards(token);
                 await tx.wait();
                 // const [transferEvent] = tr.events;
             } catch (e) {

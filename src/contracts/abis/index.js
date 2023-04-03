@@ -1,3 +1,4 @@
+import ERC20_Abi from "./ERC20Token.json";
 import Hexit_Abi from "./HEXIT.json";
 import HexMockToken_Abi from "./HexMockToken.json";
 import HexOneBootstrap_Abi from "./HexOneBootstrap.json";
@@ -9,9 +10,9 @@ import HexOneStaking_Abi from "./HexOneStaking.json";
 import HexOneStakingMaster_Abi from "./HexOneStakingMaster.json";
 import HexOneToken_Abi from "./HexOneToken.json";
 import HexOneVault_Abi from "./HexOneVault.json";
-import ERC20_Abi from "./ERC20.json";
 
 export {
+    ERC20_Abi,
     Hexit_Abi,
     HexMockToken_Abi,
     HexOneBootstrap_Abi,
@@ -23,5 +24,4 @@ export {
     HexOneStakingMaster_Abi,
     HexOneToken_Abi,
     HexOneVault_Abi,
-    ERC20_Abi
 }
