@@ -44,7 +44,7 @@ export default function Staking() {
     if (!timer || !HexOneStaking.connected()) return;
 
     const getData = async () => {
-      const stakeList = await HexOneStaking.getStakingList();
+      const stakeList = await HexOneStaking.getStakingList(address);
       setData(stakeList.map(r => {
         return { ...r, stakingAmt: { value: "", bignum: BigNumber.from(0) }, open: false }
       }));
@@ -65,7 +65,7 @@ export default function Staking() {
     const getData = async () => {
       showLoading();
 
-      const stakeList = await HexOneStaking.getStakingList();
+      const stakeList = await HexOneStaking.getStakingList(address);
       setData(stakeList.map(r => {
         return { ...r, stakingAmt: { value: "", bignum: BigNumber.from(0) }, open: false }
       }));
@@ -81,18 +81,18 @@ export default function Staking() {
 
   const drawPieChart = async (stakeList) => {
     const labels = stakeList.map(r => TOKENS.find(t => t.token === r.token)?.name || "");
-    const chartData = stakeList.map(r => +utils.formatUnits(r.totalLockedUSD));
+    const data = stakeList.map(r => +utils.formatUnits(r.totalLockedUSD));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
-    if (chartData.length > 0) {
+    if (data.length > 0) {
       setChartData({
         labels: labels,
         datasets: [
           {
             label: 'Total Value Locked USD',
-            data: chartData,
+            data: data,
             backgroundColor: backgroundColors,
-            borderColor: chartData.map(r => 'rgba(255, 255, 255, 0.3)'),
+            borderColor: data.map(r => 'rgba(255, 255, 255, 0.3)'),
             borderWidth: 2,
           },
         ],
@@ -103,7 +103,7 @@ export default function Staking() {
   }
 
   const getStakeList = async () => {
-    const stakeList = await HexOneStaking.getStakingList();
+    const stakeList = await HexOneStaking.getStakingList(address);
 
     setData(prevData => {
       return stakeList.map(r => {
@@ -123,11 +123,11 @@ export default function Staking() {
     });
   }
 
-  const changeStakingAmt = (e) => (token) => {
+  const changeStakingAmt = (token, value) => {
     setData(prevData => {
       return prevData.map(r => {
         if (r.token === token) {
-          r.stakingAmt = { value: e.target.value, bignum: utils.parseEther(e.target.value || "0") }
+          r.stakingAmt = { value: value, bignum: utils.parseEther(value || "0") }
         }
         return r;
       });
@@ -142,7 +142,7 @@ export default function Staking() {
     //const decimals = await Erc20Contract.getDecimals();
     const decimals = 8;
 
-    const amount = row.stakedAmount['bignum'].div(utils.parseUnits("1", 18 - decimals));
+    const amount = row.stakingAmt['bignum'].div(utils.parseUnits("1", 18 - decimals));
 
     const res = await HexOneStaking.stakeToken(row.token, amount)
     if (res.status !== "success") {
@@ -163,7 +163,7 @@ export default function Staking() {
     //const decimals = await Erc20Contract.getDecimals();
     const decimals = 8;
 
-    const amount = row.stakedAmount['bignum'].div(utils.parseUnits("1", 18 - decimals));
+    const amount = row.stakingAmt['bignum'].div(utils.parseUnits("1", 18 - decimals));
 
     const res = await HexOneStaking.unstakeToken(address, row.token, amount)
     if (res.status !== "success") {
@@ -258,9 +258,9 @@ export default function Staking() {
                         <td>${formatFloat(+utils.formatUnits(r.totalLockedUSD))}</td>
                         <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount))}</td>
                         <td>
-                            {r.hexMultiplier.gt(0) && `${r.hexMultiplier.toString()}x`}
-                            {r.hexMultiplier.gt(0) && <br />}
-                            {r.hexitMultiplier.gt(0) && `${r.hexitMultiplier.toString()}x`}
+                            {r.hexMultiplier > 0 && `${formatFloat(r.hexMultiplier / 1000)}x`}
+                            {r.hexMultiplier > 0 && <br />}
+                            {r.hexitMultiplier > 0 && `${formatFloat(r.hexitMultiplier / 1000)}x`}
                         </td>
                         <td className="td-actions" width="20">
                           <button
@@ -283,7 +283,7 @@ export default function Staking() {
                                         type="text"
                                         placeholder="Please, input amount"
                                         value={r.stakingAmt.value}
-                                        onChange={changeStakingAmt(r.token)} 
+                                        onChange={e => changeStakingAmt(r.token, e.target.value)} 
                                       />
                                       <InputGroupAddon addonType="append">
                                         <InputGroupText>$</InputGroupText>
