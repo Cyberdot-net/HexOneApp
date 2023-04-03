@@ -1,4 +1,4 @@
-import ERC20_Abi from "./ERC20Token.json";
+import ERC20_Abi from "./ERC20.json";
 import Hexit_Abi from "./HEXIT.json";
 import HexMockToken_Abi from "./HexMockToken.json";
 import HexOneBootstrap_Abi from "./HexOneBootstrap.json";
