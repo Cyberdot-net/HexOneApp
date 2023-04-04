@@ -1,4 +1,4 @@
-import { Contract } from "ethers";
+import { Contract, BigNumber } from "ethers";
 import { HexOneStaking_Abi } from "./abis";
 import { HexOneStakingMaster_Addr } from "./address";
 
@@ -18,6 +18,19 @@ export default (function() {
             }
         },
 
+        getCurrentDay: async () => {
+            let currentDay = BigNumber.from(0);
+            if (!contract) return currentDay;
+    
+            try {
+                currentDay = await contract.currentStakingDay();
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return currentDay;
+        },
+        
         getStakingList: async (address) => {
             let list = [];
             if (!contract) return list;

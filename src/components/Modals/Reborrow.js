@@ -116,7 +116,6 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
                     value={amount.value}
                     onChange={changeAmount} 
                     autoFocus
-                    {...(amount['bignum'].gt(totalHex)) && {className: "form-control-danger"}}
                   />
                   <InputGroupAddon addonType="append" className="cursor-pointer" onClick={setMaxAmount}>
                     <InputGroupText>MAX</InputGroupText>

@@ -80,9 +80,8 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
     setSacrificeAmt({ value: e.target.value, bignum: utils.parseEther(e.target.value || "0") });
   }
 
-  const getTotalUSD = () => {
-    // const selErc20 = ERC20.find(r => r.id === erc20);
-    return sacrificeAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"));
+  const setMaxAmount = () => {
+    setSacrificeAmt({ value: formatDecimal(totalHex), bignum: totalHex });
   }
 
   const onClickSacrifice = async () => {
@@ -169,18 +168,22 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
               </Col>
             </Row>
           </FormGroup>
-            <FormGroup className={"mb-3 " + (sacrificeAmt['bignum'].gt(totalHex) && " has-danger")}>
+          <FormGroup className={"mb-3 " + (sacrificeAmt['bignum'].gt(totalHex) && " has-danger")}>
             <Row>
               <Label sm="3" className="text-right">Sacrifice Amount</Label>
               <Col sm="8">
-                <Input
-                  type="text"
-                  placeholder={`Sacrifice Amount in ${ERC20.find(r => r.id === erc20).symbol} (${formatZeroDecimal(totalHex)} ${ERC20.find(r => r.id === erc20).symbol} available)`}
-                  value={sacrificeAmt.value}
-                  onChange={changeSacrificeAmt} 
-                  autoFocus
-                  {...(sacrificeAmt['bignum'].gt(totalHex)) && {className: "form-control-danger"}}
-                />
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder={`Sacrifice Amount in ${ERC20.find(r => r.id === erc20).symbol} (${formatZeroDecimal(totalHex)} ${ERC20.find(r => r.id === erc20).symbol} available)`}
+                    value={sacrificeAmt.value}
+                    onChange={changeSacrificeAmt} 
+                    autoFocus
+                  />
+                  <InputGroupAddon addonType="append" className="cursor-pointer" onClick={setMaxAmount}>
+                    <InputGroupText>MAX</InputGroupText>
+                  </InputGroupAddon>
+              </InputGroup>
               </Col>
             </Row>
           </FormGroup>
@@ -192,7 +195,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
                   <Input
                     type="text"
                     placeholder="Total Value USD"
-                    value={formatDecimal(getTotalUSD())}
+                    value={formatFloat(+utils.formatUnits(sacrificeAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"))))}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">

@@ -223,7 +223,6 @@ export default function Borrow({ show, onClose, onBorrow }) {
                       value={collateralAmt.value}
                       onChange={changeCollateralAmt} 
                       autoFocus
-                      {...(collateralAmt['bignum'].gt(totalHex)) && {className: "form-control-danger"}}
                     />
                     <InputGroupAddon addonType="append">
                       <InputGroupText>HEX</InputGroupText>
@@ -249,7 +248,6 @@ export default function Borrow({ show, onClose, onBorrow }) {
                       placeholder={`Stake Length in Days (${formatFloat(STAKEDAYS_MIN)} ~ ${formatFloat(STAKEDAYS_MAX)})`}
                       value={stakeDays}
                       onChange={e => setStakeDays(e.target.value)} 
-                      {...(stakeDays && (+stakeDays < STAKEDAYS_MIN || +stakeDays > STAKEDAYS_MAX)) && {className: "form-control-danger"}}
                     />
                     <InputGroupAddon addonType="append" className="cursor-pointer" onClick={() => setOpen(!isOpen)}>
                       <InputGroupText>

@@ -33,7 +33,7 @@ export default (function() {
         },
 
         getCurrentSacrificeDay: async () => {
-            let currentDay = BigNumber.from(1);
+            let currentDay = BigNumber.from(0);
             if (!contract) return currentDay;
     
             try {
@@ -46,7 +46,7 @@ export default (function() {
         },
 
         getCurrentAirdropDay: async () => {
-            let currentDay = BigNumber.from(1);
+            let currentDay = BigNumber.from(0);
             if (!contract) return currentDay;
     
             try {
@@ -166,13 +166,15 @@ export default (function() {
         },
 
         checkAirdropInfo: async (address) => {
-            let requested = false;
+            let requested = 0;
             if (!contract) return requested;
     
             try {
                 const info = await contract.requestAirdropInfo(address);
-                if (!info.airdropId.isZero()) {
-                    requested = true;
+                if (info.claimed) {
+                    requested = 2;
+                } else if (!info.airdropId.isZero()) {
+                    requested = 1;
                 }
             } catch (e) {
                 console.error(e);

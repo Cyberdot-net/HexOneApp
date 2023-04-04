@@ -24,12 +24,12 @@ export const isEmpty = (value) => {
 
 export const formatDecimal = (num, decimal = 18) => {
   if (isNaN(num) || !+num) return "";
-  return utils.commify(utils.formatUnits(num, decimal));
+  return formatFloat(+utils.formatUnits(num, decimal), 5);
 }
 
 export const formatZeroDecimal = (num, decimal = 18) => {
   if (isNaN(num) || !+num) return "0";
-  return utils.commify(utils.formatUnits(num, decimal));
+  return formatFloat(+utils.formatUnits(num, decimal), 5);
 }
 
 export const formatFloat = (num, decimal = 2) => {

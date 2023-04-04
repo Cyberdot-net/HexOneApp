@@ -78,7 +78,7 @@ export default (function() {
         },
 
         getCurrentDay: async () => {
-            let currentDay = BigNumber.from(1);
+            let currentDay = BigNumber.from(0);
             if (!contract) return currentDay;
     
             try {

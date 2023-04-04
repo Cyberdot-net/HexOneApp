@@ -25,7 +25,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
 
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
-  const [ isApproved, setApproved ] = useState(false);
+  const [ isApproved, setApproved ] = useState(0);
   const [ airdropInfo, setAirdropInfo ] = useState({});
 
   useEffect(() => {
@@ -35,6 +35,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
 
     const getHexData = async () => {
       showLoading();
+      
       setAirdropInfo(await HexOneBootstrap.getCurrentAirdropInfo(address));
       setApproved(await HexOneBootstrap.checkAirdropInfo(address));
 
@@ -61,7 +62,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
   
       onClaim();
       onClose();
-            
+      
       hideLoading();
 
     } else {
@@ -74,10 +75,9 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
         return;
       }
 
-      setApproved(true);
+      setApproved(1);
       hideLoading();
     }
-    // onClose();
   }
   
   return (
@@ -203,7 +203,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
               color="info"
               id="borrow"
               type="button"
-              disabled={!address}
+              disabled={!address || isApproved === 2}
               onClick={onClickClaimHexit}
             >
               {isApproved ? "Claim $HEXIT" : "Approve"}

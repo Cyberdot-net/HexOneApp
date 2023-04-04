@@ -36,7 +36,7 @@ export default function Bootstrap() {
   const { timer } = useContext(TimerContext);
   const [ decimals, setDecimals ] = useState({});
   const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
-  const [ currentDay, setCurrentDay ] = useState(1);
+  const [ currentDay, setCurrentDay ] = useState(0);
   const [ isOpen, setOpen ] = useState(false);
   const [ sacrificeList, setSacrificeList ] = useState([]);
   const [ shareInfo, setShareInfo ] = useState(null);
@@ -146,13 +146,15 @@ export default function Bootstrap() {
       return;
     }
 
-    getSacrificeList();
+    await getSacrificeList();
+    
     hideLoading();
+
     toast.success("Claim $HEXIT success!");
   }
 
-  const doSacrifice = () => {
-    getSacrificeList();
+  const doSacrifice = async () => {
+    await getSacrificeList();
   }
 
   return (

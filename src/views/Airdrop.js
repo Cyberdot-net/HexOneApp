@@ -20,7 +20,7 @@ export default function Bootstrap() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const { timer } = useContext(TimerContext);
-  const [ currentDay, setCurrentDay ] = useState(1);
+  const [ currentDay, setCurrentDay ] = useState(0);
   const [ airdropList, setAirdropList ] = useState([]);
   const [ page, setPage ] = useState(1);
   const [ isOpen, setOpen ] = useState(false);
