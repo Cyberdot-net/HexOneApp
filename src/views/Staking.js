@@ -366,7 +366,7 @@ export default function Staking() {
                               <div className="claim-panel">
                                 <Row className="align-center">
                                   <Col md="6">
-                                    <strong>Claimed Amount</strong>
+                                    <strong>Claimable Amount</strong>
                                   </Col>
                                   <Col md="6">
                                     <p>
