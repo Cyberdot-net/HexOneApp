@@ -36,7 +36,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
   const [ isApproved, setApproved ] = useState(false);
 
   useEffect(() => {
-    if (!address) return;
+    if (!address || !provider) return;
 
     showLoading();
 
@@ -58,7 +58,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
   }, [ address, provider ]);
 
   useEffect(() => {
-    if (!address) return;
+    if (!address || !provider) return;
 
     const getHexData = async () => {
       showLoading();

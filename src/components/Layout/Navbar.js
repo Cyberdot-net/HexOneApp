@@ -3,10 +3,6 @@ import { useHistory, Link } from "react-router-dom";
 import {
   Button,
   Collapse,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
   NavbarBrand,
   Navbar,
   NavItem,
@@ -240,48 +236,6 @@ export default function IndexNavbar() {
                 <i className="tim-icons icon-coins ml-1" />
               </Button>}
             </NavItem>
-            <UncontrolledDropdown nav>
-              <DropdownToggle
-                caret
-                color="default"
-                data-toggle="dropdown"
-                href="#pablo"
-                nav
-                onClick={(e) => e.preventDefault()}
-              >
-                <i className="fa fa-cogs d-lg-none d-xl-none" />
-                Menu
-              </DropdownToggle>
-              <DropdownMenu className="dropdown-with-icons">
-                <DropdownItem tag={Link} to="#">
-                  Hex One Protocol
-                </DropdownItem>
-                <DropdownItem tag={Link} to="#">
-                  Hex One Vault
-                </DropdownItem>
-                <DropdownItem tag={Link} to="#">
-                  Hex One Staking
-                </DropdownItem>
-                <DropdownItem tag={Link} to="#">
-                  Hex One Sacrifice
-                </DropdownItem>
-                <DropdownItem tag={Link} to="#">
-                  Hex One Airdrop
-                </DropdownItem>
-                <DropdownItem tag={Link} to="#">
-                  Hex One Price-feed
-                </DropdownItem>
-                <DropdownItem tag={Link} to="#">
-                  Hex One Token ($HEX1)
-                </DropdownItem>
-                <DropdownItem tag={Link} to="#">
-                  Hex One Incentive Token ($HEXIT)
-                </DropdownItem>
-                <DropdownItem tag={Link} to="#">
-                  Stats
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
           </Nav>
         </Collapse>
       </Container>

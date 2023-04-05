@@ -56,7 +56,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
   }, []);
 
   useEffect(() => {
-    if (!address) return;
+    if (!address || !provider) return;
 
     showLoading();
 
@@ -148,9 +148,8 @@ export default function Borrow({ show, onClose, onBorrow }) {
     // onClose();
   }
 
-  const onClickAddHexOneToken = async () => {
-    
-    if (!address) return;
+  const onClickAddHexOneToken = async () => {    
+    if (!address || !provider) return;
 
     if (typeof window.ethereum === 'undefined') {
       toast.error("<b>No MetaMask! - </b>Please, install MetaMask");

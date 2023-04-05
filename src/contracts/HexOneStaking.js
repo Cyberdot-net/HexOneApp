@@ -37,7 +37,6 @@ export default (function() {
     
             try {
                 list = await contract.getUserStakingStatus(address);
-                console.log(list);
             } catch (e) {
                 console.error(e);
             }

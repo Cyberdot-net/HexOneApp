@@ -28,7 +28,7 @@ export default function Reborrow({ show, data, onClose, onReborrow }) {
   const [ totalHex,  setTotalHex ] = useState(0);
 
   useEffect(() => {
-    if (!address) return;
+    if (!address || !provider) return;
 
     HexOneVault.setProvider(provider);
     HexOneProtocol.setProvider(provider);

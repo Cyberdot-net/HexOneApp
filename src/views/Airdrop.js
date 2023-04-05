@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useMediaQuery } from 'react-responsive';
 import {
   Button,
   Container,
@@ -24,6 +25,7 @@ export default function Bootstrap() {
   const [ airdropList, setAirdropList ] = useState([]);
   const [ page, setPage ] = useState(1);
   const [ isOpen, setOpen ] = useState(false);
+  const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
   
   useEffect(() => {
@@ -42,7 +44,7 @@ export default function Bootstrap() {
 
 
   useEffect(() => {
-    if (!address) return;
+    if (!address || !provider) return;
     
     HexOneBootstrap.setProvider(provider);
 
@@ -115,20 +117,20 @@ export default function Bootstrap() {
             </Col>
           </Row>
           <Row>
-            <Col md="12">
+            <Col md="12" className="overflow-y">
               <table className="table">
                 <thead>
                   <tr>
                     <th className="text-center">ClaimId</th>
                     <th>Day</th>
-                    <th>Sacrificed Amt USD</th>
-                    <th>Sacrificed Bonus</th>
-                    <th>Hex Staked USD</th>
-                    <th>Hex Staked Bonus</th>
-                    <th>Total Power</th>
-                    <th>Total Daily HEXIT</th>
-                    <th>Share of Pool</th>
-                    <th>Claimed HEXIT</th>
+                    <th>Sacrificed {isMobile && <br />}Amt USD</th>
+                    <th>Sacrificed {isMobile && <br />}Bonus</th>
+                    <th>Hex {isMobile && <br />}Staked {isMobile && <br />}USD</th>
+                    <th>Hex {isMobile && <br />}Staked {isMobile && <br />}Bonus</th>
+                    <th>Total {isMobile && <br />}Power</th>
+                    <th>Total {isMobile && <br />}Daily {isMobile && <br />}HEXIT</th>
+                    <th>Share {isMobile && <br />}of {isMobile && <br />}Pool</th>
+                    <th>Claimed {isMobile && <br />}HEXIT</th>
                   </tr>
                 </thead>
                 <tbody>

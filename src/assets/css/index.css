@@ -13668,6 +13668,9 @@ img {
 .modal-content .modal-body select {
   background-color: #1f2251;
 }
+.modal-content .modal-body .rdrMonthAndYearPickers select {
+  background-color: transparent;
+}
 .modal-content .modal-footer {
   border-top: 0;
   -webkit-justify-content: space-between;
@@ -17099,6 +17102,10 @@ textarea.form-control:focus, textarea.form-control:active {
   justify-content: center;
 }
 
+.align-center {
+  align-items: center;
+}
+
 @media (min-width: 576px) {
   .container-sm, .container {
     max-width: 540px;
@@ -17135,6 +17142,10 @@ textarea.form-control:focus, textarea.form-control:active {
 }
 .filter-group .filter-component span {
   color: rgba(255, 255, 255, 0.5);
+}
+
+.overflow-y {
+  overflow-y: auto;
 }
 
 .progress-container {

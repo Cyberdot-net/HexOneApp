@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useMediaQuery } from 'react-responsive';
 import { toast } from "react-hot-toast";
 import {
   Container,
@@ -39,7 +40,8 @@ export default function Staking() {
   const [ currentDay, setCurrentDay ] = useState(0);
   const [ data, setData ] = useState([]);
   const [ chartData, setChartData ] = useState(null);
-
+  const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
+  
   
   useEffect(() => {
     if (!timer || !HexOneStaking.connected()) return;
@@ -57,7 +59,7 @@ export default function Staking() {
   }, [ timer ]);
 
   useEffect(() => {
-    if (!address) return;
+    if (!address || !provider) return;
 
     HexOneStaking.setProvider(provider);
 
@@ -273,18 +275,18 @@ export default function Staking() {
               </Col>
             </Row>
             <Row>
-              <Col md="12">
+              <Col md="12" className="overflow-y">
                 <table className="table">
                   <thead>
                     <tr>
                       <th>Token</th>
                       <th>Amount</th>
-                      <th>Share of Pool</th>
+                      <th>Share {isMobile && <br />}of {isMobile && <br />}Pool</th>
                       <th>APR</th>
                       <th>Earned</th>
                       <th>Joined</th>
-                      <th>Total Value Locked USD</th>
-                      <th>Total Value Locked ERC20</th>
+                      <th>Total {isMobile && <br />}Value {isMobile && <br />}Locked USD</th>
+                      <th>Total {isMobile && <br />}Value {isMobile && <br />}Locked ERC20</th>
                       <th>Multiplier</th>
                       <th className="text-center"></th>
                     </tr>
@@ -322,7 +324,7 @@ export default function Staking() {
                       <tr>
                         <td colSpan={9} className={`description ${r.open ? "active" : ""}`}>
                           <div className="description-wrapper">
-                            <div className="content p-md-4">
+                            <div className="content p-4">
                               <div className="stake-panel">
                                 <Row>
                                   <Col lg="8" md="6" className={"input-panel " + (r.stakingAmt['bignum'].gt(r.balance) && " has-danger")}>

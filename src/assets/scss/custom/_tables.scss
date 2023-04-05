@@ -9,8 +9,10 @@
 }
 
 .table{
+  margin-bottom: 0;
   > tbody > tr > td {
     color: rgba(255, 255, 255, 0.8); // !important;
+    white-space: nowrap;
 
     .photo {
       height: 30px;
@@ -97,6 +99,7 @@
        font-weight: $font-weight-extra-bold;
        border: 0;
        color: rgba($white, 0.8);
+       white-space: nowrap;
    }
 
    .radio,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useMediaQuery } from 'react-responsive';
 import { toast } from "react-hot-toast";
 import {
   Button,
@@ -41,6 +42,7 @@ export default function Bootstrap() {
   const [ sacrificeList, setSacrificeList ] = useState([]);
   const [ shareInfo, setShareInfo ] = useState(null);
   const [ chartData, setChartData ] = useState(null);
+  const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
   
 
   useEffect(() => {
@@ -62,7 +64,7 @@ export default function Bootstrap() {
 
   
   useEffect(() => {
-    if (!address) return;
+    if (!address || !provider) return;
     
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
@@ -206,18 +208,18 @@ export default function Bootstrap() {
             </Col>
           </Row>
           <Row>
-            <Col md="12">
+            <Col md="12" className="overflow-y">
               <table className="table">
                 <thead>
                   <tr>
                     <th className="text-center">ShareId</th>
                     <th>Day</th>
-                    <th>Base Points</th>
-                    <th>ERC20 [name]</th>
+                    <th>Base {isMobile && <br />}Points</th>
+                    <th>ERC20 {isMobile && <br />}[name]</th>
                     <th>Bonus</th>
-                    <th>Total Points</th>
-                    <th>Sacrificed Amt</th>
-                    <th>USD Value</th>
+                    <th>Total {isMobile && <br />}Points</th>
+                    <th>Sacrificed {isMobile && <br />}Amt</th>
+                    <th>USD {isMobile && <br />}Value</th>
                     <th className="text-center"></th>
                   </tr>
                 </thead>
@@ -275,7 +277,7 @@ export default function Bootstrap() {
             </Col>
           </Row>
           <Row>
-            <Col md="12">
+            <Col md="12" className="overflow-y">
               <table className="table">
                 <thead>
                   <tr>

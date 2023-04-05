@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useMediaQuery } from 'react-responsive';
 import { toast } from "react-hot-toast";
 import {
   Button,
@@ -34,6 +35,7 @@ export default function Overview() {
   const [ isBorrowOpen, setBorrowOpen ] = useState(false);
   const [ reborrow, setReborrow ] = useState({ show: false, data: {} });
   const [ page, setPage ] = useState(1);
+  const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
   
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function Overview() {
 
 
   useEffect(() => {
-    if (!address) return;
+    if (!address || !provider) return;
 
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
@@ -212,7 +214,7 @@ export default function Overview() {
             </Col>
           </Row>
           <Row>
-            <Col md="12">
+            <Col md="12" className="overflow-y">
               <table className="table">
                 <thead>
                   <tr>
@@ -222,11 +224,11 @@ export default function Overview() {
                     <th className="text-center">Current</th>
                     <th>Collateral</th>
                     <th>Effective</th>
-                    <th>Borrowed Amt</th>
-                    <th>Initial HexPrice</th>
-                    <th>Current HexPrice</th>
-                    <th>Health Ratio</th>
-                    <th className="text-center"></th>
+                    <th>Borrowed {isMobile && <br />}Amt</th>
+                    <th>Initial {isMobile && <br />}HexPrice</th>
+                    <th>Current {isMobile && <br />}HexPrice</th>
+                    <th>Health {isMobile && <br />}Ratio</th>
+                    <th className="text-center" width="125"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -245,10 +247,10 @@ export default function Overview() {
                       <td className={+getHealthRatio(r.initialHexPrice) >= 100 ? "green" : "red"}>
                         {getHealthRatio(r.initialHexPrice)}%
                       </td>
-                      <td className="td-actions" width="125">
+                      <td className="td-actions">
                         <Button
                           id="claim"
-                          className="btn btn-primary btn-sm w-full mb-1"
+                          className="btn btn-primary btn-sm w-btn mb-1"
                           onClick={() => onClickClaim(r.depositId)}
                           disabled={r.curHexDay.lte(r.endHexDay)}
                         >
@@ -262,7 +264,7 @@ export default function Overview() {
                         </UncontrolledTooltip>
                         <Button
                           id="mintHex1"
-                          className="btn btn-success btn-sm w-full mb-1"
+                          className="btn btn-success btn-sm w-btn mb-1 ml-1"
                           onClick={() => onClickReborrow(r)}
                           disabled={r.borrowableAmount.lte(0)}
                         >
@@ -299,8 +301,8 @@ export default function Overview() {
               />
             </Col>
           </Row>
-          <Row gutter="10" className="pl-4 pr-4 mt-2 center">
-            <Col md="4" sm="6" className="mb-2">
+          <Row gutter="10" className="pl-4 pr-4 mt-5 center">
+            <Col lg="4" md="6" sm="10" className="mb-2">
               <Card className="card-coin card-plain p-2 h-100">
                 <CardBody>
                   <Row>
@@ -322,7 +324,7 @@ export default function Overview() {
                 </CardBody>
               </Card>
             </Col>
-            <Col md="4" sm="6" className="mb-2">
+            <Col lg="4" md="6" sm="10" className="mb-2">
               <Card className="card-coin card-plain p-2 h-100">
                 <CardBody>
                   <Row>
@@ -354,19 +356,19 @@ export default function Overview() {
             </Col>
           </Row>
           <Row>
-            <Col md="12">
+            <Col md="12" className="overflow-y">
               <table className="table">
                 <thead>
                   <tr>
                     <th className="text-center">StakeId</th>
                     <th className="text-center">End</th>
-                    <th className="text-center">Current Day</th>
+                    <th className="text-center">Current {isMobile && <br />}Day</th>
                     <th>Grace</th>
-                    <th>Effective Hex</th>
-                    <th>Borrowed $HEX1</th>
-                    <th>Current HexPrice</th>
-                    <th>Total Hex</th>
-                    <th>Current Value</th>
+                    <th>Effective {isMobile && <br />}Hex</th>
+                    <th>Borrowed {isMobile && <br />}$HEX1</th>
+                    <th>Current {isMobile && <br />}HexPrice</th>
+                    <th>Total {isMobile && <br />}Hex</th>
+                    <th>Current {isMobile && <br />}Value</th>
                     <th>Profit/Loss</th>
                     <th className="text-center"></th>
                   </tr>
@@ -417,8 +419,8 @@ export default function Overview() {
               </table>
             </Col>
           </Row>
-          <Row gutter="10" className="pl-4 pr-4 mt-2 justify-content-md-center">
-            <Col md="4" className="mb-2">
+          <Row gutter="10" className="pl-4 pr-4 mt-5 justify-content-center">
+            <Col lg="4" md="6" sm="10" className="mb-2">
               <Card className="card-coin card-plain p-2 h-100">
                 <CardBody>
                   <Row>

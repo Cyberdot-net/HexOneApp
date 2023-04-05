@@ -29,7 +29,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
   const [ airdropInfo, setAirdropInfo ] = useState({});
 
   useEffect(() => {
-    if (!address) return;
+    if (!address || !provider) return;
 
     HexOneBootstrap.setProvider(provider);
 
