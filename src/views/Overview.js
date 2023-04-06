@@ -102,19 +102,19 @@ export default function Overview() {
     return `${profit} (${percent}%)`;
   }
 
-  const onClickClaim = async (depositId) => {
-    showLoading("Claiming...");
+  const onClickClaim = async (depositId, type) => {
+    showLoading(type === 'liquidate' ? "Liquidating..." : "Claiming...");
 
     const res = await HexOneProtocol.claimCollateral(depositId);
     if (res.status !== "success") {
       hideLoading();
-      toast.error(res.error ?? "Claim failed!");
+      toast.error(res.error ?? (type === 'liquidate' ? "Liquidate failed!" : "Claim failed!"));
       return;
     }
 
     getHistory();
     hideLoading();
-    toast.success("Claim success!");
+    toast.success(type === 'liquidate' ? "Liquidate success!" : "Claim success!");
   }
 
   const onClickReborrow = (row) => {
@@ -251,7 +251,7 @@ export default function Overview() {
                         <Button
                           id="claim"
                           className="btn btn-primary btn-sm w-btn mb-1"
-                          onClick={() => onClickClaim(r.depositId)}
+                          onClick={() => onClickClaim(r.depositId, 'claim')}
                           disabled={r.curHexDay.lte(r.endHexDay)}
                         >
                           Claim
@@ -390,7 +390,7 @@ export default function Overview() {
                         <Button
                           id="liquidate"
                           className="btn btn-success btn-sm"
-                          onClick={() => onClickClaim(r.depositId)}
+                          onClick={() => onClickClaim(r.depositId, 'liquidate')}
                           disabled={!r.liquidable}
                         >
                           Liquidate
