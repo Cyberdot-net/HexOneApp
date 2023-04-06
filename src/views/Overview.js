@@ -262,9 +262,10 @@ export default function Overview() {
                         >
                           Claim HEX by burning HEX1
                         </UncontrolledTooltip>
+                        {isMobile && <br/>}
                         <Button
                           id="mintHex1"
-                          className="btn btn-success btn-sm w-btn mb-1 ml-1"
+                          className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
                           onClick={() => onClickReborrow(r)}
                           disabled={r.borrowableAmount.lte(0)}
                         >
