@@ -2,11 +2,13 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "components/Layout/Navbar";
 import Footer from "components/Layout/Footer";
 import Loading from "components/Common/Loading";
+import ScrollToTop from "components/Common/ScrollToTop";
 import ConnectWallet from "components/Modals/ConnectWallet";
 
 const Layout = ({ children }) => {
   return (
     <>
+      <ScrollToTop />
       <Navbar />
       {children}
       <Footer />

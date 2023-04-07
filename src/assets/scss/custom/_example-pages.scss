@@ -452,3 +452,58 @@
 .w-btn {
   width: 100px;
 }
+
+.scroll-to-top {
+  position: relative;
+  animation: showIn 0.5s;
+
+  .top {
+    background-color: rgb(131, 123, 191, 0.5) !important;
+    right: 40px;
+    bottom: 40px;
+    position: fixed;
+    z-index: 2;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 9px 25px 0 rgba(132, 128, 177, 0.28);
+    border: none;
+    animation: flowbtn 3s ease-in-out infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .top:hover, .top:visited, .top:focus {
+    animation: none;
+    border: none;
+  }
+}
+
+@keyframes flowbtn {
+  0%{
+    transform: translateY(0px);
+  }
+  25%{
+    transform: translateY(10px);
+  }
+  50%{
+    transform: translateY(0px);
+  }
+  75%{
+    transform: translateY(-10px);
+  }
+  100%{
+    transform: translateY(0px);
+  }
+}
+
+@keyframes showIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
