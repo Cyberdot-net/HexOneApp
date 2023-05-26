@@ -75,7 +75,7 @@
       "name": "dexRouter",
       "outputs": [
         {
-          "internalType": "contract IUniswapV2Router02",
+          "internalType": "contract IPulseXRouter02",
           "name": "",
           "type": "address"
         }
@@ -140,11 +140,6 @@
         },
         {
           "internalType": "address",
-          "name": "_pairTokenPriceFeed",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
           "name": "_dexRouter",
           "type": "address"
         }
@@ -170,42 +165,6 @@
     {
       "inputs": [],
       "name": "renounceOwnership",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address[]",
-          "name": "_baseTokens",
-          "type": "address[]"
-        },
-        {
-          "internalType": "address[]",
-          "name": "_priceFeeds",
-          "type": "address[]"
-        }
-      ],
-      "name": "setMultiPriceFeed",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_baseToken",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_priceFeed",
-          "type": "address"
-        }
-      ],
-      "name": "setPriceFeed",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

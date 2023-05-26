@@ -12,6 +12,7 @@ export const networks = [
     { name: "Ethereum", chainId: 1 },
     // { name: "Goerli", chainId: 5 },
     { name: "Fuji", chainId: 43113 },
+    { name: "PulseX", chainId: 43113 },
 ];
 
 export const ERC20 = [
