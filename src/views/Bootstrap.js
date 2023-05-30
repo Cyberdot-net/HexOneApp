@@ -217,8 +217,8 @@ export default function Bootstrap() {
                     <th>Base {isMobile && <br />}Points</th>
                     <th>ERC20 {isMobile && <br />}[name]</th>
                     <th>Bonus</th>
-                    <th>Total {isMobile && <br />}Points</th>
                     <th>Sacrificed {isMobile && <br />}Amt</th>
+                    <th>Total {isMobile && <br />}Hexit</th>
                     <th>USD {isMobile && <br />}Value</th>
                     <th className="text-center"></th>
                   </tr>
@@ -232,8 +232,8 @@ export default function Bootstrap() {
                       <td>{formatFloat(+utils.formatUnits(r.supplyAmount))}</td>
                       <td>{r.sacrificeTokenSymbol}</td>
                       <td>{utils.formatUnits(r.multiplier, 3).toString()}x</td>
-                      <td>{formatFloat(+utils.formatUnits(r.sacrificedWeight))}</td>
                       <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount, decimals[r.sacrificeTokenSymbol] || 0))}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.sacrificedWeight))}</td>
                       <td>${formatFloat(+utils.formatUnits(r.usdValue))}</td>
                       <td className="td-actions" width="100">
                         <Button
