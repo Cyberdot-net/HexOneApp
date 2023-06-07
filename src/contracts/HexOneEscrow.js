@@ -31,6 +31,19 @@ export default (function() {
             return list;
         },
 
+        collateralDeposited: async () => {       
+            let result = true;
+            if (!contract) return result;
+    
+            try {
+                result = await contract.collateralDeposited();
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return result;
+        },
+
         reDepositCollateral: async () => {
             if (!contract) return { status: "failed" };
     
