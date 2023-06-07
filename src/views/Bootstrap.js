@@ -159,6 +159,23 @@ export default function Bootstrap() {
     toast.success("Claim $HEXIT success!");
   }
 
+  const onClickClaimHex1 = async () => {
+    showLoading("Claiming Hex1...");
+
+    const res = await HexOneEscrow.reDepositCollateral();
+    if (res.status !== "success") {
+      hideLoading();
+      toast.error(res.error ?? "Claim failed!");
+      return;
+    }
+
+    setShareInfo(await HexOneEscrow.getOverview(address));
+    
+    hideLoading();
+
+    toast.success("Claim Hex1 success!");
+  }
+
   const doSacrifice = async () => {
     await getSacrificeList();
   }
@@ -318,6 +335,7 @@ export default function Bootstrap() {
                           id="claim"
                           className="btn btn-primary btn-sm w-full"
                           disabled={shareInfo.borrowedAmount.lte(0)}
+                          onClick={() => onClickClaimHex1()}
                         >
                           Claim<br/>Hex1
                         </Button>

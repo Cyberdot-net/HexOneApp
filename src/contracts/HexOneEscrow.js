@@ -30,6 +30,26 @@ export default (function() {
 
             return list;
         },
+
+        reDepositCollateral: async () => {
+            if (!contract) return { status: "failed" };
+    
+            try {
+                const tx = await contract.reDepositCollateral();
+                await tx.wait();
+                // const [transferEvent] = tr.events;
+            } catch (e) {
+                if (e.error?.message) {
+                    return { status: "failed", error: "Claim failed! " + e.error?.message };
+                } else if (e.message) {
+                    return { status: "failed", error: "Claim failed! " + (e.data?.message ? e.data.message : e.message) };
+                } else {
+                    return { status: "failed", error: "Claim failed!" };
+                }
+            }
+    
+            return { status: "success" };
+        }
     }
     
 })();
