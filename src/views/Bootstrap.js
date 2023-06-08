@@ -42,7 +42,6 @@ export default function Bootstrap() {
   const [ sacrificeList, setSacrificeList ] = useState([]);
   const [ shareInfo, setShareInfo ] = useState(null);
   const [ chartData, setChartData ] = useState(null);
-  const [ isDeposited, setIsDeposited ] = useState(true);
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
   
 
@@ -53,7 +52,6 @@ export default function Bootstrap() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals["HEX"])));
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
-      setIsDeposited(await HexOneEscrow.collateralDeposited());
       
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
@@ -88,7 +86,6 @@ export default function Bootstrap() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", ercDecimals["HEX"])));
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
-      setIsDeposited(await HexOneEscrow.collateralDeposited());
       
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
@@ -173,7 +170,6 @@ export default function Bootstrap() {
     }
 
     setShareInfo(await HexOneEscrow.getOverview(address));
-    setIsDeposited(await HexOneEscrow.collateralDeposited());
     
     hideLoading();
 
@@ -338,7 +334,7 @@ export default function Bootstrap() {
                         <Button
                           id="claim"
                           className="btn btn-primary btn-sm w-full"
-                          disabled={shareInfo.borrowedAmount.lte(0)}
+                          disabled={shareInfo.borrowedAmount.lte(0) || shareInfo.endTime.gt(currentDay)}
                           onClick={() => onClickClaimHex1()}
                         >
                           Claim<br/>Hex1
