@@ -334,7 +334,7 @@ export default function Bootstrap() {
                         <Button
                           id="claim"
                           className="btn btn-primary btn-sm w-full"
-                          disabled={shareInfo.borrowedAmount.lte(0) || shareInfo.endTime.gt(currentDay)}
+                          disabled={shareInfo.borrowedAmount.lte(0) || shareInfo.endTime.gt(shareInfo.startTime)}
                           onClick={() => onClickClaimHex1()}
                         >
                           Claim<br/>Hex1
