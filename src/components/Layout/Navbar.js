@@ -18,6 +18,7 @@ import { getShortAddress } from "common/utilities";
 import { networks } from "contracts/Constants";
 
 const menus = [
+  { label: "Borrow", url: "/" },
   { label: "Bootstrap", url: "/bootstrap" },
   { label: "Airdrop", url: "/airdrop" },
   { label: "Staking", url: "/staking" },
