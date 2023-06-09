@@ -69,8 +69,9 @@ export default function Overview() {
       setHistory(await HexOneVault.getHistory(address));
       setLiquidates(await HexOneVault.getLiquidableDeposits());
       
-      const network = await provider.getNetwork();
-      setIsTestNet(network.chainId !== 1);
+      // const network = await provider.getNetwork();
+      // setIsTestNet(network.chainId !== 1);
+      setIsTestNet(false);
 
       hideLoading();
     }
@@ -160,7 +161,7 @@ export default function Overview() {
           </Row>}
           <Row gutter="10" className="pl-4 pr-4">
             <Col lg="12" className="mb-4">
-              {/* {isTestNet && <Button
+              {isTestNet && <Button
                 className="btn-simple mr-4"
                 color="info btn-lg"
                 id="mint"
@@ -172,7 +173,7 @@ export default function Overview() {
                 target="mint"
               >
                 Mint TestNet Hex
-              </UncontrolledTooltip>} */}
+              </UncontrolledTooltip>}
               <Button
                 className="btn-simple grow"
                 color="info btn-lg"
@@ -192,9 +193,9 @@ export default function Overview() {
             <Col lg="12" className="mb-2">
               <ListGroup>
                 <ListGroupItem>Stake HEX and Mint $HEX1</ListGroupItem>
-                <ListGroupItem>Borrow 100% against your T-shares</ListGroupItem>
+                <ListGroupItem>Borrow up to 100% against your T-shares</ListGroupItem>
                 <ListGroupItem>Each $HEX1 = 1 dollar value of collateralized HEX (T-share)</ListGroupItem>
-                <ListGroupItem>*a 5% fee applies to each deposit. The fee is distributed to stakers.</ListGroupItem>
+                <ListGroupItem>*a 5% fee applies to each deposit</ListGroupItem>
               </ListGroup>
             </Col>
           </Row>
