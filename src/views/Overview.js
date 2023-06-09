@@ -193,9 +193,9 @@ export default function Overview() {
             <Col lg="12" className="mb-2">
               <ListGroup>
                 <ListGroupItem>Stake HEX and Mint $HEX1</ListGroupItem>
-                <ListGroupItem>Borrow up to 100% against your T-shares</ListGroupItem>
+                <ListGroupItem>Borrow 100% against your T-shares</ListGroupItem>
                 <ListGroupItem>Each $HEX1 = 1 dollar value of collateralized HEX (T-share)</ListGroupItem>
-                <ListGroupItem>*a 5% fee applies to each deposit</ListGroupItem>
+                <ListGroupItem>*a 5% fee applies to each deposit. The fee is distributed to stakers.</ListGroupItem>
               </ListGroup>
             </Col>
           </Row>
