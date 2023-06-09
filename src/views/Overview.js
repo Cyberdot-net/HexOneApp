@@ -160,7 +160,7 @@ export default function Overview() {
           </Row>}
           <Row gutter="10" className="pl-4 pr-4">
             <Col lg="12" className="mb-4">
-              {isTestNet && <Button
+              {/* {isTestNet && <Button
                 className="btn-simple mr-4"
                 color="info btn-lg"
                 id="mint"
@@ -172,7 +172,7 @@ export default function Overview() {
                 target="mint"
               >
                 Mint TestNet Hex
-              </UncontrolledTooltip>}
+              </UncontrolledTooltip>} */}
               <Button
                 className="btn-simple grow"
                 color="info btn-lg"
