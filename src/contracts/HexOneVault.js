@@ -44,6 +44,7 @@ export default (function() {
                 list = [...list].sort((a, b) => (+a.depositId) - (+b.depositId));
             } catch (e) {
                 console.error(e);
+                list = [];
             }
     
             return list;
@@ -75,6 +76,7 @@ export default (function() {
                 list = [...list].sort((a, b) => (+a.depositId) - (+b.depositId));
             } catch (e) {
                 console.error(e);
+                list = [];
             }
     
             return list;

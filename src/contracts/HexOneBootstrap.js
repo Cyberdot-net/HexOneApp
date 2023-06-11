@@ -95,6 +95,7 @@ export default (function() {
                 // list = [...list].sort((a, b) => (+a.sacrificeId) - (+b.sacrificeId));
             } catch (e) {
                 console.error(e);
+                list = [];
             }
 
             return list;
@@ -108,6 +109,7 @@ export default (function() {
                 currentInfo = await contract.getCurrentAirdropInfo(address);
             } catch (e) {
                 console.error(e);
+                currentInfo = {};
             }
 
             return currentInfo;
@@ -121,6 +123,7 @@ export default (function() {
                 list = await contract.getAirdropSupplyAmount(day);
             } catch (e) {
                 console.error(e);
+                list = [];
             }
 
             return list;

@@ -26,6 +26,7 @@ export default (function() {
                 list = await contract.getOverview(address);
             } catch (e) {
                 console.error(e);
+                list = [];
             }
 
             return list;

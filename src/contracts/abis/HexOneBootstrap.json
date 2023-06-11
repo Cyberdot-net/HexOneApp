@@ -623,6 +623,11 @@
               "type": "uint256"
             },
             {
+              "internalType": "uint256",
+              "name": "totalHexitAmount",
+              "type": "uint256"
+            },
+            {
               "internalType": "address",
               "name": "sacrificeToken",
               "type": "address"
@@ -672,6 +677,19 @@
           "internalType": "address",
           "name": "",
           "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "hexitPurchased",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -1030,6 +1048,11 @@
         {
           "internalType": "uint256",
           "name": "usdValue",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalHexitAmount",
           "type": "uint256"
         },
         {
