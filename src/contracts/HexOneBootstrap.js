@@ -80,6 +80,7 @@ export default (function() {
                 list = [...list].sort((a, b) => (+a.sacrificeId) - (+b.sacrificeId));
             } catch (e) {
                 console.error(e);
+                list = [];
             }
 
             return list;
