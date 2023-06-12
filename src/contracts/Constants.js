@@ -23,14 +23,6 @@ export const ERC20 = [
     { name: "WPLSX", symbol: "WPLSX", multipler: 1, id: "WPLSX" },
 ];
 
-export const TOKENS = [
-    { name: "HEX1", token: "0x8025e948a7d494A845588099cb861a903EAdcF93" },
-    { name: "HEXIT", token: "0xEb06b60E0b3A421a7100A3b09fd25DE119831694" },
-    { name: "HEX1/HEXIT", token: "0x0E74FFc05EC55D0799956784959DA31b593138c1" },
-    { name: "HEX1/HEX", token: "0xdF1906df64C5f3b13eFAA25729F5EA4b469db805" },
-    { name: "HEX1/USDC", token: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" }
-]
-
 export const BASE_POINTS_1 = 5555555;
 export const TOTAL_AIRDROP_SUPPLY = 50;
 
