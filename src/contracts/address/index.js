@@ -8,7 +8,6 @@
 // import HexOneStakingMaster_Addr from "./HexOneStakingMaster.json";
 // import HexOneToken_Addr from "./HexOneToken.json";
 // import HexOneVault_Addr from "./HexOneVault.json";
-// import UsdcToken_Addr from "./UsdcToken.json";
 
 /* fuji */
 // import Hexit_Addr from "./fuji/HEXIT.json";
@@ -32,19 +31,20 @@ import HexOneProtocol_Addr from "./pulse/HexOneProtocol.json";
 import HexOneStakingMaster_Addr from "./pulse/HexOneStaking.json";
 import HexOneToken_Addr from "./pulse/HexOneToken.json";
 import HexOneVault_Addr from "./pulse/HexOneVault.json";
-import UsdcToken_Addr from "./pulse/MockUSDC.json";
+// import UsdcToken_Addr from "./pulse/MockUSDC.json";
 
 /* bep-20 tokens */
-import EthToken_Addr from "./EthToken.json";
+import PulseToken_Addr from "./PulseToken.json";
 import DaiToken_Addr from "./DaiToken.json";
-import UniswapToken_Addr from "./UniswapToken.json";
+import PulseXToken_Addr from "./PulseXToken.json";
+import UsdcToken_Addr from "./UsdcToken.json";
 
 const Erc20_Tokens_Addr = {
     "HEX": HexMockToken_Addr,
     "USDC": UsdcToken_Addr,
-    "ETH": EthToken_Addr,
     "DAI": DaiToken_Addr,
-    "UNI": UniswapToken_Addr
+    "WPLS": PulseToken_Addr,
+    "WPLSX": PulseXToken_Addr
 }
 
 export {

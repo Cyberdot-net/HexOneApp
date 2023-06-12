@@ -16,11 +16,11 @@ export const networks = [
 ];
 
 export const ERC20 = [
-    { name: "HEX", symbol: "HEX", multipler: 5, id: "HEX" },
+    { name: "HEX", symbol: "HEX", multipler: 5.555, id: "HEX" },
     { name: "USDC", symbol: "USDC", multipler: 3, id: "USDC" },
-    { name: "ETH", symbol: "ETH", multipler: 2, id: "ETH" },
-    { name: "DAI", symbol: "DAI", multipler: 2, id: "DAI" },
-    { name: "UNI", symbol: "UNI", multipler: 1, id: "UNI" },
+    { name: "DAI", symbol: "DAI", multipler: 3, id: "DAI" },
+    { name: "WPLS", symbol: "WPLS", multipler: 2, id: "WPLS" },
+    { name: "WPLSX", symbol: "WPLSX", multipler: 1, id: "WPLSX" },
 ];
 
 export const TOKENS = [
