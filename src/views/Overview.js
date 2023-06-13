@@ -83,7 +83,7 @@ export default function Overview() {
 
   const getHistory = async () => {
     setHistory(await HexOneVault.getHistory(address));
-	setLiquidates(await HexOneVault.getLiquidableDeposits());
+	  setLiquidates(await HexOneVault.getLiquidableDeposits());
   }
 
   const getHealthRatio = (initialFeed) => {
