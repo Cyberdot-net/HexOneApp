@@ -18,6 +18,34 @@ export default (function() {
             }
         },
 
+        getMinDuration: async () => {
+            let value = 0;
+            if (!contract) return value;
+    
+            try {
+                value = await contract.MIN_DURATION();
+                value = +value;
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return value;
+        },
+
+        getMaxDuration: async () => {
+            let value = 0;
+            if (!contract) return value;
+    
+            try {
+                value = await contract.MAX_DURATION();
+                value = +value;
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return value;
+        },
+
         getFees: async () => {
             let fee = 0;
             if (!contract) return fee;

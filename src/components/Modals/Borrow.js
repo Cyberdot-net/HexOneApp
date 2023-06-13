@@ -21,7 +21,7 @@ import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexContract, HexOnePriceFeed, HexOneProtocol } from "contracts";
 import { HexOneToken_Addr } from "contracts/address";
-import { HEX_SHARERATE_DEC, STAKEDAYS_MIN, STAKEDAYS_MAX } from "contracts/Constants";
+import { HEX_SHARERATE_DEC } from "contracts/Constants";
 import { formatDecimal, formatZeroDecimal, formatFloat, isEmpty } from "common/utilities";
 
 
@@ -40,6 +40,8 @@ export default function Borrow({ show, onClose, onBorrow }) {
   const [ stakeDays, setStakeDays ] = useState("");
   const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
   const [ result, showResult ] = useState(false);
+  const [ STAKEDAYS_MIN, setMinDuration ] = useState(0);
+  const [ STAKEDAYS_MAX, setMaxDuration ] = useState(0);
 
   useEffect(() => {
     const bodyMouseDowntHandler = e => {
@@ -70,6 +72,8 @@ export default function Borrow({ show, onClose, onBorrow }) {
       setTotalHex(await HexContract.getBalance(address));
       setDayPayoutTotal(await HexContract.getDayPayoutTotal());
       setShareRate(await HexContract.getShareRate());
+      setMinDuration(await HexOneProtocol.getMinDuration());
+      setMaxDuration(await HexOneProtocol.getMaxDuration());
 
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
 
