@@ -138,9 +138,9 @@ export default function Bootstrap() {
     return formatFloat(Math.round((currentPrice / originalPrice) * 100));
   }
 
-  const getTotalHexit = (row) => {
-    return formatFloat(+utils.formatUnits(row.sacrificedAmount.mul(utils.parseUnits("1", 15 - (decimals[row.sacrificeTokenSymbol] || 0))).mul(row.multiplier).mul(row.supplyAmount).div(utils.parseUnits("1"))));
-  }
+  // const getTotalHexit = (row) => {
+  //   return formatFloat(+utils.formatUnits(row.sacrificedAmount.mul(utils.parseUnits("1", 15 - (decimals[row.sacrificeTokenSymbol] || 0))).mul(row.multiplier).mul(row.supplyAmount).div(utils.parseUnits("1"))));
+  // }
 
   const onClickClaim = async (sacrificeId) => {
     showLoading("Claiming $HEXIT...");
@@ -254,7 +254,7 @@ export default function Bootstrap() {
                       <td>{r.sacrificeTokenSymbol}</td>
                       <td>{utils.formatUnits(r.multiplier, 3).toString()}x</td>
                       <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount, decimals[r.sacrificeTokenSymbol] || 0))}</td>
-                      <td>{getTotalHexit(r)}</td>
+                      <td>{formatFloat(+utils.formatUnits(r.totalHexitAmount))}</td>
                       <td>${formatFloat(+utils.formatUnits(r.usdValue))}</td>
                       <td className="td-actions" width="100">
                         <Button
