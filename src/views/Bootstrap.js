@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useMediaQuery } from 'react-responsive';
 import { toast } from "react-hot-toast";
 import {
+  Modal,
   Button,
   Container,
   Row,
@@ -17,7 +18,7 @@ import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import SacrificeModal from "components/Modals/Sacrifice";
 import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
 import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap, HexOneEscrow, ERC20Contract } from "contracts";
-import { Erc20_Tokens_Addr } from "contracts/address";
+import { Erc20_Tokens_Addr, Hexit_Addr } from "contracts/address";
 import { ERC20 } from "contracts/Constants";
 import { isEmpty, formatFloat } from "common/utilities";
 
@@ -42,6 +43,7 @@ export default function Bootstrap() {
   const [ sacrificeList, setSacrificeList ] = useState([]);
   const [ shareInfo, setShareInfo ] = useState(null);
   const [ chartData, setChartData ] = useState(null);
+  const [ result, showResult ] = useState(false);
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
   
 
@@ -173,11 +175,55 @@ export default function Bootstrap() {
     
     hideLoading();
 
-    toast.success("Claim Hex1 success!");
+    showResult(true);
   }
 
   const doSacrifice = async () => {
     await getSacrificeList();
+  }
+
+  const onClickAddHexitToken = async () => {    
+    if (!address || !provider) return;
+
+    if (typeof window.ethereum === 'undefined') {
+      toast.error("<b>No MetaMask! - </b>Please, install MetaMask");
+      return;
+    }
+
+    showLoading("Adding...");
+
+    // Add hexit to MetaMask
+    try {
+      const wasAdded = await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: Hexit_Addr.contract,
+            symbol: "HEXIT",
+            decimals: 18,
+          },
+        },
+      });
+     
+      hideLoading();
+      if (wasAdded) {
+        toast.success("Added hexit to MetaMask");
+      } else {
+        toast.error("Failed to add hexit to MetaMask");
+      }
+
+    } catch (error) {
+      hideLoading();
+
+      if (error.code === 4001) {
+        toast.error(`Add failed! ${error.message}`);
+      } else {
+        toast.error(`Add failed! ${error.message}`);
+      }
+
+      return;
+    }
   }
 
   return (
@@ -426,6 +472,37 @@ export default function Bootstrap() {
         onSacrifice={doSacrifice}
         onClose={() => setOpen(false)}
       />}
+      <Modal
+        isOpen={result}
+        toggle={() => showResult(false)}
+        backdrop="static"
+      >
+        <div className="modal-header justify-content-center">
+          <button className="close" onClick={() => showResult(false)} style={{ padding: "10px", top: "10px", right: "16px" }}>
+            <i className="tim-icons icon-simple-remove" />
+          </button>
+          <h4 className="title title-up">Claim Hexone success!</h4>
+        </div>
+        <div className="modal-footer" style={{ justifyContent: "flex-end" }}>
+          <Button
+            className="mr-2"
+            color="success"
+            type="button"
+            size="sm"
+            onClick={() => onClickAddHexitToken()}
+          >
+            Add Hexit
+          </Button>
+          <Button
+            color="default"
+            type="button"
+            size="sm"
+            onClick={() => showResult(false)}
+          >
+            Close
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }
