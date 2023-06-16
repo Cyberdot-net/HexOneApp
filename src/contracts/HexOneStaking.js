@@ -46,7 +46,7 @@ export default (function() {
         
         getStakingEnable: async () => {
             let status = false;
-            if (!contract) return list;
+            if (!contract) return status;
     
             try {
                 status = await contract.stakingEnable();
