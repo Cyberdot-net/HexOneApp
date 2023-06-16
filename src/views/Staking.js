@@ -40,6 +40,7 @@ export default function Staking() {
   const [ currentDay, setCurrentDay ] = useState(0);
   const [ data, setData ] = useState([]);
   const [ chartData, setChartData ] = useState(null);
+  const [ stakeEnabled, setStakeEnabled ] = useState(false);
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
   
   
@@ -67,6 +68,8 @@ export default function Staking() {
       showLoading();
 
       setCurrentDay(await HexOneStaking.getCurrentDay());
+
+      setStakeEnabled(await HexOneStaking.getStakingEnable());
 
       await getStakeList();
       
@@ -346,6 +349,7 @@ export default function Staking() {
                                         className="btn-simple w-full"
                                         color="info"
                                         type="button"
+                                        disabled={r.stakingAmt.bignum.isZero() || !stakeEnabled}
                                         onClick={() => onStake(r)}
                                       >
                                         Stake

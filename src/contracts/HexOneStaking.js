@@ -43,6 +43,19 @@ export default (function() {
     
             return list;
         },
+        
+        getStakingEnable: async () => {
+            let status = false;
+            if (!contract) return list;
+    
+            try {
+                status = await contract.stakingEnable();
+            } catch (e) {
+                console.error(e);
+            }
+    
+            return status;
+        },
 
         claimable: async (address, token) => {            
             let result = false;
