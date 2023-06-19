@@ -307,7 +307,7 @@ export default function Bootstrap() {
                           id="claim"
                           className="btn btn-primary btn-sm w-full"
                           onClick={() => onClickClaim(r.sacrificeId)}
-                          disabled={r.claimed || r.day.gte(currentDay)}
+                          disabled={r.claimed || r.day.gte(curDay)}
                         >
                           Claim<br/>$HEXIT
                         </Button>
