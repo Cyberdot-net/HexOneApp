@@ -20,6 +20,14 @@ export const ERC20 = [
     { name: "WPLSX", symbol: "WPLSX", multipler: 1, id: "WPLSX" },
 ];
 
+export const SHARE_RATE = [
+    { name: "HEX1", shareRate: 0.1, reward: 'HEXIT' },
+    { name: "HEXIT", shareRate: 1, reward: 'HEX' },
+    { name: "HEX1/HEXIT", shareRate: 0.2, reward: 'HEXIT' },
+    { name: "HEX1/HEX", shareRate: 0.2, reward: 'HEXIT' },
+    { name: "HEX1/USDC", shareRate: 0.5, reward: 'HEXIT' }
+];
+
 export const BASE_POINTS_1 = 5555555;
 export const TOTAL_AIRDROP_SUPPLY = 50;
 

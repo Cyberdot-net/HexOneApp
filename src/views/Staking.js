@@ -20,6 +20,7 @@ import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
 import { HexOneStaking, ERC20Contract } from "contracts";
 import { HexOneStakingMaster_Addr } from "contracts/address";
+// import { SHARE_RATE } from "contracts/Constants";
 import { formatFloat, formatZeroDecimal, isEmpty } from "common/utilities";
 
 
