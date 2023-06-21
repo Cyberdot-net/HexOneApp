@@ -282,7 +282,7 @@ export default function Bootstrap() {
                     <th className="text-center">ShareId</th>
                     <th>Day</th>
                     <th>Base {isMobile && <br />}Points</th>
-                    <th>ERC20 {isMobile && <br />}[name]</th>
+                    <th>ERC20</th>
                     <th>Bonus</th>
                     <th>Sacrificed {isMobile && <br />}Amt</th>
                     <th>Total {isMobile && <br />}Hexit</th>
