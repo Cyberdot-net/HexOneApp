@@ -36,17 +36,19 @@ export default function Bootstrap() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const { timer } = useContext(TimerContext);
-  const [ decimals, setDecimals ] = useState({});
-  const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
-  const [ currentDay, setCurrentDay ] = useState(0);
-  const [ isOpen, setOpen ] = useState(false);
-  const [ sacrificeList, setSacrificeList ] = useState([]);
-  const [ shareInfo, setShareInfo ] = useState(null);
-  const [ chartData, setChartData ] = useState(null);
-  const [ result, showResult ] = useState(false);
+  const [decimals, setDecimals] = useState({});
+  const [hexFeed, setHexFeed] = useState(BigNumber.from(0));
+  const [currentDay, setCurrentDay] = useState(0);
+  const [isOpen, setOpen] = useState(false);
+  const [sacrificeList, setSacrificeList] = useState([]);
+  const [shareInfo, setShareInfo] = useState(null);
+  const [chartData, setChartData] = useState(null);
+  const [result, showResult] = useState(false);
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
-  
 
+  console.log(BigNumber.from('0xae499b70f2dc392000') / BigNumber.from('1000000000000000000'))
+  console.log(BigNumber.from('0x056bc75e2d63100000') / BigNumber.from('1000000000000000000'))
+  console.log(BigNumber.from('0x0f578162bc855982519876d52000') / BigNumber.from('1000000000000000000'))
   useEffect(() => {
     if (!timer || !HexOneBootstrap.connected() || Object.keys(decimals).length === 0) return;
 
@@ -54,20 +56,20 @@ export default function Bootstrap() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals["HEX"])));
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
-      
+
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData, decimals)
     }
 
-    getData();    
+    getData();
     // eslint-disable-next-line
-  }, [ timer ]);
+  }, [timer]);
 
-  
+
   useEffect(() => {
     if (!address || !provider) return;
-    
+
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
     HexOneVault.setProvider(provider);
@@ -88,7 +90,7 @@ export default function Bootstrap() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", ercDecimals["HEX"])));
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
-      
+
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData, ercDecimals)
@@ -99,14 +101,15 @@ export default function Bootstrap() {
     getData();
 
     // eslint-disable-next-line
-  }, [ address, provider ]);
+  }, [address, provider]);
 
 
   const drawPieChart = async (sacrificeData, ercDecimals) => {
+    console.log(sacrificeData, ercDecimals)
     const labels = sacrificeData.map(r => r.sacrificeTokenSymbol || "");
-    const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount, ercDecimals[r.sacrificeTokenSymbol] || 0));
+    // const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount, ercDecimals[r.sacrificeTokenSymbol] || 0));
+    const data = sacrificeData.map(r => +utils.formatUnits(r.usdValue, ercDecimals['WPLS'] || 0));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
-
     if (data.length > 0) {
       setChartData({
         labels: labels,
@@ -136,7 +139,7 @@ export default function Bootstrap() {
 
     const currentPrice = +utils.formatUnits(hexFeed);
     const originalPrice = +utils.formatUnits(initialFeed);
-    
+
     return formatFloat(Math.round((currentPrice / originalPrice) * 100));
   }
 
@@ -155,7 +158,7 @@ export default function Bootstrap() {
     }
 
     await getSacrificeList();
-    
+
     hideLoading();
 
     toast.success("Claim $HEXIT success!");
@@ -172,7 +175,7 @@ export default function Bootstrap() {
     }
 
     setShareInfo(await HexOneEscrow.getOverview(address));
-    
+
     hideLoading();
 
     showResult(true);
@@ -182,7 +185,7 @@ export default function Bootstrap() {
     await getSacrificeList();
   }
 
-  const onClickAddHexitToken = async () => {    
+  const onClickAddHexitToken = async () => {
     if (!address || !provider) return;
 
     if (typeof window.ethereum === 'undefined') {
@@ -205,7 +208,7 @@ export default function Bootstrap() {
           },
         },
       });
-     
+
       hideLoading();
       if (wasAdded) {
         toast.success("Added hexit to MetaMask");
@@ -291,44 +294,44 @@ export default function Bootstrap() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sacrificeList.length > 0 ? 
+                  {sacrificeList.length > 0 ?
                     sacrificeList.map((r, idx) => (
-                    <tr key={idx}>
-                      <td className="text-center">{r.sacrificeId.toString()}</td>
-                      <td className="text-center">{r.day.toString()}</td>
-                      <td>{formatFloat(+utils.formatUnits(r.supplyAmount))}</td>
-                      <td>{r.sacrificeTokenSymbol}</td>
-                      <td>{utils.formatUnits(r.multiplier, 3).toString()}x</td>
-                      <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount, decimals[r.sacrificeTokenSymbol] || 0))}</td>
-                      <td>{formatFloat(+utils.formatUnits(r.totalHexitAmount))}</td>
-                      <td>${formatFloat(+utils.formatUnits(r.usdValue))}</td>
-                      <td className="td-actions" width="100">
-                        <Button
-                          id="claim"
-                          className="btn btn-primary btn-sm w-full"
-                          onClick={() => onClickClaim(r.sacrificeId)}
-                          disabled={r.claimed || r.day.gte(currentDay)}
+                      <tr key={idx}>
+                        <td className="text-center">{r.sacrificeId.toString()}</td>
+                        <td className="text-center">{r.day.toString()}</td>
+                        <td>{formatFloat(+utils.formatUnits(r.supplyAmount))}</td>
+                        <td>{r.sacrificeTokenSymbol}</td>
+                        <td>{utils.formatUnits(r.multiplier, 3).toString()}x</td>
+                        <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount, decimals[r.sacrificeTokenSymbol] || 0))}</td>
+                        <td>{formatFloat(+utils.formatUnits(r.totalHexitAmount))}</td>
+                        <td>${formatFloat(+utils.formatUnits(r.usdValue))}</td>
+                        <td className="td-actions" width="100">
+                          <Button
+                            id="claim"
+                            className="btn btn-primary btn-sm w-full"
+                            onClick={() => onClickClaim(r.sacrificeId)}
+                            disabled={r.claimed || r.day.gte(currentDay)}
+                          >
+                            Claim<br />$HEXIT
+                          </Button>
+                          <UncontrolledTooltip
+                            placement="bottom"
+                            target="claim"
+                          >
+                            Claim $HEXIT
+                          </UncontrolledTooltip>
+                        </td>
+                      </tr>
+                    )) : <tr>
+                      <td colSpan={12} className="text-center">
+                        <Alert
+                          className="alert-with-icon"
+                          color="default"
                         >
-                          Claim<br/>$HEXIT
-                        </Button>
-                        <UncontrolledTooltip
-                          placement="bottom"
-                          target="claim"
-                        >
-                          Claim $HEXIT
-                        </UncontrolledTooltip>
+                          <span>There are no matching entries</span>
+                        </Alert>
                       </td>
-                    </tr>
-                  )) : <tr>
-                    <td colSpan={12} className="text-center">                
-                      <Alert
-                        className="alert-with-icon"
-                        color="default"
-                      >
-                        <span>There are no matching entries</span>
-                      </Alert>
-                    </td>
-                  </tr>}
+                    </tr>}
                 </tbody>
               </table>
             </Col>
@@ -362,7 +365,7 @@ export default function Bootstrap() {
                   </tr>
                 </thead>
                 <tbody>
-                  {shareInfo && shareInfo.totalUSDValue?.gt(0) ? 
+                  {shareInfo && shareInfo.totalUSDValue?.gt(0) ?
                     <tr>
                       <td>${formatFloat(+utils.formatUnits(shareInfo.totalUSDValue))}</td>
                       <td>{shareInfo.shareOfPool.toString()}%</td>
@@ -383,7 +386,7 @@ export default function Bootstrap() {
                           disabled={shareInfo.borrowedAmount.lte(0) || shareInfo.endTime.gt(shareInfo.curDay)}
                           onClick={() => onClickClaimHex1()}
                         >
-                          Claim<br/>Hex1
+                          Claim<br />Hex1
                         </Button>
                         <UncontrolledTooltip
                           placement="bottom"
@@ -393,15 +396,15 @@ export default function Bootstrap() {
                         </UncontrolledTooltip>
                       </td>
                     </tr> : <tr>
-                    <td colSpan={12} className="text-center">                
-                      <Alert
-                        className="alert-with-icon"
-                        color="default"
-                      >
-                        <span>There are no matching entries</span>
-                      </Alert>
-                    </td>
-                  </tr>}
+                      <td colSpan={12} className="text-center">
+                        <Alert
+                          className="alert-with-icon"
+                          color="default"
+                        >
+                          <span>There are no matching entries</span>
+                        </Alert>
+                      </td>
+                    </tr>}
                 </tbody>
               </table>
             </Col>
@@ -418,45 +421,45 @@ export default function Bootstrap() {
           </Row>
           <Row className="center">
             <Col lg="8" md="12">
-              {chartData ? 
-              <Pie
-                data={chartData}
-                plugins={[ ChartDataLabels, ChartDataOutLabels ]}
-                legend={{
-                  display: false,
-                  labels: {
-                    padding: 20,
-                  },
-                }}
-                options= {{
-                  layout: { padding: 50 },
-                  legend: { display: false },
-                  plugins: {
-                    datalabels: {
-                      color: "rgba(255, 255, 255, 0.8)",
-                      textAlign: 'center',
-                      opacity: 0.8,
-                      formatter: function(value, context) {
-                        const sum = chartData.datasets[0]?.data?.reduce((s, o)=> s + o, 0);
-                        const label = context.chart.data.labels[context.dataIndex];
-                        if (sum) {
-                          return [label, `${sum ? Math.round(value / sum * 100) : 0}%`]; 
-                        } else {
-                          return "";
+              {chartData ?
+                <Pie
+                  data={chartData}
+                  plugins={[ChartDataLabels, ChartDataOutLabels]}
+                  legend={{
+                    display: false,
+                    labels: {
+                      padding: 20,
+                    },
+                  }}
+                  options={{
+                    layout: { padding: 50 },
+                    legend: { display: false },
+                    plugins: {
+                      datalabels: {
+                        color: "rgba(255, 255, 255, 0.8)",
+                        textAlign: 'center',
+                        opacity: 0.8,
+                        formatter: function (value, context) {
+                          const sum = chartData.datasets[0]?.data?.reduce((s, o) => s + o, 0);
+                          const label = context.chart.data.labels[context.dataIndex];
+                          if (sum) {
+                            return [label, `${sum ? Math.round(value / sum * 100) : 0}%`];
+                          } else {
+                            return "";
+                          }
+                        }
+                      },
+                      outlabels: {
+                        font: { size: 15 },
+                        stretch: 20,
+                        text: (context) => {
+                          const label = context.chart.data.labels[context.dataIndex];
+                          const value = context.dataset.data[context.dataIndex];
+                          return `${label} ${value}`;
                         }
                       }
-                    },
-                    outlabels: {
-                      font: { size: 15 },
-                      stretch: 20,
-                      text: (context) => {
-                        const label = context.chart.data.labels[context.dataIndex];
-                        const value = context.dataset.data[context.dataIndex];
-                        return `${label} ${value}`;
-                      }
                     }
-                  }
-                }}
+                  }}
                 /> :
                 <h3 className="text-center">
                   No Analysis Data
@@ -466,7 +469,7 @@ export default function Bootstrap() {
           </Row>
         </Container>
       </section>
-      {isOpen && <SacrificeModal 
+      {isOpen && <SacrificeModal
         show={isOpen}
         day={currentDay}
         onSacrifice={doSacrifice}
