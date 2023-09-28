@@ -98,6 +98,8 @@ export default function Bootstrap() {
 
       setSacrificeStart(st.getFullYear() + '-' + ("0" + (st.getMonth() + 1)).slice(-2) + '-' + ("0" + (st.getDate())).slice(-2))
       setSacrificeEnd(en.getFullYear() + '-' + ("0" + (en.getMonth() + 1)).slice(-2) + '-' + ("0" + (en.getDate())).slice(-2))
+
+      console.log(await HexOneEscrow.collateralDeposited())
       hideLoading();
     }
 
