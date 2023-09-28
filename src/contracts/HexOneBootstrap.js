@@ -3,7 +3,7 @@ import { HexOneBootstrap_Abi } from "./abis";
 import { HexOneBootstrap_Addr } from "./address";
 import { Erc20_Tokens_Addr } from "./address";
 
-export default (function() {
+export default (function () {
 
     let contract = null;
 
@@ -22,7 +22,7 @@ export default (function() {
         checkSacrificeDuration: async () => {
             let result = false;
             if (!contract) return result;
-    
+
             try {
                 result = await contract.afterSacrificeDuration();
             } catch (e) {
@@ -35,33 +35,33 @@ export default (function() {
         getCurrentSacrificeDay: async () => {
             let currentDay = BigNumber.from(0);
             if (!contract) return currentDay;
-    
+
             try {
                 currentDay = await contract.getCurrentSacrificeDay();
             } catch (e) {
                 console.error(e);
             }
-    
+
             return currentDay;
         },
 
         getCurrentAirdropDay: async () => {
             let currentDay = BigNumber.from(0);
             if (!contract) return currentDay;
-    
+
             try {
                 currentDay = await contract.getCurrentAirdropDay();
             } catch (e) {
                 console.error(e);
             }
-    
+
             return currentDay;
         },
-        
+
         getBasePoint: async (day) => {
             let result = BigNumber.from("0");
             if (!contract) return result;
-    
+
             try {
                 result = await contract.getAmountForSacrifice(day);
             } catch (e) {
@@ -74,7 +74,7 @@ export default (function() {
         getSacrificeList: async (address) => {
             let list = [];
             if (!contract) return list;
-    
+
             try {
                 list = await contract.getUserSacrificeInfo(address);
                 list = [...list].sort((a, b) => (+a.sacrificeId) - (+b.sacrificeId));
@@ -89,7 +89,7 @@ export default (function() {
         getAirdropList: async (address) => {
             let list = [];
             if (!contract) return list;
-    
+
             try {
                 list = await contract.getAirdropClaimHistory(address);
                 // list = [...list].sort((a, b) => (+a.sacrificeId) - (+b.sacrificeId));
@@ -104,7 +104,7 @@ export default (function() {
         getCurrentAirdropInfo: async (address) => {
             let currentInfo = {};
             if (!contract) return currentInfo;
-    
+
             try {
                 currentInfo = await contract.getCurrentAirdropInfo(address);
             } catch (e) {
@@ -118,7 +118,7 @@ export default (function() {
         getAirdropDailyHistory: async (day) => {
             let list = [];
             if (!contract) return list;
-    
+
             try {
                 list = await contract.getAirdropSupplyAmount(day);
             } catch (e) {
@@ -128,10 +128,10 @@ export default (function() {
 
             return list;
         },
-        
+
         sacrificeToken: async (type, amount) => {
             if (!contract) return { status: "failed" };
-    
+
             try {
                 const tx = await contract.sacrificeToken(Erc20_Tokens_Addr[type].contract, amount);
                 await tx.wait();
@@ -145,13 +145,13 @@ export default (function() {
                     return { status: "failed", error: "Sacrifice failed!" };
                 }
             }
-    
+
             return { status: "success" };
         },
 
         claimSacrifice: async (sacrificeId) => {
             if (!contract) return { status: "failed" };
-    
+
             try {
                 const tx = await contract.claimRewardsForSacrifice(sacrificeId);
                 await tx.wait();
@@ -162,17 +162,17 @@ export default (function() {
                 } else if (e.message) {
                     return { status: "failed", error: "Claim failed! " + (e.data?.message ? e.data.message : e.message) };
                 } else {
-                    return { status: "failed", error: "Claim failed!"};
+                    return { status: "failed", error: "Claim failed!" };
                 }
             }
-    
+
             return { status: "success" };
         },
 
         checkAirdropInfo: async (address) => {
             let requested = 0;
             if (!contract) return requested;
-    
+
             try {
                 const info = await contract.requestAirdropInfo(address);
                 if (info.claimed) {
@@ -189,7 +189,7 @@ export default (function() {
 
         requestAirdrop: async () => {
             if (!contract) return { status: "failed" };
-    
+
             try {
                 const tx = await contract.requestAirdrop();
                 await tx.wait();
@@ -203,13 +203,13 @@ export default (function() {
                     return { status: "failed", error: "Request Airdrop failed!" };
                 }
             }
-    
+
             return { status: "success" };
         },
 
         claimAirdrop: async () => {
             if (!contract) return { status: "failed" };
-    
+
             try {
                 const tx = await contract.claimAirdrop();
                 await tx.wait();
@@ -223,10 +223,41 @@ export default (function() {
                     return { status: "failed", error: "Claim Airdrop failed!" };
                 }
             }
-    
+
             return { status: "success" };
         },
-        
+
+        sacrificeStartTime: async () => {
+            if (!contract) return { status: "failed" };
+
+            const res = await contract.sacrificeStartTime()
+
+            return res
+        },
+
+        sacrificeEndTime: async () => {
+            if (!contract) return { status: "failed" };
+
+            const res = await contract.sacrificeEndTime()
+
+            return res
+        },
+
+        airdropStartTime: async () => {
+            if (!contract) return { status: "failed" };
+
+            const res = await contract.airdropStartTime()
+
+            return res
+        },
+
+        airdropEndTime: async () => {
+            if (!contract) return { status: "failed" };
+
+            const res = await contract.airdropEndTime()
+
+            return res
+        }
     }
-    
+
 })();

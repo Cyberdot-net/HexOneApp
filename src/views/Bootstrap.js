@@ -44,11 +44,10 @@ export default function Bootstrap() {
   const [shareInfo, setShareInfo] = useState(null);
   const [chartData, setChartData] = useState(null);
   const [result, showResult] = useState(false);
+  const [sacrificeStart, setSacrificeStart] = useState('')
+  const [sacrificeEnd, setSacrificeEnd] = useState('')
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
-  console.log(BigNumber.from('0xae499b70f2dc392000') / BigNumber.from('1000000000000000000'))
-  console.log(BigNumber.from('0x056bc75e2d63100000') / BigNumber.from('1000000000000000000'))
-  console.log(BigNumber.from('0x0f578162bc855982519876d52000') / BigNumber.from('1000000000000000000'))
   useEffect(() => {
     if (!timer || !HexOneBootstrap.connected() || Object.keys(decimals).length === 0) return;
 
@@ -65,7 +64,6 @@ export default function Bootstrap() {
     getData();
     // eslint-disable-next-line
   }, [timer]);
-
 
   useEffect(() => {
     if (!address || !provider) return;
@@ -95,6 +93,11 @@ export default function Bootstrap() {
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData, ercDecimals)
 
+      const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
+      const en = new Date(BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() * 1000)
+
+      setSacrificeStart(st.getFullYear() + '-' + ("0" + (st.getMonth() + 1)).slice(-2) + '-' + ("0" + (st.getDate())).slice(-2))
+      setSacrificeEnd(en.getFullYear() + '-' + ("0" + (en.getMonth() + 1)).slice(-2) + '-' + ("0" + (en.getDate())).slice(-2))
       hideLoading();
     }
 
@@ -103,9 +106,7 @@ export default function Bootstrap() {
     // eslint-disable-next-line
   }, [address, provider]);
 
-
   const drawPieChart = async (sacrificeData, ercDecimals) => {
-    console.log(sacrificeData, ercDecimals)
     const labels = sacrificeData.map(r => r.sacrificeTokenSymbol || "");
     // const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount, ercDecimals[r.sacrificeTokenSymbol] || 0));
     const data = sacrificeData.map(r => +utils.formatUnits(r.usdValue, ercDecimals['WPLS'] || 0));
@@ -243,8 +244,10 @@ export default function Bootstrap() {
               <MetaMaskAlert isOpen={!address} />
             </Col>
           </Row>}
+          <h4 className="title text-left">Sacrifice Start Date: {sacrificeStart}</h4>
+          <h4 className="title text-left">Sacrifice End Date: {sacrificeEnd}</h4>
           <h3 className="title text-left mb-2">Day: {currentDay.toString()}</h3>
-          <Row gutter="10" className="pl-4 pr-4">
+          <Row gutter="10" className="pl-4 pr-4" style={{ placeContent: 'center' }}>
             <Col lg="12" className="mb-4">
               <Button
                 className="btn-simple grow"
@@ -261,6 +264,8 @@ export default function Bootstrap() {
                 Sacrifice tokens
               </UncontrolledTooltip>
             </Col>
+            <div style={{ width: '650px', color: 'white' }}>When you sacrifice you are bootstrapping the Hex One Protocol.
+              You will receive <strong>75%</strong> of the USD value sacrificed in <strong>$HEX1</strong>, and the remaining <strong>25%</strong> go into the liquidity pool <strong>(HEX1/USDC)</strong>. You also receive an aidrop of <strong>$HEXIT</strong>.</div>
           </Row>
         </Container>
       </section>
