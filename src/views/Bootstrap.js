@@ -99,7 +99,6 @@ export default function Bootstrap() {
       setSacrificeStart(st.getFullYear() + '-' + ("0" + (st.getMonth() + 1)).slice(-2) + '-' + ("0" + (st.getDate())).slice(-2))
       setSacrificeEnd(en.getFullYear() + '-' + ("0" + (en.getMonth() + 1)).slice(-2) + '-' + ("0" + (en.getDate())).slice(-2))
 
-      console.log(await HexOneEscrow.collateralDeposited())
       hideLoading();
     }
 
@@ -378,8 +377,8 @@ export default function Bootstrap() {
                       <td>{shareInfo.shareOfPool.toString()}%</td>
                       <td>{shareInfo.startTime.toString()}</td>
                       <td>{shareInfo.endTime.toString()}</td>
-                      <td>{formatFloat(+utils.formatUnits(shareInfo.hexAmount))} HEX</td>
-                      <td>{formatFloat(+utils.formatUnits(shareInfo.effectiveAmount))} HEX</td>
+                      <td>{formatFloat(+utils.formatUnits(shareInfo.hexAmount, 8))} HEX</td>
+                      <td>{formatFloat(+utils.formatUnits(shareInfo.effectiveAmount, 8))} HEX</td>
                       <td>{formatFloat(+utils.formatUnits(shareInfo.borrowedAmount))} HEX1</td>
                       <td>${formatFloat(+utils.formatUnits(shareInfo.initUSDValue))}</td>
                       <td>${formatFloat(+utils.formatUnits(hexFeed))}</td>
