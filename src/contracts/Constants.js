@@ -18,7 +18,7 @@ export const ERC20 = [
     { name: "USDC", symbol: "USDC", multipler: 3, id: "USDC" },
     { name: "DAI", symbol: "DAI", multipler: 3, id: "DAI" },
     { name: "WPLS", symbol: "WPLS", multipler: 2, id: "WPLS" },
-    { name: "WPLSX", symbol: "WPLSX", multipler: 1, id: "WPLSX" },
+    { name: "PLSX", symbol: "PLSX", multipler: 1, id: "PLSX" },
 ];
 
 export const SHARE_RATE = [

@@ -44,7 +44,7 @@ const Erc20_Tokens_Addr = {
     "USDC": UsdcToken_Addr,
     "DAI": DaiToken_Addr,
     "WPLS": PulseToken_Addr,
-    "WPLSX": PulseXToken_Addr
+    "PLSX": PulseXToken_Addr
 }
 
 export {
