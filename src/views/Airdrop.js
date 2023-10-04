@@ -57,7 +57,6 @@ export default function Bootstrap() {
       setCurrentDay(day);
       setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
 
-      console.log(await HexOneBootstrap.getCurrentAirdropInfo(address))
       const st = new Date(BigNumber.from(await HexOneBootstrap.airdropStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.airdropEndTime()).toNumber() * 1000)
 
