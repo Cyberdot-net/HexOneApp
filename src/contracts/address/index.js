@@ -31,11 +31,13 @@ import HexOneProtocol_Addr from "./pulse/HexOneProtocol.json";
 import HexOneStakingMaster_Addr from "./pulse/HexOneStaking.json";
 import HexOneToken_Addr from "./pulse/HexOneToken.json";
 import HexOneVault_Addr from "./pulse/HexOneVault.json";
+import PulseXFactory_Addr from './pulse/PulseXFactory.json'
 // import UsdcToken_Addr from "./pulse/MockUSDC.json";
 
 /* bep-20 tokens */
 import PulseToken_Addr from "./PulseToken.json";
-import DaiToken_Addr from "./DaiToken.json";
+// import DaiToken_Addr from "./DaiToken.json";
+import DaiToken_Addr from './pulse/DAI.json'
 import PulseXToken_Addr from "./PulseXToken.json";
 import UsdcToken_Addr from "./UsdcToken.json";
 
@@ -58,4 +60,5 @@ export {
     HexOneToken_Addr,
     HexOneVault_Addr,
     Erc20_Tokens_Addr,
+    PulseXFactory_Addr,
 }

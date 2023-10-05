@@ -6,6 +6,8 @@ import HexOneVault from "./HexOneVault";
 import HexOneBootstrap from "./HexOneBootstrap";
 import HexOneEscrow from "./HexOneEscrow";
 import HexOneStaking from "./HexOneStaking";
+import PulseXFactory from './PulseXFactory'
+import ResultContract from "./ResultContract";
 
 export {
     ERC20Contract,
@@ -15,5 +17,7 @@ export {
     HexOneVault,
     HexOneBootstrap,
     HexOneEscrow,
-    HexOneStaking
+    HexOneStaking,
+    PulseXFactory,
+    ResultContract
 }
