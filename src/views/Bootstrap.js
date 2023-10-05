@@ -55,7 +55,7 @@ export default function Bootstrap() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals["HEX"])));
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
-
+      console.log(await HexOneEscrow.collateralDeposited())
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData, decimals)

@@ -15,7 +15,7 @@ import {
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
 import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
-import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed } from "contracts";
+import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import Pagination from "components/Common/Pagination";
@@ -27,17 +27,17 @@ export default function Overview() {
   const { address, provider } = useContext(WalletContext);
   const { timer } = useContext(TimerContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
-  const [ isTestNet, setIsTestNet ] = useState(false);
-  const [ hexDecimals, setHexDecimals ] = useState(0);
-  const [ hexFeed, setHexFeed ] = useState(BigNumber.from(0));
-  const [ history, setHistory ] = useState([]);
-  const [ liquidates, setLiquidates ] = useState([]);
-  const [ isBorrowOpen, setBorrowOpen ] = useState(false);
-  const [ reborrow, setReborrow ] = useState({ show: false, data: {} });
-  const [ page, setPage ] = useState(1);
+  const [isTestNet, setIsTestNet] = useState(false);
+  const [hexDecimals, setHexDecimals] = useState(0);
+  const [hexFeed, setHexFeed] = useState(BigNumber.from(0));
+  const [history, setHistory] = useState([]);
+  const [liquidates, setLiquidates] = useState([]);
+  const [isBorrowOpen, setBorrowOpen] = useState(false);
+  const [reborrow, setReborrow] = useState({ show: false, data: {} });
+  const [page, setPage] = useState(1);
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
-  
+
   useEffect(() => {
     if (!timer || !HexOnePriceFeed.connected() || !hexDecimals) return;
 
@@ -47,9 +47,9 @@ export default function Overview() {
       setLiquidates(await HexOneVault.getLiquidableDeposits());
     }
 
-    getData();    
+    getData();
     // eslint-disable-next-line
-  }, [ timer ]);
+  }, [timer]);
 
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function Overview() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
       setHistory(await HexOneVault.getHistory(address));
       setLiquidates(await HexOneVault.getLiquidableDeposits());
-      
+
       // const network = await provider.getNetwork();
       // setIsTestNet(network.chainId !== 1);
       setIsTestNet(false);
@@ -79,11 +79,11 @@ export default function Overview() {
     getData();
 
     // eslint-disable-next-line
-  }, [ address, provider ]);
+  }, [address, provider]);
 
   const getHistory = async () => {
     setHistory(await HexOneVault.getHistory(address));
-	  setLiquidates(await HexOneVault.getLiquidableDeposits());
+    setLiquidates(await HexOneVault.getLiquidableDeposits());
   }
 
   const getHealthRatio = (initialFeed) => {
@@ -91,7 +91,7 @@ export default function Overview() {
 
     const currentPrice = +utils.formatUnits(hexFeed);
     const originalPrice = +utils.formatUnits(initialFeed);
-    
+
     return formatFloat(Math.round((currentPrice / originalPrice) * 100));
   }
 
@@ -99,7 +99,7 @@ export default function Overview() {
 
     const profit = formatFloat(+(utils.formatUnits(row.currentUSDValue.sub(row.initUSDValue))));
     const percent = formatFloat(+(row.currentUSDValue.div(row.initUSDValue).mul(100)), 0);
-    
+
     return `${profit} (${percent}%)`;
   }
 
@@ -119,7 +119,7 @@ export default function Overview() {
   }
 
   const onClickReborrow = (row) => {
-    setReborrow({ show: true, data: {...row, currentFeed: hexFeed} });
+    setReborrow({ show: true, data: { ...row, currentFeed: hexFeed } });
   }
 
   const doMintHex = async () => {
@@ -132,7 +132,7 @@ export default function Overview() {
       toast.error(res.error ?? "Mint failed!");
       return;
     }
-    
+
     hideLoading();
     toast.success("Mint hex success!");
   }
@@ -145,6 +145,15 @@ export default function Overview() {
     getHistory();
   }
 
+  const onClickBorrow = () => {
+    const func = async () => {
+      const cur = new Date()
+      const airdropEndTime = await HexOneBootstrap.airdropEndTime()
+      if (cur > airdropEndTime) setBorrowOpen(true)
+      else toast.error("Can't Borrow until Aidrop ends")
+    }
+    func()
+  }
   return (
     <div className="wrapper">
       <section className="section section-lg section-titles">
@@ -178,7 +187,7 @@ export default function Overview() {
                 className="btn-simple grow"
                 color="info btn-lg"
                 id="borrow"
-                onClick={() => setBorrowOpen(true)}>
+                onClick={onClickBorrow}>
                 BORROW
               </Button>
               <UncontrolledTooltip
@@ -233,68 +242,68 @@ export default function Overview() {
                   </tr>
                 </thead>
                 <tbody>
-                  {history.length > 0 ? 
+                  {history.length > 0 ?
                     history.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE).map((r, idx) => (
-                    <tr key={idx}>
-                      <td className="text-center">{r.depositId.toString()}</td>
-                      <td className="text-center">{r.lockedHexDay.toString()}</td>
-                      <td className="text-center">{r.endHexDay.toString()}</td>
-                      <td className="text-center">{r.curHexDay.toString()}</td>
-                      <td>{formatFloat(+utils.formatUnits(r.depositAmount, hexDecimals))} HEX</td>
-                      <td>{formatFloat(+utils.formatUnits(r.effectiveAmount, hexDecimals))} HEX</td>
-                      <td>{formatFloat(+utils.formatUnits(r.mintAmount))} HEX1</td>
-                      <td>${formatFloat(+utils.formatUnits(r.initialHexPrice))}</td>
-                      <td>${formatFloat(+utils.formatUnits(hexFeed))}</td>
-                      <td className={+getHealthRatio(r.initialHexPrice) >= 100 ? "green" : "red"}>
-                        {getHealthRatio(r.initialHexPrice)}%
+                      <tr key={idx}>
+                        <td className="text-center">{r.depositId.toString()}</td>
+                        <td className="text-center">{r.lockedHexDay.toString()}</td>
+                        <td className="text-center">{r.endHexDay.toString()}</td>
+                        <td className="text-center">{r.curHexDay.toString()}</td>
+                        <td>{formatFloat(+utils.formatUnits(r.depositAmount, hexDecimals))} HEX</td>
+                        <td>{formatFloat(+utils.formatUnits(r.effectiveAmount, hexDecimals))} HEX</td>
+                        <td>{formatFloat(+utils.formatUnits(r.mintAmount))} HEX1</td>
+                        <td>${formatFloat(+utils.formatUnits(r.initialHexPrice))}</td>
+                        <td>${formatFloat(+utils.formatUnits(hexFeed))}</td>
+                        <td className={+getHealthRatio(r.initialHexPrice) >= 100 ? "green" : "red"}>
+                          {getHealthRatio(r.initialHexPrice)}%
+                        </td>
+                        <td className="td-actions">
+                          <Button
+                            id="claim"
+                            className="btn btn-primary btn-sm w-btn mb-1"
+                            onClick={() => onClickClaim(r.depositId, 'claim')}
+                            disabled={r.curHexDay.lte(r.endHexDay)}
+                          >
+                            Claim
+                          </Button>
+                          <UncontrolledTooltip
+                            placement="bottom"
+                            target="claim"
+                          >
+                            Claim HEX by burning HEX1
+                          </UncontrolledTooltip>
+                          {isMobile && <br />}
+                          <Button
+                            id="mintHex1"
+                            className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
+                            onClick={() => onClickReborrow(r)}
+                            disabled={r.borrowableAmount.lte(0)}
+                          >
+                            Re-Borrow
+                          </Button>
+                          <UncontrolledTooltip
+                            placement="bottom"
+                            target="mintHex1"
+                          >
+                            Mint more $HEX1 without adding any collateral
+                          </UncontrolledTooltip>
+                        </td>
+                      </tr>
+                    )) : <tr>
+                      <td colSpan={12} className="text-center">
+                        <Alert
+                          className="alert-with-icon"
+                          color="default"
+                        >
+                          <span>There are no matching entries</span>
+                        </Alert>
                       </td>
-                      <td className="td-actions">
-                        <Button
-                          id="claim"
-                          className="btn btn-primary btn-sm w-btn mb-1"
-                          onClick={() => onClickClaim(r.depositId, 'claim')}
-                          disabled={r.curHexDay.lte(r.endHexDay)}
-                        >
-                          Claim
-                        </Button>
-                        <UncontrolledTooltip
-                          placement="bottom"
-                          target="claim"
-                        >
-                          Claim HEX by burning HEX1
-                        </UncontrolledTooltip>
-                        {isMobile && <br/>}
-                        <Button
-                          id="mintHex1"
-                          className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
-                          onClick={() => onClickReborrow(r)}
-                          disabled={r.borrowableAmount.lte(0)}
-                        >
-                          Re-Borrow
-                        </Button>
-                        <UncontrolledTooltip
-                          placement="bottom"
-                          target="mintHex1"
-                        >
-                          Mint more $HEX1 without adding any collateral
-                        </UncontrolledTooltip>
-                      </td>
-                    </tr>
-                  )) : <tr>
-                    <td colSpan={12} className="text-center">                
-                      <Alert
-                        className="alert-with-icon"
-                        color="default"
-                      >
-                        <span>There are no matching entries</span>
-                      </Alert>
-                    </td>
-                  </tr>}
+                    </tr>}
                 </tbody>
               </table>
             </Col>
             <Col md="12">
-              <Pagination 
+              <Pagination
                 className="mb-3"
                 page={page}
                 count={history.length}
@@ -408,15 +417,15 @@ export default function Overview() {
                       </td>
                     </tr>
                   )) : <tr>
-                  <td colSpan={11} className="text-center">                
-                    <Alert
-                      className="alert-with-icon"
-                      color="default"
-                    >
-                      <span>There are no matching entries</span>
-                    </Alert>
-                  </td>
-                </tr>}
+                    <td colSpan={11} className="text-center">
+                      <Alert
+                        className="alert-with-icon"
+                        color="default"
+                      >
+                        <span>There are no matching entries</span>
+                      </Alert>
+                    </td>
+                  </tr>}
                 </tbody>
               </table>
             </Col>
@@ -443,12 +452,12 @@ export default function Overview() {
           </Row>
         </Container>
       </section>
-      {isBorrowOpen && <BorrowModal 
+      {isBorrowOpen && <BorrowModal
         show={isBorrowOpen}
         onBorrow={doBorrow}
         onClose={() => setBorrowOpen(false)}
       />}
-      {reborrow.show && <ReborrowModal 
+      {reborrow.show && <ReborrowModal
         show={reborrow.show}
         data={reborrow.data}
         onReborrow={doReborrow}

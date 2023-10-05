@@ -29,19 +29,19 @@ export default function Borrow({ show, onClose, onBorrow }) {
 
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
-  const [ isOpen, setOpen ] = useState(false);
-  const [ hexDecimals, setHexDecimals ] = useState(8);
-  const [ fee,  setFee ] = useState(0);
-  const [ totalHex,  setTotalHex ] = useState(0);
-  const [ hexFeed, setHexFeed ] = useState(0);
-  const [ dayPayoutTotal, setDayPayoutTotal ] = useState(0);
-  const [ shareRate, setShareRate ] = useState(0);
-  const [ collateralAmt, setCollateralAmt ] = useState({ value: "", bignum: BigNumber.from(0), fee: BigNumber.from(0) });
-  const [ stakeDays, setStakeDays ] = useState("");
-  const [ daterange, setDateRange ] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
-  const [ result, showResult ] = useState(false);
-  const [ STAKEDAYS_MIN, setMinDuration ] = useState(0);
-  const [ STAKEDAYS_MAX, setMaxDuration ] = useState(0);
+  const [isOpen, setOpen] = useState(false);
+  const [hexDecimals, setHexDecimals] = useState(8);
+  const [fee, setFee] = useState(0);
+  const [totalHex, setTotalHex] = useState(0);
+  const [hexFeed, setHexFeed] = useState(0);
+  const [dayPayoutTotal, setDayPayoutTotal] = useState(0);
+  const [shareRate, setShareRate] = useState(0);
+  const [collateralAmt, setCollateralAmt] = useState({ value: "", bignum: BigNumber.from(0), fee: BigNumber.from(0) });
+  const [stakeDays, setStakeDays] = useState("");
+  const [daterange, setDateRange] = useState([{ startDate: new Date(), endDate: new Date(), key: "selection" }]);
+  const [result, showResult] = useState(false);
+  const [STAKEDAYS_MIN, setMinDuration] = useState(0);
+  const [STAKEDAYS_MAX, setMaxDuration] = useState(0);
 
   useEffect(() => {
     const bodyMouseDowntHandler = e => {
@@ -85,7 +85,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
     getHexData();
 
     // eslint-disable-next-line
-  }, [ address, provider ]);
+  }, [address, provider]);
 
   const getBorrowAmt = () => {
     return collateralAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"));
@@ -106,7 +106,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
 
     // calc days in selected daterange
     const startDate = moment(selection.startDate).startOf("day");
-    const endDate = moment(selection.endDate);    
+    const endDate = moment(selection.endDate);
     setStakeDays(endDate.diff(startDate, 'days') + 1)
   }
 
@@ -146,13 +146,13 @@ export default function Borrow({ show, onClose, onBorrow }) {
 
     onBorrow();
     setTotalHex(await HexContract.getBalance(address));
-    
+
     hideLoading();
     showResult(true);
     // onClose();
   }
 
-  const onClickAddHexOneToken = async () => {    
+  const onClickAddHexOneToken = async () => {
     if (!address || !provider) return;
 
     if (typeof window.ethereum === 'undefined') {
@@ -175,7 +175,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
           },
         },
       });
-     
+
       hideLoading();
       if (wasAdded) {
         toast.success("Added hexone to MetaMask");
@@ -224,7 +224,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
                       type="text"
                       placeholder={`Collateral Amount in HEX (${formatZeroDecimal(totalHex)} HEX available)`}
                       value={collateralAmt.value}
-                      onChange={changeCollateralAmt} 
+                      onChange={changeCollateralAmt}
                       autoFocus
                     />
                     <InputGroupAddon addonType="append">
@@ -250,7 +250,7 @@ export default function Borrow({ show, onClose, onBorrow }) {
                       type="text"
                       placeholder={`Stake Length in Days (${formatFloat(STAKEDAYS_MIN)} ~ ${formatFloat(STAKEDAYS_MAX)})`}
                       value={stakeDays}
-                      onChange={e => setStakeDays(e.target.value)} 
+                      onChange={e => setStakeDays(e.target.value)}
                     />
                     <InputGroupAddon addonType="append" className="cursor-pointer" onClick={() => setOpen(!isOpen)}>
                       <InputGroupText>
