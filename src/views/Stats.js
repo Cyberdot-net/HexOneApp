@@ -33,6 +33,10 @@ export default function Stats() {
     const [totalUSD, setTotalUSD] = useState(0)
     const [hexitSupply, setHexitSupply] = useState(0)
     const [hex1Supply, setHex1Supply] = useState(0)
+    const [sacHex, setSacHex] = useState(0)
+    const [sacWpls, setSacWpls] = useState(0)
+    const [sacPlsx, setSacPlsx] = useState(0)
+    const [sacDai, setSacDai] = useState(0)
 
 
     useEffect(() => {
@@ -59,11 +63,26 @@ export default function Stats() {
             showLoading();
 
             const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
-            let sumUSD = BigNumber.from(0);
+            let sumUSD = BigNumber.from(0), sumHex = BigNumber.from(0), sumWpls = BigNumber.from(0), sumPlsx = BigNumber.from(0), sumDai = BigNumber.from(0);
             for (let i = 0; i < sacrificeData.length; i++) {
+                switch (sacrificeData[i].sacrificeTokenSymbol) {
+                    case 'HEX':
+                        sumHex += sacrificeData[i].sacrificedAmount
+                        break;
+                    case 'DAI':
+                        sumDai += sacrificeData[i].sacrificedAmount
+                        break;
+                    case 'WPLS':
+                        sumWpls += sacrificeData[i].sacrificedAmount
+                        break;
+                    case 'PLSX':
+                        sumPlsx += sacrificeData[i].sacrificedAmount
+                        break;
+                }
                 sumUSD += sacrificeData[i].usdValue
             }
             setTotalUSD(formatDecimal(sumUSD))
+            setSacHex(formatDecimal(sumHex))
             console.log(sacrificeData)
             {
                 ERC20Contract.setProvider(provider, Hexit_Addr.contract);
@@ -108,11 +127,10 @@ export default function Stats() {
                     <div>Hexit Contract Address: {Hexit_Addr.contract}</div>
                     <br />
                     <div>Total Sacrifice USD: {totalUSD}</div>
-                    <div>Total Sacrifice HEX: { }</div>
-                    <div>Total Sacrifice WPLS: { }</div>
-                    <div>Total Sacrifice PLSX: { }</div>
-                    <div>Total Sacrifice DAI from eth: { }</div>
-                    <div>Total Sacrifice DAI from pulse: { }</div>
+                    <div>Total Sacrifice HEX: {sacHex}</div>
+                    <div>Total Sacrifice WPLS: {sacWpls}</div>
+                    <div>Total Sacrifice PLSX: {sacPlsx}</div>
+                    <div>Total Sacrifice DAI from eth: {sacDai}</div>
                     <br />
                     <div>Total Hexit Supply: {hexitSupply}</div>
                     <div>Total Hex1 Supply: {hex1Supply}</div>
