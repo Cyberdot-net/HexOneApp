@@ -17,7 +17,7 @@ import {
 import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
-import { HexOnePriceFeed, HexOneBootstrap, ERC20Contract } from "contracts";
+import { HexOnePriceFeed, HexOneBootstrap, ERC20Contract, PulseXFactory, ResultContract } from "contracts";
 import { HexOneBootstrap_Addr, Erc20_Tokens_Addr } from "contracts/address";
 import { ERC20 } from "contracts/Constants";
 import { formatDecimal, formatZeroDecimal, formatFloat, isEmpty } from "common/utilities";
@@ -27,13 +27,13 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
-  const [ afterDuration, setDuration ] = useState(false);
-  const [ hexFeed, setHexFeed ] = useState(0);
-  const [ basePoint, setBasePoint ] = useState(0);
-  const [ sacrificeAmt, setSacrificeAmt ] = useState({ value: "", bignum: BigNumber.from(0) });
-  const [ erc20, setErc20 ] = useState(ERC20[0].id);
-  const [ totalHex,  setTotalHex ] = useState(BigNumber.from(0));
-  const [ isApproved, setApproved ] = useState(false);
+  const [afterDuration, setDuration] = useState(false);
+  const [hexFeed, setHexFeed] = useState(0);
+  const [basePoint, setBasePoint] = useState(0);
+  const [sacrificeAmt, setSacrificeAmt] = useState({ value: "", bignum: BigNumber.from(0) });
+  const [erc20, setErc20] = useState(ERC20[0].id);
+  const [totalHex, setTotalHex] = useState(BigNumber.from(0));
+  const [isApproved, setApproved] = useState(false);
 
   useEffect(() => {
     if (!address || !provider) return;
@@ -42,6 +42,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
     HexOnePriceFeed.setProvider(provider);
     HexOneBootstrap.setProvider(provider);
+    ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
 
     const getHexData = async () => {
       showLoading();
@@ -49,13 +50,16 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       setBasePoint(await HexOneBootstrap.getBasePoint(day));
       setDuration(await HexOneBootstrap.checkSacrificeDuration());
 
+      const decimals = await ERC20Contract.getDecimals()
+      console.log(decimals)
+      setTotalHex(await ERC20Contract.getBalance(address));
       hideLoading();
     }
 
     getHexData();
 
     // eslint-disable-next-line
-  }, [ address, provider ]);
+  }, [address, provider]);
 
   useEffect(() => {
     if (!address || !provider) return;
@@ -63,18 +67,35 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
     const getHexData = async () => {
       showLoading();
 
-      ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
-      const decimals = await ERC20Contract.getDecimals();
-      setTotalHex(await ERC20Contract.getBalance(address));
-      setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
+      const token0 = Erc20_Tokens_Addr['DAI']?.contract, token1 = Erc20_Tokens_Addr[erc20]?.contract
 
+      ResultContract.setProvider(provider, token0)
+      ERC20Contract.setProvider(provider, token1);
+      PulseXFactory.setProvider(provider)
+
+      const decimals = await ERC20Contract.getDecimals()
+      setTotalHex(await ERC20Contract.getBalance(address));
+      if (token0 != token1) {
+        const pair = await PulseXFactory.getPair(token0, token1)
+        const d1 = await ResultContract.getDecimals()
+        const d2 = await ERC20Contract.getDecimals()
+        const r1 = await ResultContract.getBalance(pair)
+        const r2 = await ERC20Contract.getBalance(pair)
+        console.log(token0, token1, pair, r1, r2, d1, d2, 1.0 * r1 / r2)
+        setHexFeed(1.0 * r1 / r2);
+      }
+      else setHexFeed(1.0)
+      // ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
+      // const decimals = await ERC20Contract.getDecimals();
+      // setTotalHex(await ERC20Contract.getBalance(address));
+      // setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
       hideLoading();
     }
 
     getHexData();
 
     // eslint-disable-next-line
-  }, [ erc20 ]);
+  }, [erc20]);
 
   const changeSacrificeAmt = (e) => {
     setSacrificeAmt({ value: e.target.value, bignum: utils.parseEther(e.target.value || "0") });
@@ -94,7 +115,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
     if (isApproved) {
 
       showLoading("Sacrificing...");
-  
+
       const res = await HexOneBootstrap.sacrificeToken(erc20, amount);
       if (res.status !== "success") {
         hideLoading();
@@ -103,10 +124,10 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       }
 
       setSacrificeAmt({ value: "", bignum: BigNumber.from(0) });
-  
+
       onSacrifice();
       setTotalHex(await ERC20Contract.getBalance(address));
-      
+
       setApproved(false);
       hideLoading();
 
@@ -132,7 +153,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
     }
     // onClose();
   }
-  
+
   return (
     <Modal
       modalClassName="modal-black"
@@ -161,7 +182,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
                   value={erc20}
                   onChange={e => setErc20(e.target.value)}
                 >
-                  {ERC20.map(r => 
+                  {ERC20.map(r =>
                     <option key={r.id} value={r.id}>{r.name}{r.multipler && ` (${r.multipler}x)`}</option>
                   )}
                 </Input>
@@ -177,29 +198,29 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
                     type="text"
                     placeholder={`Sacrifice Amount in ${ERC20.find(r => r.id === erc20).symbol} (${formatZeroDecimal(totalHex)} ${ERC20.find(r => r.id === erc20).symbol} available)`}
                     value={sacrificeAmt.value}
-                    onChange={changeSacrificeAmt} 
+                    onChange={changeSacrificeAmt}
                     autoFocus
                   />
                   <InputGroupAddon addonType="append" className="cursor-pointer" onClick={setMaxAmount}>
                     <InputGroupText>MAX</InputGroupText>
                   </InputGroupAddon>
-              </InputGroup>
+                </InputGroup>
               </Col>
             </Row>
           </FormGroup>
           <FormGroup className="mb-4">
             <Row>
-              <Label sm="3" className="text-right">Total Value USD</Label>
+              <Label sm="3" className="text-right">Total Value DAI</Label>
               <Col sm="8">
                 <InputGroup>
                   <Input
                     type="text"
-                    placeholder="Total Value USD"
-                    value={formatFloat(+utils.formatUnits(sacrificeAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"))))}
+                    placeholder="Total Value DAI"
+                    value={(sacrificeAmt.value * hexFeed)}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
-                    <InputGroupText>USD</InputGroupText>
+                    <InputGroupText>DAI</InputGroupText>
                   </InputGroupAddon>
                 </InputGroup>
               </Col>
