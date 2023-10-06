@@ -17,6 +17,7 @@ const Overview = lazy(() => import('views/Overview'));
 const Bootstrap = lazy(() => import('views/Bootstrap'));
 const Staking = lazy(() => import('views/Staking'));
 const Airdrop = lazy(() => import('views/Airdrop'));
+const Stats = lazy(() => import('views/Stats'))
 
 export default function App() {
 
@@ -45,6 +46,7 @@ export default function App() {
                 <Route exact path="/bootstrap" render={(props) => <Bootstrap {...props} />} />
                 <Route exact path="/staking" render={(props) => <Staking {...props} />} />
                 <Route exact path="/airdrop" render={(props) => <Airdrop {...props} />} />
+                <Route exact path='/stats' render={(props) => <Stats {...props} />} />
                 {/* add routes here */}
                 <Redirect to='/' />
               </Switch>

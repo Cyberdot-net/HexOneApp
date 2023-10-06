@@ -22,16 +22,17 @@ const menus = [
   { label: "Bootstrap", url: "/bootstrap" },
   { label: "Airdrop", url: "/airdrop" },
   { label: "Staking", url: "/staking" },
+  { label: "Stats", url: '/stats' },
 ];
 
 export default function IndexNavbar() {
-  
+
   const history = useHistory();
   const { setProvider, setAddress, showModal, address } = useContext(WalletContext);
-  const [ collapseOpen, setCollapseOpen ] = useState(false);
-  const [ collapseOut, setCollapseOut ] = useState("");
-  const [ color, setColor ] = useState("navbar-transparent");
-  const [ selected, setSelected ] = useState(history.location.pathname);
+  const [collapseOpen, setCollapseOpen] = useState(false);
+  const [collapseOut, setCollapseOut] = useState("");
+  const [color, setColor] = useState("navbar-transparent");
+  const [selected, setSelected] = useState(history.location.pathname);
 
   useEffect(() => {
     const { ethereum } = window;
@@ -48,7 +49,7 @@ export default function IndexNavbar() {
         connectMetaMask();
       }
     };
-  
+
     const handleWalletDisconnect = (err) => {
       if (err) console.error(err);
       setProvider(null);
@@ -59,7 +60,7 @@ export default function IndexNavbar() {
     ethereum.on('disconnect', handleWalletDisconnect)
 
     window.addEventListener("scroll", changeColor);
-    
+
     const connectMetaMask = async () => {
       try {
         await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -67,7 +68,7 @@ export default function IndexNavbar() {
         console.error(error);
         return;
       }
-      
+
       // Set up the provider and wallet
       const connectProvider = new ethers.providers.Web3Provider(window.ethereum);
       if (!connectProvider) return;
@@ -80,7 +81,7 @@ export default function IndexNavbar() {
 
       setProvider(connectProvider);
     }
-    
+
     // connect MetaMask Wallet
     connectMetaMask();
 
@@ -89,7 +90,7 @@ export default function IndexNavbar() {
       ethereum.removeListener('disconnect', handleWalletDisconnect);
       window.removeEventListener("scroll", changeColor);
     };
-    
+
     // eslint-disable-next-line
   }, []);
 
@@ -99,7 +100,7 @@ export default function IndexNavbar() {
       setSelected(location.pathname);
     });
 
-  }, [ history ]);
+  }, [history]);
 
   const gotoPage = (url) => {
     history.push(url);
@@ -118,7 +119,7 @@ export default function IndexNavbar() {
       setColor("navbar-transparent");
     }
   };
-  
+
   const toggleCollapse = () => {
     document.documentElement.classList.toggle("nav-open");
     setCollapseOpen(!collapseOpen);
@@ -194,7 +195,7 @@ export default function IndexNavbar() {
             <NavItem>
               <Button
                 className="nav-link d-lg-block"
-                style={{width: 120}}
+                style={{ width: 120 }}
                 color="primary"
                 target="_blank"
                 href="https://hex-one.gitbook.io/hex-one-protocol"
@@ -202,19 +203,19 @@ export default function IndexNavbar() {
                 Learn
               </Button>
             </NavItem>
-            {menus.map(menu => 
-            <NavItem key={menu.label}>
-              <Button
-                className="nav-link d-lg-block"
-                style={{width: 120}}
-                color={selected === menu.url ? "success" : "primary" }
-                onClick={() => gotoPage(menu.url)}
-              >
-                {menu.label}
-              </Button>
-            </NavItem>
+            {menus.map(menu =>
+              <NavItem key={menu.label}>
+                <Button
+                  className="nav-link d-lg-block"
+                  style={{ width: 120 }}
+                  color={selected === menu.url ? "success" : "primary"}
+                  onClick={() => gotoPage(menu.url)}
+                >
+                  {menu.label}
+                </Button>
+              </NavItem>
             )}
-            <NavItem {...address && {className: "wallet"}}>
+            <NavItem {...address && { className: "wallet" }}>
               {address ? <>
                 <img
                   alt="metamask"
@@ -226,11 +227,11 @@ export default function IndexNavbar() {
                 />
                 <span className="ml-2">{getShortAddress(address)}</span>
                 <UncontrolledTooltip placement="bottom" target="metamask_connected">
-                  { address }
+                  {address}
                 </UncontrolledTooltip>
               </> : <Button
                 className="nav-link d-lg-block"
-                style={{width: 120}}
+                style={{ width: 120 }}
                 onClick={() => showModal(true)}
               >
                 Connect

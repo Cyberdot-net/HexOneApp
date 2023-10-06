@@ -150,7 +150,6 @@ export default function Overview() {
     const func = async () => {
       const cur = new Date()
       const airdropEndTime = await HexOneBootstrap.airdropEndTime()
-      console.log(cur.getTime(), airdropEndTime)
       if (cur.getTime() > airdropEndTime * 1000) setBorrowOpen(true)
       else toast.error("Can't Borrow until Aidrop ends")
     }

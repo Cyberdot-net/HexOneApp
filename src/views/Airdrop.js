@@ -17,7 +17,7 @@ import { HexOneBootstrap } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import { formatFloat } from "common/utilities";
 
-export default function Bootstrap() {
+export default function Airdrop() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const { timer } = useContext(TimerContext);

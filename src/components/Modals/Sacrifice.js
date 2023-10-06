@@ -66,8 +66,8 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
     const getHexData = async () => {
       showLoading();
-
-      const token0 = Erc20_Tokens_Addr['DAI']?.contract, token1 = Erc20_Tokens_Addr[erc20]?.contract
+      //token0 = DAI from pulse
+      const token0 = '0xefD766cCb38EaF1dfd701853BFCe31359239F305', token1 = Erc20_Tokens_Addr[erc20]?.contract
 
       ResultContract.setProvider(provider, token0)
       ERC20Contract.setProvider(provider, token1);
@@ -75,20 +75,19 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
       const decimals = await ERC20Contract.getDecimals()
       setTotalHex(await ERC20Contract.getBalance(address));
-      if (token0 != token1) {
-        const pair = await PulseXFactory.getPair(token0, token1)
-        const d1 = await ResultContract.getDecimals()
-        const d2 = await ERC20Contract.getDecimals()
-        const r1 = await ResultContract.getBalance(pair)
-        const r2 = await ERC20Contract.getBalance(pair)
-        console.log(token0, token1, pair, r1, r2, d1, d2, 1.0 * r1 / r2)
-        setHexFeed(1.0 * r1 / r2);
-      }
-      else setHexFeed(1.0)
+      const pair = await PulseXFactory.getPair(token0, token1)
+      const d1 = await ResultContract.getDecimals()
+      const d2 = await ERC20Contract.getDecimals()
+      const r1 = await ResultContract.getBalance(pair)
+      const r2 = await ERC20Contract.getBalance(pair)
+      console.log(token0, token1, pair, r1, r2, d1, d2, 1.0 * r1 / r2)
+      if (erc20 == 'DAI') setHexFeed(1.0)
+      else setHexFeed(1.0 * r1 / r2);
       // ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
       // const decimals = await ERC20Contract.getDecimals();
       // setTotalHex(await ERC20Contract.getBalance(address));
       // setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
+      // console.log(decimals, erc20, hexFeed)
       hideLoading();
     }
 
@@ -210,17 +209,18 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
           </FormGroup>
           <FormGroup className="mb-4">
             <Row>
-              <Label sm="3" className="text-right">Total Value DAI</Label>
+              <Label sm="3" className="text-right">Total Value USD</Label>
               <Col sm="8">
                 <InputGroup>
                   <Input
                     type="text"
-                    placeholder="Total Value DAI"
+                    placeholder="Total Value USD"
                     value={(sacrificeAmt.value * hexFeed)}
+                    // value={formatFloat(+utils.formatUnits(sacrificeAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"))), 10)}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
-                    <InputGroupText>DAI</InputGroupText>
+                    <InputGroupText>USD</InputGroupText>
                   </InputGroupAddon>
                 </InputGroup>
               </Col>

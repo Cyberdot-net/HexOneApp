@@ -39,12 +39,13 @@ import PulseToken_Addr from "./PulseToken.json";
 // import DaiToken_Addr from "./DaiToken.json";
 import DaiToken_Addr from './pulse/DAI.json'
 import PulseXToken_Addr from "./PulseXToken.json";
-import UsdcToken_Addr from "./UsdcToken.json";
+// import UsdcToken_Addr from "./UsdcToken.json";
+import EthDAI_Addr from './ethDAI.json'
 
 const Erc20_Tokens_Addr = {
     "HEX": HexMockToken_Addr,
-    "USDC": UsdcToken_Addr,
-    "DAI": DaiToken_Addr,
+    //"USDC": UsdcToken_Addr,
+    "DAI": EthDAI_Addr,
     "WPLS": PulseToken_Addr,
     "PLSX": PulseXToken_Addr
 }

@@ -92,7 +92,7 @@ export default function Bootstrap() {
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData, ercDecimals)
-
+      console.log(sacrificeData)
       const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() * 1000)
 
@@ -310,7 +310,7 @@ export default function Bootstrap() {
                         <td>{utils.formatUnits(r.multiplier, 3).toString()}x</td>
                         <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount, decimals[r.sacrificeTokenSymbol] || 0))}</td>
                         <td>{formatFloat(+utils.formatUnits(r.totalHexitAmount))}</td>
-                        <td>${formatFloat(+utils.formatUnits(r.usdValue))}</td>
+                        <td>${formatFloat(+utils.formatUnits(r.usdValue), 5)}</td>
                         <td className="td-actions" width="100">
                           <Button
                             id="claim"
