@@ -58,6 +58,7 @@ export default function Overview() {
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
     HexOneVault.setProvider(provider);
+    HexOneBootstrap.setProvider(provider)
     HexOneProtocol.setProvider(provider);
 
     const getData = async () => {
@@ -149,7 +150,8 @@ export default function Overview() {
     const func = async () => {
       const cur = new Date()
       const airdropEndTime = await HexOneBootstrap.airdropEndTime()
-      if (cur > airdropEndTime) setBorrowOpen(true)
+      console.log(cur.getTime(), airdropEndTime)
+      if (cur.getTime() > airdropEndTime * 1000) setBorrowOpen(true)
       else toast.error("Can't Borrow until Aidrop ends")
     }
     func()
