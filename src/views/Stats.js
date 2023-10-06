@@ -82,7 +82,10 @@ export default function Stats() {
                 sumUSD += sacrificeData[i].usdValue
             }
             setTotalUSD(formatDecimal(sumUSD))
-            setSacHex(formatDecimal(sumHex))
+            setSacHex(formatDecimal(sumHex, 8))
+            setSacDai(formatDecimal(sumDai, 18))
+            setSacWpls(formatDecimal(sumWpls, 18))
+            setSacPlsx(formatDecimal(sumPlsx, 18))
             console.log(sacrificeData)
             {
                 ERC20Contract.setProvider(provider, Hexit_Addr.contract);
