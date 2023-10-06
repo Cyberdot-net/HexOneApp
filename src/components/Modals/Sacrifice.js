@@ -50,6 +50,8 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       setBasePoint(await HexOneBootstrap.getBasePoint(day));
       setDuration(await HexOneBootstrap.checkSacrificeDuration());
 
+      const decimals = await ERC20Contract.getDecimals()
+      console.log(decimals)
       setTotalHex(await ERC20Contract.getBalance(address));
       hideLoading();
     }
@@ -71,6 +73,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       ERC20Contract.setProvider(provider, token1);
       PulseXFactory.setProvider(provider)
 
+      const decimals = await ERC20Contract.getDecimals()
       setTotalHex(await ERC20Contract.getBalance(address));
       if (token0 != token1) {
         const pair = await PulseXFactory.getPair(token0, token1)

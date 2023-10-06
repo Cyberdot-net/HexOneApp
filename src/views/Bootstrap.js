@@ -96,8 +96,8 @@ export default function Bootstrap() {
       const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() * 1000)
 
-      setSacrificeStart(st.getFullYear() + '-' + ("0" + (st.getMonth() + 1)).slice(-2) + '-' + ("0" + (st.getDate())).slice(-2))
-      setSacrificeEnd(en.getFullYear() + '-' + ("0" + (en.getMonth() + 1)).slice(-2) + '-' + ("0" + (en.getDate())).slice(-2))
+      setSacrificeStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
+      setSacrificeEnd(en.getUTCFullYear() + '-' + ("0" + (en.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + en.getUTCDate()).slice(-2) + ' ' + ("0" + en.getUTCHours()).slice(-2) + ':' + ("0" + en.getUTCMinutes()).slice(-2) + ' UTC +0')
 
       hideLoading();
     }
