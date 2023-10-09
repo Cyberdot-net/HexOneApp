@@ -107,6 +107,7 @@ export default (function () {
 
             try {
                 currentInfo = await contract.getCurrentAirdropInfo(address);
+                console.log(currentInfo)
             } catch (e) {
                 console.error(e);
                 currentInfo = {};
@@ -175,6 +176,7 @@ export default (function () {
 
             try {
                 const info = await contract.requestAirdropInfo(address);
+                console.log(info)
                 if (info.claimed) {
                     requested = 2;
                 } else if (!info.airdropId.isZero()) {

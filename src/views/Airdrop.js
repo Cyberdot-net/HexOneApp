@@ -54,10 +54,11 @@ export default function Airdrop() {
       showLoading();
 
       const day = await HexOneBootstrap.getCurrentAirdropDay();
+      console.log(day)
       setCurrentDay(day);
       setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
 
-      const st = new Date(BigNumber.from(await HexOneBootstrap.airdropStartTime()).toNumber() * 1000)
+      const st = new Date((BigNumber.from(await HexOneBootstrap.airdropStartTime()).toNumber() + 86400) * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.airdropEndTime()).toNumber() * 1000)
 
       setAirdropStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
@@ -70,7 +71,7 @@ export default function Airdrop() {
     // eslint-disable-next-line
   }, [address, provider]);
 
-
+  console.log(airdropList)
   const showClaim = () => {
     setOpen(true);
   }
@@ -150,7 +151,7 @@ export default function Airdrop() {
                         <td>{r.requestedDay.toString()}</td>
                         <td>${formatFloat(+utils.formatUnits(r.sacrificeUSD))}</td>
                         <td>{formatFloat(+utils.formatUnits(r.sacrificeMultiplier, 2))}x</td>
-                        <td>${formatFloat(+utils.formatUnits(r.hexShares, 9))}</td>
+                        <td>${formatFloat(+utils.formatUnits(r.hexShares, 18))}</td>
                         <td>{formatFloat(+utils.formatUnits(r.hexShareMultiplier, 2))}x</td>
                         <td>${formatFloat(+utils.formatUnits(r.totalUSD))}</td>
                         <td>{formatFloat(+utils.formatUnits(r.dailySupplyAmount))} HEXIT</td>
