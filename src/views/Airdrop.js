@@ -149,11 +149,11 @@ export default function Airdrop() {
                       <tr key={idx}>
                         <td className="text-center">{r.airdropId.toString()}</td>
                         <td>{r.requestedDay.toString()}</td>
-                        <td>${formatFloat(+utils.formatUnits(r.sacrificeUSD))}</td>
+                        <td>${formatFloat(+utils.formatUnits(r.sacrificeUSD), 4)}</td>
                         <td>{formatFloat(+utils.formatUnits(r.sacrificeMultiplier, 2))}x</td>
                         <td>${formatFloat(+utils.formatUnits(r.hexShares, 18))}</td>
                         <td>{formatFloat(+utils.formatUnits(r.hexShareMultiplier, 2))}x</td>
-                        <td>${formatFloat(+utils.formatUnits(r.totalUSD))}</td>
+                        <td>${formatFloat(+utils.formatUnits(r.totalUSD, 17), 4)}</td>
                         <td>{formatFloat(+utils.formatUnits(r.dailySupplyAmount))} HEXIT</td>
                         <td>{formatFloat(+utils.formatUnits(r.shareOfPool, 1))}%</td>
                         <td>{formatFloat(+utils.formatUnits(r.claimedAmount))} HEXIT</td>
