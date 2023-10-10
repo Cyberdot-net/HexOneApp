@@ -25,8 +25,8 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
 
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
-  const [ isApproved, setApproved ] = useState(0);
-  const [ airdropInfo, setAirdropInfo ] = useState({});
+  const [isApproved, setApproved] = useState(0);
+  const [airdropInfo, setAirdropInfo] = useState({});
 
   useEffect(() => {
     if (!address || !provider) return;
@@ -35,7 +35,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
 
     const getHexData = async () => {
       showLoading();
-      
+
       setAirdropInfo(await HexOneBootstrap.getCurrentAirdropInfo(address));
       setApproved(await HexOneBootstrap.checkAirdropInfo(address));
 
@@ -45,24 +45,24 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
     getHexData();
 
     // eslint-disable-next-line
-  }, [ address, provider ]);
+  }, [address, provider]);
 
   const onClickClaimHexit = async () => {
 
     if (isApproved) {
 
       showLoading("Claiming...");
-  
+
       const res = await HexOneBootstrap.claimAirdrop();
       if (res.status !== "success") {
         hideLoading();
         toast.error(res.error ?? "Claim failed!");
         return;
       }
-  
+
       onClaim();
       onClose();
-      
+
       hideLoading();
 
     } else {
@@ -79,7 +79,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       hideLoading();
     }
   }
-  
+
   return (
     <Modal
       modalClassName="modal-black"
@@ -142,7 +142,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
                   <Input
                     type="text"
                     placeholder="Hex Staking"
-                    value={airdropInfo.stakingShareAmount ? formatFloat(+utils.formatUnits(airdropInfo.stakingShareAmount, 9)) : "0"}
+                    value={airdropInfo.stakingShareAmount ? formatFloat(+utils.formatUnits(airdropInfo.stakingShareAmount, 18)) : "0"}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
