@@ -18,7 +18,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import ChartDataOutLabels from 'chartjs-plugin-piechart-outlabels';
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
-import { HexOneStaking, ERC20Contract } from "contracts";
+import { HexOneStaking, ERC20Contract, HexOneEscrow } from "contracts";
 import { HexOneStakingMaster_Addr } from "contracts/address";
 // import { SHARE_RATE } from "contracts/Constants";
 import { formatFloat, formatZeroDecimal, isEmpty } from "common/utilities";
@@ -38,13 +38,13 @@ export default function Staking() {
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const { timer } = useContext(TimerContext);
-  const [ currentDay, setCurrentDay ] = useState(0);
-  const [ data, setData ] = useState([]);
-  const [ chartData, setChartData ] = useState(null);
-  const [ stakeEnabled, setStakeEnabled ] = useState(false);
+  const [currentDay, setCurrentDay] = useState(0);
+  const [data, setData] = useState([]);
+  const [chartData, setChartData] = useState(null);
+  const [stakeEnabled, setStakeEnabled] = useState(false);
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
-  
-  
+
+
   useEffect(() => {
     if (!timer || !HexOneStaking.connected()) return;
 
@@ -58,12 +58,13 @@ export default function Staking() {
     getData();
 
     // eslint-disable-next-line
-  }, [ timer ]);
+  }, [timer]);
 
   useEffect(() => {
     if (!address || !provider) return;
 
     HexOneStaking.setProvider(provider);
+    HexOneEscrow.setProvider(provider);
 
     const getData = async () => {
       showLoading();
@@ -71,16 +72,15 @@ export default function Staking() {
       setCurrentDay(await HexOneStaking.getCurrentDay());
 
       setStakeEnabled(await HexOneStaking.getStakingEnable());
-
+      console.log(await HexOneEscrow.getOverview(address), await HexOneEscrow.balanceOfHex())
       await getStakeList();
-      
       hideLoading();
     }
 
     getData();
-    
+
     // eslint-disable-next-line
-  }, [ address, provider ]);
+  }, [address, provider]);
 
   const drawPieChart = async (stakeList) => {
     const labels = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => r.tokenSymbol);
@@ -106,19 +106,20 @@ export default function Staking() {
   }
 
   const getStakeList = async () => {
-    try {  
+    try {
       const result = await HexOneStaking.getStakingList(address);
+      console.log(result)
       let stakeList = result.map(r => {
         return { ...r }
       });
-  
+
       for (let k in stakeList) {
         ERC20Contract.setProvider(provider, stakeList[k].token);
         stakeList[k]['tokenSymbol'] = await ERC20Contract.getSymbol();
         stakeList[k]['decimals'] = await ERC20Contract.getDecimals();
         stakeList[k]['balance'] = await ERC20Contract.getBalance(address);
       }
-  
+
       setData(prevData => {
         return stakeList.map(r => {
           const prevRow = prevData.find(row => row.token === r.token) || {};
@@ -165,7 +166,7 @@ export default function Staking() {
     });
   }
 
-  const onStake = async (row) => {    
+  const onStake = async (row) => {
     if (isEmpty(row.stakingAmt['bignum']) || row.stakingAmt['bignum'].gt(row.balance)) return;
 
     showLoading("Staking...");
@@ -174,7 +175,7 @@ export default function Staking() {
 
     let res = null;
     const amount = row.stakingAmt['bignum'].div(utils.parseUnits("1", 18 - row.decimals));
-    
+
     const allowanceAmount = await ERC20Contract.allowance(address, HexOneStakingMaster_Addr.contract);
     if (allowanceAmount.lt(amount)) {
       res = await ERC20Contract.approve(HexOneStakingMaster_Addr.contract, amount);
@@ -269,7 +270,7 @@ export default function Staking() {
             <h3 className="title text-left mb-2">Day: {currentDay.toString()}</h3>
           </Container>
         </section>
-        
+
         <section className="section section-lg section-tables">
           <Container>
             <Row>
@@ -296,112 +297,112 @@ export default function Staking() {
                     </tr>
                   </thead>
                   <tbody>
-                  {data.length > 0 ? data.map((r) => (
-                    <React.Fragment key={r.token}>
-                      <tr>
-                        <td>{r.tokenSymbol}</td>
-                        <td>{formatFloat(+utils.formatUnits(r.stakedAmount, r.decimals))} {r.tokenSymbol}</td>
-                        <td>{formatFloat(r.shareOfPool / 10)}%</td>
-                        <td>{`${formatFloat(+r.hexAPR / 1000)}%`} $HEX<br/>{formatFloat(+r.hexitAPR / 1000)}% $HEXIT</td>
-                        <td>
+                    {data.length > 0 ? data.map((r) => (
+                      <React.Fragment key={r.token}>
+                        <tr>
+                          <td>{r.tokenSymbol}</td>
+                          <td>{formatFloat(+utils.formatUnits(r.stakedAmount, r.decimals))} {r.tokenSymbol}</td>
+                          <td>{formatFloat(r.shareOfPool / 10)}%</td>
+                          <td>{`${formatFloat(+r.hexAPR / 1000)}%`} $HEX<br />{formatFloat(+r.hexitAPR / 1000)}% $HEXIT</td>
+                          <td>
                             {formatFloat(+utils.formatUnits(r.earnedHexAmount))} $HEX
-                            <br/>
+                            <br />
                             {formatFloat(+utils.formatUnits(r.earnedHexitAmount))} $HEXIT
-                        </td>
-                        <td>{r.stakedTime.toString()} {+r.stakedTime > 1 ? "days" : "day"}</td>
-                        <td>${formatFloat(+utils.formatUnits(r.totalLockedUSD))}</td>
-                        <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals))} {r.tokenSymbol}</td>
-                        <td>
+                          </td>
+                          <td>{r.stakedTime.toString()} {+r.stakedTime > 1 ? "days" : "day"}</td>
+                          <td>${formatFloat(+utils.formatUnits(r.totalLockedUSD))}</td>
+                          <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals))} {r.tokenSymbol}</td>
+                          <td>
                             {r.hexMultiplier > 0 && `${formatFloat(r.hexMultiplier / 1000)}x`}
                             {r.hexMultiplier > 0 && <br />}
                             {r.hexitMultiplier > 0 && `${formatFloat(r.hexitMultiplier / 1000)}x`}
-                        </td>
-                        <td className="td-actions" width="20">
-                          <button
-                            className={`td-toggler ${r.open ? "active" : ""}`}
-                            onClick={() => onClickShow(r.token)}
-                          >
-                            <i className="tim-icons icon-minimal-down" />
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colSpan={9} className={`description ${r.open ? "active" : ""}`}>
-                          <div className="description-wrapper">
-                            <div className="content p-4">
-                              <div className="stake-panel">
-                                <Row>
-                                  <Col lg="8" md="6" className={"input-panel " + (r.stakingAmt['bignum'].gt(r.balance) && " has-danger")}>
-                                    <InputGroup>
-                                      <Input
-                                        type="text"
-                                        placeholder={`Stake Amount in ${r.tokenSymbol} (${formatZeroDecimal(r.balance)} ${r.tokenSymbol} available)`}
-                                        value={r.stakingAmt.value}
-                                        onChange={e => changeStakingAmt(r.token, e.target.value)} 
-                                      />
-                                      <InputGroupAddon addonType="append" className="cursor-pointer" onClick={() => setMaxAmount(r)}>
-                                        <InputGroupText>MAX</InputGroupText>
-                                      </InputGroupAddon>
-                                    </InputGroup>
-                                  </Col>
-                                  <Col lg="4" md="6">
-                                    <Row>
-                                      <Button
-                                        className="btn-simple w-full"
-                                        color="info"
-                                        type="button"
-                                        disabled={r.stakingAmt.bignum.isZero() || !stakeEnabled}
-                                        onClick={() => onStake(r)}
-                                      >
-                                        Stake
-                                      </Button>
-                                    </Row>
-                                    <Row>
-                                      <Button
-                                        className="btn-simple w-full"
-                                        color="info"
-                                        type="button"
-                                        onClick={() => onUnstake(r)}
-                                        disabled={r.stakedAmount.isZero()}
-                                      >
-                                        Unstake
-                                      </Button>
-                                    </Row>
-                                  </Col>
-                                </Row>
-                              </div>
-                              <div className="claim-panel">
-                                <Row className="align-center">
-                                  <Col md="6" className="mb-sm-2">
-                                    <strong>Claimable Amount</strong>
-                                  </Col>
-                                  <Col md="6">
-                                    <p>
-                                      {`${formatZeroDecimal(r.claimableHexAmount, 8)} HEX`}
-                                    </p>
-                                    <p>
-                                      {`${formatZeroDecimal(r.claimableHexitAmount)} HEXIT`}
-                                    </p>
-                                  </Col>
-                                </Row>
-                                <Row>
-                                  <Button
-                                    color="info"
-                                    type="button"
-                                    onClick={() => onClaim(r)}
-                                    disabled={r.stakedAmount.isZero()}
-                                  >
-                                    Claim
-                                  </Button>
-                                </Row>
+                          </td>
+                          <td className="td-actions" width="20">
+                            <button
+                              className={`td-toggler ${r.open ? "active" : ""}`}
+                              onClick={() => onClickShow(r.token)}
+                            >
+                              <i className="tim-icons icon-minimal-down" />
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colSpan={9} className={`description ${r.open ? "active" : ""}`}>
+                            <div className="description-wrapper">
+                              <div className="content p-4">
+                                <div className="stake-panel">
+                                  <Row>
+                                    <Col lg="8" md="6" className={"input-panel " + (r.stakingAmt['bignum'].gt(r.balance) && " has-danger")}>
+                                      <InputGroup>
+                                        <Input
+                                          type="text"
+                                          placeholder={`Stake Amount in ${r.tokenSymbol} (${formatZeroDecimal(r.balance)} ${r.tokenSymbol} available)`}
+                                          value={r.stakingAmt.value}
+                                          onChange={e => changeStakingAmt(r.token, e.target.value)}
+                                        />
+                                        <InputGroupAddon addonType="append" className="cursor-pointer" onClick={() => setMaxAmount(r)}>
+                                          <InputGroupText>MAX</InputGroupText>
+                                        </InputGroupAddon>
+                                      </InputGroup>
+                                    </Col>
+                                    <Col lg="4" md="6">
+                                      <Row>
+                                        <Button
+                                          className="btn-simple w-full"
+                                          color="info"
+                                          type="button"
+                                          disabled={r.stakingAmt.bignum.isZero() || !stakeEnabled}
+                                          onClick={() => onStake(r)}
+                                        >
+                                          Stake
+                                        </Button>
+                                      </Row>
+                                      <Row>
+                                        <Button
+                                          className="btn-simple w-full"
+                                          color="info"
+                                          type="button"
+                                          onClick={() => onUnstake(r)}
+                                          disabled={r.stakedAmount.isZero()}
+                                        >
+                                          Unstake
+                                        </Button>
+                                      </Row>
+                                    </Col>
+                                  </Row>
+                                </div>
+                                <div className="claim-panel">
+                                  <Row className="align-center">
+                                    <Col md="6" className="mb-sm-2">
+                                      <strong>Claimable Amount</strong>
+                                    </Col>
+                                    <Col md="6">
+                                      <p>
+                                        {`${formatZeroDecimal(r.claimableHexAmount, 8)} HEX`}
+                                      </p>
+                                      <p>
+                                        {`${formatZeroDecimal(r.claimableHexitAmount)} HEXIT`}
+                                      </p>
+                                    </Col>
+                                  </Row>
+                                  <Row>
+                                    <Button
+                                      color="info"
+                                      type="button"
+                                      onClick={() => onClaim(r)}
+                                      disabled={r.stakedAmount.isZero()}
+                                    >
+                                      Claim
+                                    </Button>
+                                  </Row>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </td>
-                      </tr>
-                    </React.Fragment>
+                          </td>
+                        </tr>
+                      </React.Fragment>
                     )) : <tr>
-                      <td colSpan={9} className="text-center">                
+                      <td colSpan={9} className="text-center">
                         <Alert
                           className="alert-with-icon"
                           color="default"
@@ -426,44 +427,44 @@ export default function Staking() {
             </Row>
             <Row className="center">
               <Col lg="8" md="12">
-                {chartData ? 
-                <Pie
-                  data={chartData}
-                  plugins={[ ChartDataLabels, ChartDataOutLabels ]}
-                  legend={{
-                    labels: {
-                      padding: 20,
-                    },
-                  }}
-                  options= {{
-                    layout: { padding: 50 },
-                    legend: { display: false },
-                    plugins: {
-                      datalabels: {
-                        color: "rgba(255, 255, 255, 0.8)",
-                        textAlign: 'center',
-                        opacity: 0.8,
-                        formatter: function(value, context) {
-                          const sum = chartData.datasets[0]?.data?.reduce((s, o)=> s + o, 0);
-                          const label = context.chart.data.labels[context.dataIndex];
-                          if (sum) {
-                            return [label, `${sum ? Math.round(value / sum * 100) : 0}%`]; 
-                          } else {
-                            return "";
+                {chartData ?
+                  <Pie
+                    data={chartData}
+                    plugins={[ChartDataLabels, ChartDataOutLabels]}
+                    legend={{
+                      labels: {
+                        padding: 20,
+                      },
+                    }}
+                    options={{
+                      layout: { padding: 50 },
+                      legend: { display: false },
+                      plugins: {
+                        datalabels: {
+                          color: "rgba(255, 255, 255, 0.8)",
+                          textAlign: 'center',
+                          opacity: 0.8,
+                          formatter: function (value, context) {
+                            const sum = chartData.datasets[0]?.data?.reduce((s, o) => s + o, 0);
+                            const label = context.chart.data.labels[context.dataIndex];
+                            if (sum) {
+                              return [label, `${sum ? Math.round(value / sum * 100) : 0}%`];
+                            } else {
+                              return "";
+                            }
+                          }
+                        },
+                        outlabels: {
+                          font: { size: 15 },
+                          stretch: 20,
+                          text: (context) => {
+                            const label = context.chart.data.labels[context.dataIndex];
+                            const value = context.dataset.data[context.dataIndex];
+                            return `${label} ${value}`;
                           }
                         }
-                      },
-                      outlabels: {
-                        font: { size: 15 },
-                        stretch: 20,
-                        text: (context) => {
-                          const label = context.chart.data.labels[context.dataIndex];
-                          const value = context.dataset.data[context.dataIndex];
-                          return `${label} ${value}`;
-                        }
                       }
-                    }
-                  }}
+                    }}
                   /> :
                   <h3 className="text-center">
                     No Analysis Data

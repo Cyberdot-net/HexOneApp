@@ -2,7 +2,7 @@ import { Contract } from "ethers";
 import { HexOneEscrow_Abi } from "./abis";
 import { HexOneEscrow_Addr } from "./address";
 
-export default (function() {
+export default (function () {
 
     let contract = null;
 
@@ -21,7 +21,7 @@ export default (function() {
         getOverview: async (address) => {
             let list = [];
             if (!contract) return list;
-    
+
             try {
                 list = await contract.getOverview(address);
             } catch (e) {
@@ -32,22 +32,22 @@ export default (function() {
             return list;
         },
 
-        collateralDeposited: async () => {       
+        collateralDeposited: async () => {
             let result = true;
             if (!contract) return result;
-    
+
             try {
                 result = await contract.collateralDeposited();
             } catch (e) {
                 console.error(e);
             }
-    
+
             return result;
         },
 
         reDepositCollateral: async () => {
             if (!contract) return { status: "failed" };
-    
+
             try {
                 const tx = await contract.reDepositCollateral();
                 await tx.wait();
@@ -61,9 +61,16 @@ export default (function() {
                     return { status: "failed", error: "Claim failed!" };
                 }
             }
-    
+
             return { status: "success" };
+        },
+        balanceOfHex: async () => {
+            if (!contract) return { status: "failed" }
+
+            const res = await contract.balanceOfHex()
+
+            return res
         }
     }
-    
+
 })();
