@@ -259,6 +259,30 @@ export default (function () {
             const res = await contract.airdropEndTime()
 
             return res
+        },
+
+        airdropHEXITAmount: async () => {
+            if (!contract) return { status: "failed" };
+
+            const res = await contract.airdropHEXITAmount()
+
+            return res
+        },
+
+        HEXITAmountForSacrifice: async () => {
+            if (!contract) return { status: "failed" };
+
+            const res = await contract.HEXITAmountForSacrifice()
+
+            return res
+        },
+
+        stakingContract: async () => {
+            if (!contract) return { status: "failed" };
+
+            const res = await contract.stakingContract()
+
+            return res
         }
     }
 

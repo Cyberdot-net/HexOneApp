@@ -99,6 +99,9 @@ export default function Bootstrap() {
       setSacrificeStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
       setSacrificeEnd(en.getUTCFullYear() + '-' + ("0" + (en.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + en.getUTCDate()).slice(-2) + ' ' + ("0" + en.getUTCHours()).slice(-2) + ':' + ("0" + en.getUTCMinutes()).slice(-2) + ' UTC +0')
 
+      console.log(utils.formatUnits(await HexOneBootstrap.airdropHEXITAmount(), 17))
+      console.log(utils.formatUnits(await HexOneBootstrap.HEXITAmountForSacrifice(), 18))
+      console.log(await HexOneBootstrap.stakingContract())
       hideLoading();
     }
 
