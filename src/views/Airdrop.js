@@ -58,7 +58,7 @@ export default function Airdrop() {
       setCurrentDay(day);
       setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
 
-      const st = new Date((BigNumber.from(await HexOneBootstrap.airdropStartTime()).toNumber() + 86400) * 1000)
+      const st = new Date(BigNumber.from(await HexOneBootstrap.airdropStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.airdropEndTime()).toNumber() * 1000)
 
       setAirdropStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')

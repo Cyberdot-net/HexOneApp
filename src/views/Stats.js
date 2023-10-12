@@ -39,19 +39,19 @@ export default function Stats() {
     const [sacDai, setSacDai] = useState(0)
 
 
-    useEffect(() => {
-        if (!timer || !HexOneBootstrap.connected()) return;
+    // useEffect(() => {
+    //     if (!timer || !HexOneBootstrap.connected()) return;
 
-        const getData = async () => {
-            const day = await HexOneBootstrap.getCurrentAirdropDay();
-            setCurrentDay(day);
-            setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
-        }
+    //     const getData = async () => {
+    //         const day = await HexOneBootstrap.getCurrentAirdropDay();
+    //         setCurrentDay(day);
+    //         setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
+    //     }
 
-        getData();
+    //     getData();
 
-        // eslint-disable-next-line
-    }, [timer]);
+    //     // eslint-disable-next-line
+    // }, [timer]);
 
 
     useEffect(() => {
@@ -99,15 +99,15 @@ export default function Stats() {
                 console.log(res)
             }
 
-            const day = await HexOneBootstrap.getCurrentAirdropDay();
-            setCurrentDay(day);
-            setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
+            // const day = await HexOneBootstrap.getCurrentAirdropDay();
+            // setCurrentDay(day);
+            // setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
 
-            const st = new Date(BigNumber.from(await HexOneBootstrap.airdropStartTime()).toNumber() * 1000)
-            const en = new Date(BigNumber.from(await HexOneBootstrap.airdropEndTime()).toNumber() * 1000)
+            // const st = new Date(BigNumber.from(await HexOneBootstrap.airdropStartTime()).toNumber() * 1000)
+            // const en = new Date(BigNumber.from(await HexOneBootstrap.airdropEndTime()).toNumber() * 1000)
 
-            setAirdropStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
-            setAirdropEnd(en.getUTCFullYear() + '-' + ("0" + (en.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + en.getUTCDate()).slice(-2) + ' ' + ("0" + en.getUTCHours()).slice(-2) + ':' + ("0" + en.getUTCMinutes()).slice(-2) + ' UTC +0')
+            // setAirdropStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
+            // setAirdropEnd(en.getUTCFullYear() + '-' + ("0" + (en.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + en.getUTCDate()).slice(-2) + ' ' + ("0" + en.getUTCHours()).slice(-2) + ':' + ("0" + en.getUTCMinutes()).slice(-2) + ' UTC +0')
             hideLoading();
         }
 
