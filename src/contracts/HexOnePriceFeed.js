@@ -40,7 +40,6 @@ export default (function () {
             } catch (e) {
                 console.error(e);
             }
-            console.log(feed, '--------')
             return feed;
         }
     }

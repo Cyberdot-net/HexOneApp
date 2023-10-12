@@ -103,6 +103,7 @@ export default function Bootstrap() {
       console.log(utils.formatUnits(await HexOneBootstrap.HEXITAmountForSacrifice(), 18))
       console.log(await HexOneBootstrap.stakingContract())
       hideLoading();
+      console.log(await HexOnePriceFeed.getBaseTokenPrice('PLSX', utils.parseUnits('1', 18)))
     }
 
     getData();
