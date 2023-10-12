@@ -73,21 +73,21 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       ERC20Contract.setProvider(provider, token1);
       PulseXFactory.setProvider(provider)
 
-      const decimals = await ERC20Contract.getDecimals()
-      setTotalHex(await ERC20Contract.getBalance(address));
-      const pair = await PulseXFactory.getPair(token0, token1)
-      const d1 = await ResultContract.getDecimals()
-      const d2 = await ERC20Contract.getDecimals()
-      const r1 = await ResultContract.getBalance(pair)
-      const r2 = await ERC20Contract.getBalance(pair)
-      console.log(token0, token1, pair, r1, r2, d1, d2, 1.0 * r1 / r2)
-      if (erc20 == 'DAI') setHexFeed(1.0)
-      else setHexFeed(1.0 * r1 / r2);
-      // ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
-      // const decimals = await ERC20Contract.getDecimals();
+      // const decimals = await ERC20Contract.getDecimals()
       // setTotalHex(await ERC20Contract.getBalance(address));
-      // setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
-      // console.log(decimals, erc20, hexFeed)
+      // const pair = await PulseXFactory.getPair(token0, token1)
+      // const d1 = await ResultContract.getDecimals()
+      // const d2 = await ERC20Contract.getDecimals()
+      // const r1 = await ResultContract.getBalance(pair)
+      // const r2 = await ERC20Contract.getBalance(pair)
+      // console.log(token0, token1, pair, r1, r2, d1, d2, 1.0 * r1 / r2)
+      // if (erc20 == 'DAI') setHexFeed(1.0)
+      // else setHexFeed(1.0 * r1 / r2);
+      ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
+      const decimals = await ERC20Contract.getDecimals();
+      setTotalHex(await ERC20Contract.getBalance(address));
+      setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
+      console.log(decimals, erc20, hexFeed)
       hideLoading();
     }
 
@@ -215,8 +215,8 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
                   <Input
                     type="text"
                     placeholder="Total Value USD"
-                    value={(sacrificeAmt.value * hexFeed)}
-                    // value={formatFloat(+utils.formatUnits(sacrificeAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"))), 10)}
+                    //value={(sacrificeAmt.value * hexFeed)}
+                    value={formatFloat(+utils.formatUnits(sacrificeAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"))), 10)}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
