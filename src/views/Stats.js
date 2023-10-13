@@ -79,9 +79,12 @@ export default function Stats() {
                         sumPlsx += sacrificeData[i].sacrificedAmount
                         break;
                 }
-                sumUSD += sacrificeData[i].usdValue
+                const tmp = sacrificeData[i].usdValue
+                console.log(tmp)
+                sumUSD = sumUSD.add(tmp)
             }
-            setTotalUSD(formatDecimal(sumUSD))
+            console.log(sumUSD)
+            setTotalUSD(formatFloat(utils.formatUnits(sumUSD, 18), 6))
             setSacHex(formatDecimal(sumHex, 8))
             setSacDai(formatDecimal(sumDai, 18))
             setSacWpls(formatDecimal(sumWpls, 18))
