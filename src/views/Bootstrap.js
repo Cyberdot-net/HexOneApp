@@ -58,6 +58,7 @@ export default function Bootstrap() {
       console.log(await HexOneEscrow.collateralDeposited())
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
+      console.log(sacrificeData[1].sacrificedWeight, sacrificeData[0].sacrificedWeight)
       drawPieChart(sacrificeData, decimals)
     }
 
@@ -164,7 +165,7 @@ export default function Bootstrap() {
     }
 
     await getSacrificeList();
-
+    console.log(sacrificeList)
     hideLoading();
 
     toast.success("Claim $HEXIT success!");
