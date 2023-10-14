@@ -108,7 +108,6 @@ export default function Staking() {
   const getStakeList = async () => {
     try {
       const result = await HexOneStaking.getStakingList(address);
-      console.log(result)
       let stakeList = result.map(r => {
         return { ...r }
       });
