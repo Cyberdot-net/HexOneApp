@@ -108,19 +108,33 @@ export default function Bootstrap() {
   }, [address, provider]);
 
   const drawPieChart = async (sacrificeData, ercDecimals) => {
+
     const labels = sacrificeData.map(r => r.sacrificeTokenSymbol || "");
     // const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount, ercDecimals[r.sacrificeTokenSymbol] || 0));
     const data = sacrificeData.map(r => +utils.formatUnits(r.usdValue, ercDecimals['WPLS'] || 0));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
+    const t_labels = [], t_data = [], t_colors = [];
+    for (let i = 0; i < data.length; i++) {
+      const index = t_labels.indexOf(labels[i])
+      if (index == -1) {
+        t_labels.push(labels[i])
+        t_data.push(data[i])
+        t_colors.push(backgroundColors[i])
+      } else {
+        t_data[index] += data[i]
+      }
+    }
+    console.log(labels, data, backgroundColors)
+    console.log(t_labels, t_data, t_colors)
     if (data.length > 0) {
       setChartData({
-        labels: labels,
+        labels: t_labels,
         datasets: [
           {
             label: 'Sacrificed AMT',
-            data: data,
-            backgroundColor: backgroundColors,
-            borderColor: data.map(r => 'rgba(255, 255, 255, 0.3)'),
+            data: t_data,
+            backgroundColor: t_colors,
+            borderColor: t_data.map(r => 'rgba(255, 255, 255, 0.3)'),
             borderWidth: 2,
           },
         ],
