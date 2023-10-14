@@ -37,6 +37,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       showLoading();
 
       setAirdropInfo(await HexOneBootstrap.getCurrentAirdropInfo(address));
+
       setApproved(await HexOneBootstrap.checkAirdropInfo(address));
 
       hideLoading();
@@ -46,7 +47,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
 
     // eslint-disable-next-line
   }, [address, provider]);
-
+  console.log(airdropInfo)
   const onClickClaimHexit = async () => {
 
     if (isApproved) {

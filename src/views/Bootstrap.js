@@ -99,11 +99,7 @@ export default function Bootstrap() {
       setSacrificeStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
       setSacrificeEnd(en.getUTCFullYear() + '-' + ("0" + (en.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + en.getUTCDate()).slice(-2) + ' ' + ("0" + en.getUTCHours()).slice(-2) + ':' + ("0" + en.getUTCMinutes()).slice(-2) + ' UTC +0')
 
-      console.log(utils.formatUnits(await HexOneBootstrap.airdropHEXITAmount(), 17))
-      console.log(utils.formatUnits(await HexOneBootstrap.HEXITAmountForSacrifice(), 18))
-      console.log(await HexOneBootstrap.stakingContract())
       hideLoading();
-      console.log(await HexOnePriceFeed.getBaseTokenPrice('PLSX', utils.parseUnits('1', 18)))
     }
 
     getData();
@@ -254,14 +250,16 @@ export default function Bootstrap() {
           <h3 className="title text-left mb-2">Day: {currentDay.toString()}</h3>
           <Row gutter="10" className="pl-4 pr-4" style={{ placeContent: 'center' }}>
             <Col lg="12" className="mb-4">
-              <Button
-                className="btn-simple grow"
-                color="info btn-lg"
-                id="sacrifice"
-                onClick={() => setOpen(true)}
-              >
-                Sacrifice
-              </Button>
+              {
+                <Button
+                  className="btn-simple grow"
+                  color="info btn-lg"
+                  id="sacrifice"
+                  onClick={() => setOpen(true)}
+                >
+                  Sacrifice
+                </Button>
+              }
               <UncontrolledTooltip
                 placement="bottom"
                 target="sacrifice"

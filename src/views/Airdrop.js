@@ -55,6 +55,7 @@ export default function Airdrop() {
 
       const day = await HexOneBootstrap.getCurrentAirdropDay();
       console.log(day)
+      console.log(await HexOneBootstrap.checkAirdropInfo(address))
       setCurrentDay(day);
       setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
 
@@ -71,7 +72,6 @@ export default function Airdrop() {
     // eslint-disable-next-line
   }, [address, provider]);
 
-  console.log(airdropList)
   const showClaim = () => {
     setOpen(true);
   }
