@@ -67,16 +67,16 @@ export default function Stats() {
             for (let i = 0; i < sacrificeData.length; i++) {
                 switch (sacrificeData[i].sacrificeTokenSymbol) {
                     case 'HEX':
-                        sumHex += sacrificeData[i].sacrificedAmount
+                        sumHex = sumHex.add(sacrificeData[i].sacrificedAmount)
                         break;
                     case 'DAI':
-                        sumDai += sacrificeData[i].sacrificedAmount
+                        sumDai = sumDai.add(sacrificeData[i].sacrificedAmount)
                         break;
                     case 'WPLS':
-                        sumWpls += sacrificeData[i].sacrificedAmount
+                        sumWpls = sumWpls.add(sacrificeData[i].sacrificedAmount)
                         break;
                     case 'PLSX':
-                        sumPlsx += sacrificeData[i].sacrificedAmount
+                        sumPlsx = sumPlsx.add(sacrificeData[i].sacrificedAmount)
                         break;
                 }
                 const tmp = sacrificeData[i].usdValue
