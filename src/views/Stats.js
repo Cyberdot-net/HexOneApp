@@ -18,6 +18,7 @@ import { Hexit_Addr, HexOneToken_Addr } from "contracts/address";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import { formatFloat } from "common/utilities";
 import { formatDecimal } from "common/utilities";
+import { HexMockToken_Addr } from "contracts/address";
 
 export default function Stats() {
     const { address, provider } = useContext(WalletContext);
