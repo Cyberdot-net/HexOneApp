@@ -40,7 +40,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       const tmp = await HexOneBootstrap.getCurrentAirdropInfo(address)
       setAirdropInfo(tmp);
       setApproved(await HexOneBootstrap.checkAirdropInfo(address));
-      setTotalHexit(tmp.curDaySupplyHEXIT.add(tmp.sacrificeDistRate * tmp.sacrificedAmount.div(10 ** 9) * tmp.stakingDistRate * tmp.stakingShareAmount.div(10 ** 13)))
+      if (!tmp) setTotalHexit(tmp.curDaySupplyHEXIT.add(tmp.sacrificeDistRate * tmp.sacrificedAmount.div(10 ** 9) * tmp.stakingDistRate * tmp.stakingShareAmount.div(10 ** 13)))
 
       hideLoading();
     }
@@ -49,7 +49,6 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
 
     // eslint-disable-next-line
   }, [address, provider]);
-  console.log(totalHexit, utils.formatUnits(totalHexit), utils.formatUnits(airdropInfo.curDaySupplyHEXIT))
   const onClickClaimHexit = async () => {
 
     if (isApproved) {
