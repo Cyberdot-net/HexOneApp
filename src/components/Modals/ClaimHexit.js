@@ -14,7 +14,7 @@ import {
   InputGroupText,
   UncontrolledTooltip,
 } from "reactstrap";
-import { utils } from "ethers";
+import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneBootstrap } from "contracts";
@@ -27,6 +27,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [isApproved, setApproved] = useState(0);
   const [airdropInfo, setAirdropInfo] = useState({});
+  const [totalHexit, setTotalHexit] = useState(BigNumber.from(0))
 
   useEffect(() => {
     if (!address || !provider) return;
@@ -36,9 +37,10 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
     const getHexData = async () => {
       showLoading();
 
-      setAirdropInfo(await HexOneBootstrap.getCurrentAirdropInfo(address));
-
+      const tmp = await HexOneBootstrap.getCurrentAirdropInfo(address)
+      setAirdropInfo(tmp);
       setApproved(await HexOneBootstrap.checkAirdropInfo(address));
+      setTotalHexit(tmp.curDaySupplyHEXIT.add(tmp.sacrificeDistRate * tmp.sacrificedAmount.div(10 ** 9) * tmp.stakingDistRate * tmp.stakingShareAmount.div(10 ** 13)))
 
       hideLoading();
     }
@@ -47,7 +49,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
 
     // eslint-disable-next-line
   }, [address, provider]);
-  console.log(airdropInfo)
+  console.log(totalHexit, utils.formatUnits(totalHexit), utils.formatUnits(airdropInfo.curDaySupplyHEXIT))
   const onClickClaimHexit = async () => {
 
     if (isApproved) {
@@ -158,7 +160,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
               <Col sm="3"></Col>
               <Col sm="8">
                 <span>Day: <strong className="ml-1">{formatFloat(airdropInfo.curAirdropDay)}</strong></span>
-                <span className="ml-4">Daily Pool Total: <strong className="ml-1">{airdropInfo.curDayPoolAmount ? formatFloat(+utils.formatUnits(airdropInfo.curDayPoolAmount)) : "0"}</strong></span>
+                <span className="ml-4">Daily Pool Total: <strong className="ml-1">{airdropInfo.curDaySupplyHEXIT ? formatFloat(+utils.formatUnits(airdropInfo.curDaySupplyHEXIT)) : "0"}</strong></span>
               </Col>
             </Row>
           </FormGroup>
@@ -188,7 +190,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
                   <Input
                     type="text"
                     placeholder="Total Hexit"
-                    value={airdropInfo.curDaySupplyHEXIT ? formatFloat(+utils.formatUnits(airdropInfo.curDaySupplyHEXIT)) : "0"}
+                    value={airdropInfo.curDaySupplyHEXIT ? formatFloat(+utils.formatUnits(totalHexit)) : "0"}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
