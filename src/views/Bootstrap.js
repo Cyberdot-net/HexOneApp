@@ -55,7 +55,6 @@ export default function Bootstrap() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals["HEX"])));
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
-      console.log(await HexOneEscrow.collateralDeposited())
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData, decimals)
@@ -92,7 +91,7 @@ export default function Bootstrap() {
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData, ercDecimals)
-      console.log(sacrificeData)
+      console.log(await HexOneEscrow.collateralDeposited())
       const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() * 1000)
 
@@ -195,6 +194,18 @@ export default function Bootstrap() {
     hideLoading();
 
     showResult(true);
+  }
+
+  const onClickReborrow = async () => {
+    if (!address || !provider) return;
+    showLoading("Reborrowing...")
+    const res = await HexOneEscrow.borrowHexOne(hexFeed)
+    if (res.status !== 'succes') {
+      hideLoading()
+      toast.error(res.error ?? "Reborrow Failed!")
+      return;
+    }
+    hideLoading()
   }
 
   const doSacrifice = async () => {
@@ -401,7 +412,7 @@ export default function Bootstrap() {
                       <td className={+getHealthRatio(shareInfo.initUSDValue) >= 100 ? "green" : "red"}>
                         {getHealthRatio(shareInfo.initUSDValue)}%
                       </td>
-                      <td className="td-actions" width="100">
+                      <td className="td-actions">
                         <Button
                           id="claim"
                           className="btn btn-primary btn-sm w-full"
@@ -410,12 +421,20 @@ export default function Bootstrap() {
                         >
                           Claim<br />Hex1
                         </Button>
-                        <UncontrolledTooltip
+                        <Button
+                          id="mintHex1"
+                          className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
+                          onClick={() => onClickReborrow()}
+                          disabled={shareInfo.borrowedAmount.lte(0)}
+                        >
+                          Re-Borrow
+                        </Button>
+                        {/* <UncontrolledTooltip
                           placement="bottom"
                           target="claim"
                         >
                           Claim Hex1
-                        </UncontrolledTooltip>
+                        </UncontrolledTooltip> */}
                       </td>
                     </tr> : <tr>
                       <td colSpan={12} className="text-center">

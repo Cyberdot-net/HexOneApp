@@ -89,8 +89,6 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       const decimals = await ERC20Contract.getDecimals();
       setTotalHex(await ERC20Contract.getBalance(address));
       setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
-      console.log(decimals, erc20, hexFeed)
-      console.log(await HexOneProtocol.getVaultAddress('0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39'))
       hideLoading();
     }
 
@@ -98,7 +96,6 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
     // eslint-disable-next-line
   }, [erc20]);
-
   const changeSacrificeAmt = (e) => {
     setSacrificeAmt({ value: e.target.value, bignum: utils.parseEther(e.target.value || "0") });
   }
