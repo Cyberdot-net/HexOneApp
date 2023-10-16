@@ -69,7 +69,6 @@ export default function Overview() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
       setHistory(await HexOneVault.getHistory(address));
       setLiquidates(await HexOneVault.getLiquidableDeposits());
-
       // const network = await provider.getNetwork();
       // setIsTestNet(network.chainId !== 1);
       setIsTestNet(false);
