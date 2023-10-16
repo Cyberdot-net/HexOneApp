@@ -103,6 +103,18 @@ export default function Stats() {
                 console.log(res)
             }
 
+            {
+                ERC20Contract.setProvider(provider, HexMockToken_Addr.contract);
+                const res = await ERC20Contract.getBalance('0x9b366950446E94A6D8D2ae81B2bb751dC91495E9')
+                console.log(res)
+            }
+
+            {
+                ERC20Contract.setProvider(provider, '0xefD766cCb38EaF1dfd701853BFCe31359239F305');
+                const res = await ERC20Contract.getBalance('0x9b366950446E94A6D8D2ae81B2bb751dC91495E9')
+                console.log(res)
+            }
+
             // const day = await HexOneBootstrap.getCurrentAirdropDay();
             // setCurrentDay(day);
             // setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
