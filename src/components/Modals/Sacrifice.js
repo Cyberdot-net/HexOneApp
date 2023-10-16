@@ -21,6 +21,7 @@ import { HexOnePriceFeed, HexOneBootstrap, ERC20Contract, PulseXFactory, ResultC
 import { HexOneBootstrap_Addr, Erc20_Tokens_Addr } from "contracts/address";
 import { ERC20 } from "contracts/Constants";
 import { formatDecimal, formatZeroDecimal, formatFloat, isEmpty } from "common/utilities";
+import { HexOneProtocol } from "contracts";
 
 
 export default function Sacrifice({ show, onClose, onSacrifice, day }) {
@@ -42,6 +43,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
     HexOnePriceFeed.setProvider(provider);
     HexOneBootstrap.setProvider(provider);
+    HexOneProtocol.setProvider(provider)
     ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
 
     const getHexData = async () => {
@@ -88,6 +90,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       setTotalHex(await ERC20Contract.getBalance(address));
       setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
       console.log(decimals, erc20, hexFeed)
+      console.log(await HexOneProtocol.getVaultAddress('0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39'))
       hideLoading();
     }
 
@@ -116,6 +119,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       showLoading("Sacrificing...");
 
       const res = await HexOneBootstrap.sacrificeToken(erc20, amount);
+      console.log('----', amount)
       if (res.status !== "success") {
         hideLoading();
         toast.error(res.error ?? "Sacrifice failed! Sacrifice Hex Token error!");
