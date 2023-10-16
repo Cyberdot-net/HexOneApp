@@ -88,6 +88,10 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
       const decimals = await ERC20Contract.getDecimals();
       setTotalHex(await ERC20Contract.getBalance(address));
+      let realPrice = await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals));
+      realPrice = realPrice.div(8)
+      const hexPrice = await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", 8))
+      console.log(realPrice, hexPrice, realPrice.mul(10 ** 8).div(hexPrice))
       setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
       hideLoading();
     }
@@ -99,7 +103,6 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
   const changeSacrificeAmt = (e) => {
     setSacrificeAmt({ value: e.target.value, bignum: utils.parseEther(e.target.value || "0") });
   }
-
   const setMaxAmount = () => {
     setSacrificeAmt({ value: formatDecimal(totalHex), bignum: totalHex });
   }
