@@ -124,7 +124,7 @@ export default function Airdrop() {
             </Col>
             <div style={{ width: '650px', color: 'white', fontSize: '16px' }}>
               If you <strong>sacrificed</strong> for the bootstrap and hold <strong>$HEXIT</strong> tokens, or if you were 
-              <strong>staking $HEX</strong> at the time of Hex One Protocol deployment, you can claim free
+               <strong>staking $HEX</strong> at the time of Hex One Protocol deployment, you can claim free
               <strong> $HEXIT</strong> tokens!
             </div>
           </Row>
