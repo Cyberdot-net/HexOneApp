@@ -104,7 +104,7 @@ export default function Airdrop() {
           <h4 className="title text-left">Airdrop Start Date: {airdropStart}</h4>
           <h4 className="title text-left">Airdrop End Date: {airdropEnd}</h4>
           <h3 className="title text-left mb-2">Day: {currentDay.toString()}</h3>
-          <Row gutter="10" className="pl-4 pr-4">
+          <Row gutter="10" className="pl-4 pr-4" style={{ placeContent: 'center' }}>
             <Col lg="12" className="mb-4">
               <Button
                 className="btn-simple grow"
@@ -122,6 +122,11 @@ export default function Airdrop() {
                 Claim $HEXIT
               </UncontrolledTooltip>
             </Col>
+            <div style={{ width: '650px', color: 'white', fontSize: '16px' }}>
+              If you <strong>sacrificed</strong> for the bootstrap and hold <strong>$HEXIT</strong> tokens, or if you were
+              <strong>staking $HEX</strong> at the time Hex One Protocol deployment, you can free
+              <strong> $HEXIT</strong> tokens!
+            </div>
           </Row>
         </Container>
       </section>
