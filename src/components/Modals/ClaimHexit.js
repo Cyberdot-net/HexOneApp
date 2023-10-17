@@ -27,7 +27,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [isApproved, setApproved] = useState(0);
   const [airdropInfo, setAirdropInfo] = useState({});
-  const [totalHexit, setTotalHexit] = useState(BigNumber.from(0))
+  const [totalHexit, setTotalHexit] = useState(BigNumber.from(1))
 
   useEffect(() => {
     if (!address || !provider) return;
@@ -41,7 +41,8 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       setAirdropInfo(tmp);
       setApproved(await HexOneBootstrap.checkAirdropInfo(address));
       console.log(await HexOneBootstrap.getCurrentAirdropDay())
-      if (tmp.curDaySupplyHEXIT) setTotalHexit(tmp.curDaySupplyHEXIT.add(tmp.sacrificeDistRate * tmp.sacrificedAmount.div(10 ** 9) * tmp.stakingDistRate * tmp.stakingShareAmount.div(10 ** 13)))
+      console.log(tmp, totalHexit)
+      if (tmp.curDaySupplyHEXIT) setTotalHexit((tmp.curDaySupplyHEXIT.add(tmp.sacrificeDistRate * tmp.sacrificedAmount.div(10 ** 9) * tmp.stakingDistRate * tmp.stakingShareAmount.div(10 ** 13))))
 
       hideLoading();
     }
