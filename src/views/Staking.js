@@ -72,7 +72,7 @@ export default function Staking() {
       setCurrentDay(await HexOneStaking.getCurrentDay());
 
       setStakeEnabled(await HexOneStaking.getStakingEnable());
-      console.log(await HexOneEscrow.getOverview(address), await HexOneEscrow.balanceOfHex())
+
       await getStakeList();
       hideLoading();
     }

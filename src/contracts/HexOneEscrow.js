@@ -65,14 +65,6 @@ export default (function () {
             return { status: "success" };
         },
 
-        balanceOfHex: async () => {
-            if (!contract) return { status: "failed" }
-
-            const res = await contract.balanceOfHex()
-
-            return res
-        },
-
         borrowHexOne: async (amount) => {
             if (!contract) return { status: "failed" }
 
