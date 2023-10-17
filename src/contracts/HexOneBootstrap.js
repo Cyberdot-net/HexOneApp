@@ -52,7 +52,7 @@ export default (function () {
             try {
                 currentDay = await contract.getCurrentAirdropDay();
             } catch (e) {
-                console.error(e);
+                return -1;
             }
 
             return currentDay;

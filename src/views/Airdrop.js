@@ -16,6 +16,7 @@ import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts"
 import { HexOneBootstrap } from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import { formatFloat } from "common/utilities";
+import toast from "react-hot-toast";
 
 export default function Airdrop() {
   const { address, provider } = useContext(WalletContext);
@@ -27,6 +28,7 @@ export default function Airdrop() {
   const [isOpen, setOpen] = useState(false);
   const [airdropStart, setAirdropStart] = useState('')
   const [airdropEnd, setAirdropEnd] = useState('')
+  const [startTime, setStartTime] = useState()
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
 
@@ -34,9 +36,11 @@ export default function Airdrop() {
     if (!timer || !HexOneBootstrap.connected()) return;
 
     const getData = async () => {
-      const day = await HexOneBootstrap.getCurrentAirdropDay();
-      setCurrentDay(day);
-      setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
+      if (startTime < new Date()) {
+        const day = await HexOneBootstrap.getCurrentAirdropDay();
+        setCurrentDay(day);
+        setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
+      }
     }
 
     getData();
@@ -53,17 +57,18 @@ export default function Airdrop() {
     const getData = async () => {
       showLoading();
 
-      const day = await HexOneBootstrap.getCurrentAirdropDay();
-      console.log(day)
-      console.log(await HexOneBootstrap.checkAirdropInfo(address))
-      setCurrentDay(day);
-      setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
-
       const st = new Date(BigNumber.from(await HexOneBootstrap.airdropStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.airdropEndTime()).toNumber() * 1000)
 
       setAirdropStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
       setAirdropEnd(en.getUTCFullYear() + '-' + ("0" + (en.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + en.getUTCDate()).slice(-2) + ' ' + ("0" + en.getUTCHours()).slice(-2) + ':' + ("0" + en.getUTCMinutes()).slice(-2) + ' UTC +0')
+      setStartTime(st)
+
+      if (st < new Date()) {
+        const day = await HexOneBootstrap.getCurrentAirdropDay();
+        setCurrentDay(day);
+        setAirdropList([await HexOneBootstrap.getAirdropList(address)]);
+      }
       hideLoading();
     }
 
@@ -73,7 +78,9 @@ export default function Airdrop() {
   }, [address, provider]);
 
   const showClaim = () => {
-    setOpen(true);
+    if (new Date() > startTime)
+      setOpen(true);
+    else toast.error("Airdrop hasn't started yet.")
   }
 
   const doClaimHexit = async () => {
