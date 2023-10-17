@@ -63,7 +63,6 @@ export default function Bootstrap() {
     getData();
     // eslint-disable-next-line
   }, [timer]);
-
   useEffect(() => {
     if (!address || !provider) return;
 
