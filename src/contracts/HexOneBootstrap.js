@@ -50,7 +50,7 @@ export default (function () {
             if (!contract) return currentDay;
 
             try {
-                currentDay = await contract.getCurrentAirdropDay() + 1;
+                currentDay = await contract.getCurrentAirdropDay();
             } catch (e) {
                 console.error(e);
             }
