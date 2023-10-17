@@ -57,6 +57,7 @@ export default function Bootstrap() {
       setShareInfo(await HexOneEscrow.getOverview(address));
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
+      console.log(sacrificeData)
       drawPieChart(sacrificeData, decimals)
     }
 
@@ -291,8 +292,8 @@ export default function Bootstrap() {
                 Sacrifice tokens
               </UncontrolledTooltip>
             </Col>
-            <div style={{ width: '650px', color: 'white' }}>When you sacrifice you are bootstrapping the Hex One Protocol.
-              You will receive <strong>75%</strong> of the USD value sacrificed in <strong>$HEX1</strong>, and the remaining <strong>25%</strong> go into the liquidity pool <strong>(HEX1/USDC)</strong>. You also receive an aidrop of <strong>$HEXIT</strong>.</div>
+            <div style={{ width: '650px', color: 'white', fontSize: '16px' }}>When you sacrifice you are bootstrapping the Hex One Protocol.
+              You will receive <strong>75%</strong> of the USD value sacrificed in <strong>$HEX1</strong>, and the remaining <strong>25%</strong> go into the liquidity pool <strong>(HEX1/DAI)</strong>. You also receive an aidrop of <strong>$HEXIT</strong>.</div>
           </Row>
         </Container>
       </section>

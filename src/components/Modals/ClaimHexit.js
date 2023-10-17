@@ -41,8 +41,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       setAirdropInfo(tmp);
       setApproved(await HexOneBootstrap.checkAirdropInfo(address));
       console.log(await HexOneBootstrap.getCurrentAirdropDay())
-      if (tmp) setTotalHexit(tmp.curDaySupplyHEXIT.add(tmp.sacrificeDistRate * tmp.sacrificedAmount.div(10 ** 9) * tmp.stakingDistRate * tmp.stakingShareAmount.div(10 ** 13)))
-      console.log(utils.formatUnits(tmp.curDaySupplyHEXIT, 18))
+      if (tmp.curDaySupplyHEXIT) setTotalHexit(tmp.curDaySupplyHEXIT.add(tmp.sacrificeDistRate * tmp.sacrificedAmount.div(10 ** 9) * tmp.stakingDistRate * tmp.stakingShareAmount.div(10 ** 13)))
 
       hideLoading();
     }
