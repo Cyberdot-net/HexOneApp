@@ -264,13 +264,13 @@ export default function Overview() {
                             onClick={() => onClickClaim(r.depositId, 'claim')}
                             disabled={r.curHexDay.lte(r.endHexDay)}
                           >
-                            Claim
+                            Re-Deposit
                           </Button>
                           <UncontrolledTooltip
                             placement="bottom"
                             target="claim"
                           >
-                            Claim HEX by burning HEX1
+                            Re-Deposit HEX by burning HEX1
                           </UncontrolledTooltip>
                           {isMobile && <br />}
                           <Button
@@ -318,14 +318,14 @@ export default function Overview() {
                 <CardBody>
                   <Row>
                     <Col className="text-center" md="12">
-                      <h4 className="text-uppercase">CLAIM</h4>
+                      <h4 className="text-uppercase">Re-Deposit</h4>
                       <hr className="line-primary" />
                     </Col>
                   </Row>
                   <Row>
                     <ListGroup>
                       <ListGroupItem>
-                        Claim your collateral (HEX)
+                        Re-Deposit your collateral (HEX)
                       </ListGroupItem>
                       <ListGroupItem>
                         by repaying the loan (HEX1)

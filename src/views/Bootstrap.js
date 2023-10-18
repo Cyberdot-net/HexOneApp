@@ -192,6 +192,23 @@ export default function Bootstrap() {
     showResult(true);
   }
 
+  const onReDeposit = async () => {
+    showLoading("Re-Depositing Hex1...");
+
+    const res = await HexOneEscrow.reDepositCollateral();
+    if (res.status !== "success") {
+      hideLoading();
+      toast.error(res.error ?? "Re-Depositing failed!");
+      return;
+    }
+
+    setShareInfo(await HexOneEscrow.getOverview(address));
+
+    hideLoading();
+
+    showResult(true);
+  }
+
   const onClickReborrow = async () => {
     if (!address || !provider) return;
     showLoading("Reborrowing...")
@@ -387,8 +404,8 @@ export default function Bootstrap() {
                     <th>COLLATERAL</th>
                     <th>EFFECTIVE</th>
                     <th>BORROWED AMT</th>
-                    <th>INITIAL HEX/USDC</th>
-                    <th>CURRENT HEX/USDC</th>
+                    <th>INITIAL HEX/DAI</th>
+                    <th>CURRENT HEX/DAI</th>
                     <th>HEALTH RATIO</th>
                     <th className="text-center"></th>
                   </tr>
@@ -403,25 +420,33 @@ export default function Bootstrap() {
                       <td>{formatFloat(+utils.formatUnits(shareInfo.hexAmount, 8))} HEX</td>
                       <td>{formatFloat(+utils.formatUnits(shareInfo.effectiveAmount, 8))} HEX</td>
                       <td>{formatFloat(+utils.formatUnits(shareInfo.borrowedAmount))} HEX1</td>
-                      <td>${formatFloat(+utils.formatUnits(shareInfo.initUSDValue))}</td>
-                      <td>${formatFloat(+utils.formatUnits(hexFeed))}</td>
+                      <td>${formatFloat(+utils.formatUnits(shareInfo.initUSDValue), 3)}</td>
+                      <td>${formatFloat(+utils.formatUnits(hexFeed), 3)}</td>
                       <td className={+getHealthRatio(shareInfo.initUSDValue) >= 100 ? "green" : "red"}>
                         {getHealthRatio(shareInfo.initUSDValue)}%
                       </td>
                       <td className="td-actions">
                         <Button
                           id="claim"
-                          className="btn btn-primary btn-sm w-full"
+                          className="btn btn-primary btn-sm w-btn mb-1"
                           disabled={shareInfo.borrowedAmount.lte(0) || shareInfo.endTime.gt(shareInfo.curDay)}
                           onClick={() => onClickClaimHex1()}
                         >
-                          Claim<br />Hex1
+                          Claim Hex1
+                        </Button>
+                        <Button
+                          id="claim"
+                          className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
+                          disabled={shareInfo.borrowedAmount.lte(0) || shareInfo.endTime.gt(shareInfo.curDay)}
+                          onClick={() => onReDeposit()}
+                        >
+                          Re-Deposit
                         </Button>
                         <Button
                           id="mintHex1"
                           className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
                           onClick={() => onClickReborrow()}
-                          disabled={shareInfo.borrowedAmount.lte(0)}
+                          disabled={getHealthRatio(shareInfo.initUSDValue) < 101}
                         >
                           Re-Borrow
                         </Button>
