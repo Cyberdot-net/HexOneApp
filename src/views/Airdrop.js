@@ -151,7 +151,6 @@ export default function Airdrop() {
                     <th>Hex {isMobile && <br />}Staked {isMobile && <br />}Bonus</th>
                     <th>Total {isMobile && <br />}Power</th>
                     <th>Total {isMobile && <br />}Daily {isMobile && <br />}HEXIT</th>
-                    <th>Share {isMobile && <br />}of {isMobile && <br />}Pool</th>
                     <th>Claimed {isMobile && <br />}HEXIT</th>
                   </tr>
                 </thead>
@@ -167,7 +166,6 @@ export default function Airdrop() {
                         <td>{formatFloat(+utils.formatUnits(r.hexShareMultiplier, 2))}x</td>
                         <td>${formatFloat(+utils.formatUnits(r.totalUSD, 17), 4)}</td>
                         <td>{formatFloat(+utils.formatUnits(r.dailySupplyAmount))} HEXIT</td>
-                        <td>{formatFloat(+utils.formatUnits(r.shareOfPool, 1))}%</td>
                         <td>{formatFloat(+utils.formatUnits(r.claimedAmount))} HEXIT</td>
                       </tr>
                     )) : <tr>
