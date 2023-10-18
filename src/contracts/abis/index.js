@@ -11,6 +11,7 @@ import HexOneStakingMaster_Abi from "./HexOneStakingMaster.json";
 import HexOneToken_Abi from "./HexOneToken.json";
 import HexOneVault_Abi from "./HexOneVault.json";
 import PulseXFactory_Abi from './PulseXFactory.json'
+import PulseXPair_Abi from './PulseXPair.json'
 
 export {
     ERC20_Abi,
@@ -26,4 +27,5 @@ export {
     HexOneToken_Abi,
     HexOneVault_Abi,
     PulseXFactory_Abi,
+    PulseXPair_Abi,
 }
