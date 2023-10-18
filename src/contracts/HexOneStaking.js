@@ -137,6 +137,14 @@ export default (function () {
             const res = contract.rewardsPool()
 
             return res
+        },
+
+        lockedTokenAmounts: async () => {
+            if (!contract) return { status: "failed" };
+
+            const res = contract.lockedTokenAmounts('0x0d2894dda55980EF479DF688B5ADB80E69064BD3')
+
+            return res
         }
     }
 

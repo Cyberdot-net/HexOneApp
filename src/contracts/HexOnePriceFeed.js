@@ -1,6 +1,6 @@
 import { Contract, BigNumber } from "ethers";
-import { HexOnePriceFeedTest_Abi } from "./abis";
-import { HexOnePriceFeedTest_Addr, Erc20_Tokens_Addr } from "./address";
+import { HexOnePriceFeed_Abi } from "./abis";
+import { HexOnePriceFeed_Addr, Erc20_Tokens_Addr } from "./address";
 
 export default (function () {
 
@@ -14,7 +14,7 @@ export default (function () {
 
         setProvider: (provider) => {
             if (provider) {
-                contract = new Contract(HexOnePriceFeedTest_Addr.contract, HexOnePriceFeedTest_Abi, provider);
+                contract = new Contract(HexOnePriceFeed_Addr.contract, HexOnePriceFeed_Abi, provider);
             }
         },
 
@@ -36,7 +36,10 @@ export default (function () {
             if (!contract) return feed;
 
             try {
-                feed = await contract.getBaseTokenPrice(Erc20_Tokens_Addr[tokenType].contract, hexPrice);
+                // console.log(Erc20_Tokens_Addr[tokenType].contract);
+                // feed = await contract.getBaseTokenPrice(Erc20_Tokens_Addr[tokenType].contract, hexPrice);
+                feed = await contract.getBaseTokenPrice('0x2fe2f536Ac166632b71802EF83e3c54cb60267f9', hexPrice);
+                console.log(feed)
             } catch (e) {
                 console.error(e);
             }

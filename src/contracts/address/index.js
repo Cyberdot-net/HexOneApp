@@ -26,7 +26,8 @@ import Hexit_Addr from "./pulse/HEXIT.json";
 import HexMockToken_Addr from "./pulse/HexMockToken.json";
 import HexOneBootstrap_Addr from "./pulse/HexOneBootstrap.json";
 import HexOneEscrow_Addr from "./pulse/HexOneEscrow.json";
-import HexOnePriceFeedTest_Addr from "./pulse/HexOnePriceFeedTest.json";
+// import HexOnePriceFeedTest_Addr from "./pulse/HexOnePriceFeedTest.json";
+import HexOnePriceFeed_Addr from './pulse/HexOnePriceFeed.json'
 import HexOneProtocol_Addr from "./pulse/HexOneProtocol.json";
 import HexOneStakingMaster_Addr from "./pulse/HexOneStaking.json";
 import HexOneToken_Addr from "./pulse/HexOneToken.json";
@@ -55,7 +56,7 @@ export {
     HexMockToken_Addr,
     HexOneBootstrap_Addr,
     HexOneEscrow_Addr,
-    HexOnePriceFeedTest_Addr,
+    HexOnePriceFeed_Addr,
     HexOneProtocol_Addr,
     HexOneStakingMaster_Addr,
     HexOneToken_Addr,

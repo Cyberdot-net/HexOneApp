@@ -42,7 +42,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       setApproved(await HexOneBootstrap.checkAirdropInfo(address));
       console.log(await HexOneBootstrap.getCurrentAirdropDay())
       console.log(tmp, totalHexit)
-      if (tmp.curDaySupplyHEXIT) setTotalHexit((tmp.curDaySupplyHEXIT.add(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(1000).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(1000)))))
+      if (tmp.curDaySupplyHEXIT) setTotalHexit((tmp.curDaySupplyHEXIT.div(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(1000).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(1000)))))
 
       hideLoading();
     }
@@ -162,25 +162,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
               <Col sm="3"></Col>
               <Col sm="8">
                 <span>Day: <strong className="ml-1">{formatFloat(airdropInfo.curAirdropDay)}</strong></span>
-                <span className="ml-4">Daily Pool Total: <strong className="ml-1">{airdropInfo.curDaySupplyHEXIT ? formatFloat(+utils.formatUnits(airdropInfo.curDaySupplyHEXIT)) : "0"}</strong></span>
-              </Col>
-            </Row>
-          </FormGroup>
-          <FormGroup>
-            <Row>
-              <Label sm="3" className="text-right">Share of Pool</Label>
-              <Col sm="8">
-                <InputGroup>
-                  <Input
-                    type="text"
-                    placeholder="Share of Pool"
-                    value={airdropInfo.shareOfPool ? formatFloat(+utils.formatUnits(airdropInfo.shareOfPool, 1)) : "0"}
-                    readOnly
-                  />
-                  <InputGroupAddon addonType="append">
-                    <InputGroupText>%</InputGroupText>
-                  </InputGroupAddon>
-                </InputGroup>
+                <span className="ml-4">Daily Points: <strong className="ml-1">{airdropInfo.curDaySupplyHEXIT ? formatFloat(+utils.formatUnits(airdropInfo.curDaySupplyHEXIT)) : "0"}</strong></span>
               </Col>
             </Row>
           </FormGroup>
