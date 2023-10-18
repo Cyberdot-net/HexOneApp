@@ -73,7 +73,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
       ResultContract.setProvider(provider, token0)
       ERC20Contract.setProvider(provider, token1);
-      PulseXFactory.setProvider(provider)
+      // PulseXFactory.setProvider(provider)
 
       // const decimals = await ERC20Contract.getDecimals()
       // setTotalHex(await ERC20Contract.getBalance(address));

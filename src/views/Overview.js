@@ -318,6 +318,28 @@ export default function Overview() {
                 <CardBody>
                   <Row>
                     <Col className="text-center" md="12">
+                      <h4 className="text-uppercase">Withdraw</h4>
+                      <hr className="line-primary" />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <ListGroup>
+                      <ListGroupItem>
+                        Claim your collateral (HEX)
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        by repaying the loan (HEX1)
+                      </ListGroupItem>
+                    </ListGroup>
+                  </Row>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col lg="4" md="6" sm="10" className="mb-2">
+              <Card className="card-coin card-plain p-2 h-100">
+                <CardBody>
+                  <Row>
+                    <Col className="text-center" md="12">
                       <h4 className="text-uppercase">Re-Deposit</h4>
                       <hr className="line-primary" />
                     </Col>

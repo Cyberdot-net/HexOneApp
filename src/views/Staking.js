@@ -13,9 +13,9 @@ import {
   InputGroupText
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
-import { Pie } from "react-chartjs-2";
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import ChartDataOutLabels from 'chartjs-plugin-piechart-outlabels';
+// import { Pie } from "react-chartjs-2";
+// import ChartDataLabels from 'chartjs-plugin-datalabels';
+// import ChartDataOutLabels from 'chartjs-plugin-piechart-outlabels';
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
 import { HexOneStaking, ERC20Contract, HexOneEscrow } from "contracts";
@@ -23,15 +23,16 @@ import { HexOneStakingMaster_Addr } from "contracts/address";
 // import { SHARE_RATE } from "contracts/Constants";
 import { formatFloat, formatZeroDecimal, isEmpty } from "common/utilities";
 import { HexOnePriceFeed } from "contracts";
+import PulseXPair from "contracts/PulseXPair";
 
 
-const backgroundColor = {
-  "HEX1": 'rgba(255, 99, 132, 0.2)',
-  "HEXIT": 'rgba(54, 162, 235, 0.2)',
-  "HEX1/HEX": 'rgba(75, 192, 192, 0.2)',
-  "HEX1/DAI": 'rgba(153, 102, 255, 0.2)',
-  "": 'rgba(255, 159, 64, 0.2)'
-};
+// const backgroundColor = {
+//   "HEX1": 'rgba(255, 99, 132, 0.2)',
+//   "HEXIT": 'rgba(54, 162, 235, 0.2)',
+//   "HEX1/HEX": 'rgba(75, 192, 192, 0.2)',
+//   "HEX1/DAI": 'rgba(153, 102, 255, 0.2)',
+//   "": 'rgba(255, 159, 64, 0.2)'
+// };
 
 export default function Staking() {
 
@@ -40,7 +41,7 @@ export default function Staking() {
   const { timer } = useContext(TimerContext);
   const [currentDay, setCurrentDay] = useState(0);
   const [data, setData] = useState([]);
-  const [chartData, setChartData] = useState(null);
+  // const [chartData, setChartData] = useState(null);
   const [stakeEnabled, setStakeEnabled] = useState(false);
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
@@ -82,28 +83,28 @@ export default function Staking() {
     // eslint-disable-next-line
   }, [address, provider]);
 
-  const drawPieChart = async (stakeList) => {
-    const labels = stakeList.filter(r => !r.totalLockedAmount.isZero()).map(r => r.tokenSymbol);
-    const data = stakeList.filter(r => !r.totalLockedAmount.isZero()).map(r => formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals)));
-    const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
+  // const drawPieChart = async (stakeList) => {
+  //   const labels = stakeList.filter(r => !r.totalLockedAmount.isZero()).map(r => r.tokenSymbol);
+  //   const data = stakeList.filter(r => !r.totalLockedAmount.isZero()).map(r => formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals)));
+  //   const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
-    if (data.length > 0) {
-      setChartData({
-        labels: labels,
-        datasets: [
-          {
-            label: 'Total Value Locked Tokens',
-            data: data,
-            backgroundColor: backgroundColors,
-            borderColor: data.map(r => 'rgba(255, 255, 255, 0.3)'),
-            borderWidth: 2,
-          },
-        ],
-      });
-    } else {
-      setChartData(null);
-    }
-  }
+  //   if (data.length > 0) {
+  //     setChartData({
+  //       labels: labels,
+  //       datasets: [
+  //         {
+  //           label: 'Total Value Locked Tokens',
+  //           data: data,
+  //           backgroundColor: backgroundColors,
+  //           borderColor: data.map(r => 'rgba(255, 255, 255, 0.3)'),
+  //           borderWidth: 2,
+  //         },
+  //       ],
+  //     });
+  //   } else {
+  //     setChartData(null);
+  //   }
+  // }
 
   const getStakeList = async () => {
     try {
@@ -115,9 +116,29 @@ export default function Staking() {
 
       for (let k in stakeList) {
         ERC20Contract.setProvider(provider, stakeList[k].token);
-        stakeList[k]['tokenSymbol'] = await ERC20Contract.getSymbol();
-        stakeList[k]['decimals'] = await ERC20Contract.getDecimals();
-        stakeList[k]['balance'] = await ERC20Contract.getBalance(address);
+        const sym = await ERC20Contract.getSymbol()
+        if (sym == 'PLP') {
+          PulseXPair.setProvider(provider, stakeList[k].token)
+          let token0 = await PulseXPair.token0(), token1 = await PulseXPair.token1()
+          ERC20Contract.setProvider(provider, token0)
+          let sym0 = await ERC20Contract.getSymbol()
+          ERC20Contract.setProvider(provider, token1)
+          let sym1 = await ERC20Contract.getSymbol()
+          if (sym1 == 'test1') {
+            let t = sym0;
+            sym0 = sym1;
+            sym1 = t;
+          }
+          stakeList[k]['tokenSymbol'] = "HEX1" + '/' + sym1 + " LP"
+          stakeList[k]['decimals'] = await PulseXPair.getDecimals()
+          stakeList[k]['balance'] = await PulseXPair.getBalance(address)
+        }
+        else {
+          stakeList[k]['tokenSymbol'] = await ERC20Contract.getSymbol();
+          stakeList[k]['decimals'] = await ERC20Contract.getDecimals();
+          stakeList[k]['balance'] = await ERC20Contract.getBalance(address);
+        }
+        console.log(stakeList[k]['balance'])
       }
 
       setData(prevData => {
@@ -127,11 +148,11 @@ export default function Staking() {
         })
       });
 
-      drawPieChart(stakeList);
+      // drawPieChart(stakeList);
     } catch (e) {
       console.error(e);
       setData([]);
-      drawPieChart([]);
+      // drawPieChart([]);
     }
   }
 
@@ -415,7 +436,7 @@ export default function Staking() {
             </Row>
           </Container>
         </section>
-        <section className="section section-lg section-tables center">
+        {/* <section className="section section-lg section-tables center">
           <Container>
             <Row>
               <Col md="4">
@@ -471,7 +492,7 @@ export default function Staking() {
               </Col>
             </Row>
           </Container>
-        </section>
+        </section> */}
       </div>
     </>
   );
