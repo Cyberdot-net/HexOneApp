@@ -252,8 +252,8 @@ export default function Overview() {
                         <td>{formatFloat(+utils.formatUnits(r.depositAmount, hexDecimals))} HEX</td>
                         <td>{formatFloat(+utils.formatUnits(r.effectiveAmount, hexDecimals))} HEX</td>
                         <td>{formatFloat(+utils.formatUnits(r.mintAmount))} HEX1</td>
-                        <td>${formatFloat(+utils.formatUnits(r.initialHexPrice))}</td>
-                        <td>${formatFloat(+utils.formatUnits(hexFeed))}</td>
+                        <td>${formatFloat(+utils.formatUnits(r.initialHexPrice), 3)}</td>
+                        <td>${formatFloat(+utils.formatUnits(hexFeed), 3)}</td>
                         <td className={+getHealthRatio(r.initialHexPrice) >= 100 ? "green" : "red"}>
                           {getHealthRatio(r.initialHexPrice)}%
                         </td>
