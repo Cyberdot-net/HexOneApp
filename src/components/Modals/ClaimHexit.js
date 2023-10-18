@@ -44,8 +44,8 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       console.log(tmp, totalHexit)
       if (tmp.curDaySupplyHEXIT) {
         console.log(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(1000).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(1000)))
-        console.log((tmp.curDaySupplyHEXIT.div(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(1000).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(1000)))))
-        setTotalHexit((tmp.curDaySupplyHEXIT.div(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(1000).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(1000)))))
+        console.log((tmp.curDaySupplyHEXIT.add(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(1000).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(1000)))))
+        setTotalHexit((tmp.curDaySupplyHEXIT.add(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(1000).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(1000)))))
       }
 
       hideLoading();
@@ -178,7 +178,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
                   <Input
                     type="text"
                     placeholder="Total Hexit"
-                    value={airdropInfo.curDaySupplyHEXIT ? formatFloat(+utils.formatUnits(totalHexit, 0)) : "0"}
+                    value={airdropInfo.curDaySupplyHEXIT ? formatFloat(+utils.formatUnits(totalHexit)) : "0"}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
