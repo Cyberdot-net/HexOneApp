@@ -22,6 +22,7 @@ import Pagination from "components/Common/Pagination";
 import BorrowModal from "components/Modals/Borrow";
 import ReborrowModal from "components/Modals/Reborrow";
 import { isEmpty, formatFloat } from "common/utilities";
+import { HexOneEscrow } from "contracts";
 
 export default function Overview() {
   const { address, provider } = useContext(WalletContext);
@@ -103,6 +104,18 @@ export default function Overview() {
     return `${profit} (${percent}%)`;
   }
 
+  const onClickWithdraw = async () => {
+    showLoading("Withdrawing...");
+
+    const res = await HexOneEscrow.distributeHexOne();
+    if (res.status !== "success") {
+      hideLoading();
+      toast.error(res.error ?? "Withdrawing failed!");
+      return;
+    }
+
+    hideLoading();
+  }
   const onClickClaim = async (depositId, type) => {
     showLoading(type === 'liquidate' ? "Liquidating..." : "Claiming...");
 
@@ -263,6 +276,14 @@ export default function Overview() {
                             className="btn btn-primary btn-sm w-btn mb-1"
                             onClick={() => onClickClaim(r.depositId, 'claim')}
                             disabled={r.curHexDay.lte(r.endHexDay)}
+                          >
+                            Withdraw
+                          </Button>
+                          <Button
+                            id="mintHex1"
+                            className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
+                            onClick={() => onClickClaim(r.depositId, 'claim')}
+                            disabled={r.borrowableAmount.lte(0)}
                           >
                             Re-Deposit
                           </Button>
