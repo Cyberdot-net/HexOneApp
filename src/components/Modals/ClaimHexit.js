@@ -43,9 +43,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       console.log(await HexOneBootstrap.getCurrentAirdropDay())
       console.log(tmp, totalHexit)
       if (tmp.curDaySupplyHEXIT) {
-        console.log(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(1000).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(1000)))
-        console.log((tmp.curDaySupplyHEXIT.add(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(1000).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(1000)))))
-        setTotalHexit((tmp.curDaySupplyHEXIT.add(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(1000).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(1000)))))
+        setTotalHexit((tmp.curDaySupplyHEXIT.add(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(100).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(100)))))
       }
 
       hideLoading();
