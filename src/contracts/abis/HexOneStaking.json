@@ -235,11 +235,6 @@
           },
           {
             "internalType": "uint256",
-            "name": "totalLockedUSD",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
             "name": "totalLockedAmount",
             "type": "uint256"
           },
