@@ -55,9 +55,9 @@ export default function Bootstrap() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals["HEX"])));
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
+
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
-      console.log(sacrificeData)
       drawPieChart(sacrificeData, decimals)
     }
 
@@ -91,13 +91,12 @@ export default function Bootstrap() {
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData, ercDecimals)
-      console.log(await HexOneEscrow.collateralDeposited())
       const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() * 1000)
 
       setSacrificeStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
       setSacrificeEnd(en.getUTCFullYear() + '-' + ("0" + (en.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + en.getUTCDate()).slice(-2) + ' ' + ("0" + en.getUTCHours()).slice(-2) + ':' + ("0" + en.getUTCMinutes()).slice(-2) + ' UTC +0')
-
+      console.log(await HexOnePriceFeed.getBaseTokenPrice('', 10000000000))
       hideLoading();
     }
 
@@ -123,8 +122,6 @@ export default function Bootstrap() {
         t_data[index] += data[i]
       }
     }
-    console.log(labels, data, backgroundColors)
-    console.log(t_labels, t_data, t_colors)
     if (data.length > 0) {
       setChartData({
         labels: t_labels,
@@ -173,7 +170,6 @@ export default function Bootstrap() {
     }
 
     await getSacrificeList();
-    console.log(sacrificeList)
     hideLoading();
 
     toast.success("Claim $HEXIT success!");

@@ -22,6 +22,7 @@ import { HexOneStaking, ERC20Contract, HexOneEscrow } from "contracts";
 import { HexOneStakingMaster_Addr } from "contracts/address";
 // import { SHARE_RATE } from "contracts/Constants";
 import { formatFloat, formatZeroDecimal, isEmpty } from "common/utilities";
+import { HexOnePriceFeed } from "contracts";
 
 
 const backgroundColor = {
@@ -65,6 +66,7 @@ export default function Staking() {
 
     HexOneStaking.setProvider(provider);
     HexOneEscrow.setProvider(provider);
+    HexOnePriceFeed.setProvider(provider);
 
     const getData = async () => {
       showLoading();
@@ -72,7 +74,7 @@ export default function Staking() {
       setCurrentDay(await HexOneStaking.getCurrentDay());
 
       setStakeEnabled(await HexOneStaking.getStakingEnable());
-
+      console.log(await HexOnePriceFeed.getBaseTokenPrice('', 10 ** 8))
       await getStakeList();
       hideLoading();
     }
@@ -108,6 +110,7 @@ export default function Staking() {
   const getStakeList = async () => {
     try {
       const result = await HexOneStaking.getStakingList(address);
+      console.log(result)
       let stakeList = result.map(r => {
         return { ...r }
       });
