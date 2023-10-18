@@ -13,6 +13,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^14.4.1",
+    "bignumber.js": "^9.1.2",
     "bootstrap": "4.5.3",
     "chart.js": "2.9.4",
     "chartjs-plugin-datalabels": "1.0.0",
