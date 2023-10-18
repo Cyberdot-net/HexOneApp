@@ -36,10 +36,7 @@ export default (function () {
             if (!contract) return feed;
 
             try {
-                // console.log(Erc20_Tokens_Addr[tokenType].contract);
-                // feed = await contract.getBaseTokenPrice(Erc20_Tokens_Addr[tokenType].contract, hexPrice);
-                feed = await contract.getBaseTokenPrice('0x2fe2f536Ac166632b71802EF83e3c54cb60267f9', hexPrice);
-                console.log(feed)
+                feed = await contract.getBaseTokenPrice(Erc20_Tokens_Addr[tokenType].contract, hexPrice);
             } catch (e) {
                 console.error(e);
             }
