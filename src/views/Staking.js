@@ -28,9 +28,8 @@ import { HexOnePriceFeed } from "contracts";
 const backgroundColor = {
   "HEX1": 'rgba(255, 99, 132, 0.2)',
   "HEXIT": 'rgba(54, 162, 235, 0.2)',
-  "HEX1/HEXIT": 'rgba(255, 206, 86, 0.2)',
   "HEX1/HEX": 'rgba(75, 192, 192, 0.2)',
-  "HEX1/USDC": 'rgba(153, 102, 255, 0.2)',
+  "HEX1/DAI": 'rgba(153, 102, 255, 0.2)',
   "": 'rgba(255, 159, 64, 0.2)'
 };
 
@@ -74,7 +73,6 @@ export default function Staking() {
       setCurrentDay(await HexOneStaking.getCurrentDay());
 
       setStakeEnabled(await HexOneStaking.getStakingEnable());
-      console.log(await HexOnePriceFeed.getBaseTokenPrice('', 10 ** 8))
       await getStakeList();
       hideLoading();
     }
@@ -85,8 +83,8 @@ export default function Staking() {
   }, [address, provider]);
 
   const drawPieChart = async (stakeList) => {
-    const labels = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => r.tokenSymbol);
-    const data = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => formatFloat(+utils.formatUnits(r.totalLockedUSD)));
+    const labels = stakeList.filter(r => !r.totalLockedAmount.isZero()).map(r => r.tokenSymbol);
+    const data = stakeList.filter(r => !r.totalLockedAmount.isZero()).map(r => formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals)));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
     if (data.length > 0) {
@@ -94,7 +92,7 @@ export default function Staking() {
         labels: labels,
         datasets: [
           {
-            label: 'Total Value Locked USD',
+            label: 'Total Value Locked Tokens',
             data: data,
             backgroundColor: backgroundColors,
             borderColor: data.map(r => 'rgba(255, 255, 255, 0.3)'),
@@ -292,7 +290,6 @@ export default function Staking() {
                       <th>APR</th>
                       <th>Earned</th>
                       <th>Joined</th>
-                      <th>Total {isMobile && <br />}Value {isMobile && <br />}Locked USD</th>
                       <th>Total {isMobile && <br />}Value {isMobile && <br />}Locked ERC20</th>
                       <th>Multiplier</th>
                       <th className="text-center"></th>
@@ -312,7 +309,6 @@ export default function Staking() {
                             {formatFloat(+utils.formatUnits(r.earnedHexitAmount))} $HEXIT
                           </td>
                           <td>{r.stakedTime.toString()} {+r.stakedTime > 1 ? "days" : "day"}</td>
-                          <td>${formatFloat(+utils.formatUnits(r.totalLockedUSD))}</td>
                           <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals))} {r.tokenSymbol}</td>
                           <td>
                             {r.hexMultiplier > 0 && `${formatFloat(r.hexMultiplier / 1000)}x`}
