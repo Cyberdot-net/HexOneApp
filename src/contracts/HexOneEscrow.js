@@ -76,6 +76,19 @@ export default (function () {
             }
 
             return { status: "success" }
+        },
+
+        distributeHexOne: async () => {
+            if (!contract) return { status: "failed" }
+
+            try {
+                const tx = await contract.distributeHexOne()
+                await tx.wait()
+            } catch (e) {
+                return { status: 'failed', error: "Withdraw Failed!" }
+            }
+
+            return { status: "success" }
         }
     }
 
