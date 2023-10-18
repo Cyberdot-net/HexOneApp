@@ -85,8 +85,8 @@ export default function Staking() {
   }, [address, provider]);
 
   const drawPieChart = async (stakeList) => {
-    const labels = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => r.tokenSymbol);
-    const data = stakeList.filter(r => !r.totalLockedUSD.isZero()).map(r => formatFloat(+utils.formatUnits(r.totalLockedUSD)));
+    const labels = stakeList.filter(r => !r.totalLockedAmount.isZero()).map(r => r.tokenSymbol);
+    const data = stakeList.filter(r => !r.totalLockedAmount.isZero()).map(r => formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals)));
     const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
 
     if (data.length > 0) {
@@ -312,7 +312,6 @@ export default function Staking() {
                             {formatFloat(+utils.formatUnits(r.earnedHexitAmount))} $HEXIT
                           </td>
                           <td>{r.stakedTime.toString()} {+r.stakedTime > 1 ? "days" : "day"}</td>
-                          <td>${formatFloat(+utils.formatUnits(r.totalLockedUSD))}</td>
                           <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals))} {r.tokenSymbol}</td>
                           <td>
                             {r.hexMultiplier > 0 && `${formatFloat(r.hexMultiplier / 1000)}x`}
