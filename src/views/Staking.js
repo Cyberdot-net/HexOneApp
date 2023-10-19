@@ -312,8 +312,8 @@ export default function Staking() {
         <section>
           <Container>
             <div style={{ color: 'white', fontSize: '16px', paddingTop: '10px' }}>
-              <div>Total Hexit for staking(Not distributed): {hexitNotDistributed}</div>
-              <div>Total Hex for staking(Not distributed): {hexNotDistributed}</div>
+              <div>Total $HEXIT for staking: {hexitNotDistributed}</div>
+              <div>Total $HEX for staking: {hexNotDistributed}</div>
             </div>
           </Container>
         </section>
