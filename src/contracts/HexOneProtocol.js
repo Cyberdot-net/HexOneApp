@@ -103,6 +103,26 @@ export default (function () {
             return { status: "success" };
         },
 
+        claimHex: async (depositId) => {
+            if (!contract) return { status: "failed" };
+
+            try {
+                const tx = await contract.claimHex(HexMockToken_Addr.contract, depositId);
+                await tx.wait();
+                // const [transferEvent] = tr.events;
+            } catch (e) {
+                if (e.error?.message) {
+                    return { status: "failed", error: "Claim failed! " + e.error?.message };
+                } else if (e.message) {
+                    return { status: "failed", error: "Claim failed! " + (e.data?.message ? e.data.message : e.message) };
+                } else {
+                    return { status: "failed", error: "Claim failed!" };
+                }
+            }
+
+            return { status: "success" };
+        },
+
         borrowHexOne: async (depositId, amount) => {
             if (!contract) return { status: "failed" };
 

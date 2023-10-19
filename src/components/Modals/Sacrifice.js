@@ -91,7 +91,6 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       let realPrice = await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals));
       realPrice = realPrice.div(8)
       const hexPrice = await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", 8))
-      console.log(realPrice, hexPrice, realPrice.mul(10 ** 8).div(hexPrice))
       setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
       hideLoading();
     }
@@ -119,7 +118,6 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       showLoading("Sacrificing...");
 
       const res = await HexOneBootstrap.sacrificeToken(erc20, amount);
-      console.log('----', amount)
       if (res.status !== "success") {
         hideLoading();
         toast.error(res.error ?? "Sacrifice failed! Sacrifice Hex Token error!");

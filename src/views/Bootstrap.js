@@ -46,6 +46,7 @@ export default function Bootstrap() {
   const [result, showResult] = useState(false);
   const [sacrificeStart, setSacrificeStart] = useState('')
   const [sacrificeEnd, setSacrificeEnd] = useState('')
+  const [endTime, setEndTime] = useState('')
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
   useEffect(() => {
@@ -87,13 +88,14 @@ export default function Bootstrap() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", ercDecimals["HEX"])));
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
-
+      console.log(shareInfo)
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData, ercDecimals)
       const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() * 1000)
 
+      setEndTime(en)
       setSacrificeStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
       setSacrificeEnd(en.getUTCFullYear() + '-' + ("0" + (en.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + en.getUTCDate()).slice(-2) + ' ' + ("0" + en.getUTCHours()).slice(-2) + ':' + ("0" + en.getUTCMinutes()).slice(-2) + ' UTC +0')
 
@@ -159,6 +161,13 @@ export default function Bootstrap() {
   //   return formatFloat(+utils.formatUnits(row.sacrificedAmount.mul(utils.parseUnits("1", 15 - (decimals[row.sacrificeTokenSymbol] || 0))).mul(row.multiplier).mul(row.supplyAmount).div(utils.parseUnits("1"))));
   // }
 
+  const onClickSacrifice = async () => {
+    if (endTime < new Date()) {
+      toast.error('Sacrifice already ended!')
+      return
+    }
+    setOpen(true)
+  }
   const onClickClaim = async (sacrificeId) => {
     showLoading("Claiming $HEXIT...");
 
@@ -173,23 +182,6 @@ export default function Bootstrap() {
     hideLoading();
 
     toast.success("Claim $HEXIT success!");
-  }
-
-  const onClickClaimHex1 = async () => {
-    showLoading("Claiming Hex1...");
-
-    const res = await HexOneEscrow.reDepositCollateral();
-    if (res.status !== "success") {
-      hideLoading();
-      toast.error(res.error ?? "Claim failed!");
-      return;
-    }
-
-    setShareInfo(await HexOneEscrow.getOverview(address));
-
-    hideLoading();
-
-    showResult(true);
   }
 
   const onReDeposit = async () => {
@@ -293,7 +285,7 @@ export default function Bootstrap() {
                   className="btn-simple grow"
                   color="info btn-lg"
                   id="sacrifice"
-                  onClick={() => setOpen(true)}
+                  onClick={onClickSacrifice}
                 >
                   Sacrifice
                 </Button>
@@ -429,14 +421,6 @@ export default function Bootstrap() {
                         <Button
                           id="claim"
                           className="btn btn-primary btn-sm w-btn mb-1"
-                          disabled={shareInfo.borrowedAmount.lte(0) || shareInfo.endTime.gt(shareInfo.curDay)}
-                          onClick={() => onClickClaimHex1()}
-                        >
-                          Claim Hex1
-                        </Button>
-                        <Button
-                          id="claim"
-                          className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
                           disabled={shareInfo.borrowedAmount.lte(0) || shareInfo.endTime.gt(shareInfo.curDay)}
                           onClick={() => onReDeposit()}
                         >

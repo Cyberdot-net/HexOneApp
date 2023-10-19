@@ -19,7 +19,7 @@ import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
 import { HexOneStaking, ERC20Contract, HexOneEscrow } from "contracts";
-import { HexOneStakingMaster_Addr } from "contracts/address";
+import { Hexit_Addr, HexOneStaking_Addr, HexMockToken_Addr } from "contracts/address";
 // import { SHARE_RATE } from "contracts/Constants";
 import { formatFloat, formatZeroDecimal, isEmpty } from "common/utilities";
 import { HexOnePriceFeed } from "contracts";
@@ -44,7 +44,8 @@ export default function Staking() {
   // const [chartData, setChartData] = useState(null);
   const [stakeEnabled, setStakeEnabled] = useState(false);
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
-
+  const [hexitNotDistributed, setHexitNotDistributed] = useState(0)
+  const [hexNotDistributed, setHexNotDistributed] = useState(0)
 
   useEffect(() => {
     if (!timer || !HexOneStaking.connected()) return;
@@ -75,6 +76,21 @@ export default function Staking() {
 
       setStakeEnabled(await HexOneStaking.getStakingEnable());
       await getStakeList();
+
+      {
+        ERC20Contract.setProvider(provider, Hexit_Addr.contract);
+        await ERC20Contract.getDecimals()
+        const balance = await ERC20Contract.getBalance(HexOneStaking_Addr.contract)
+        setHexitNotDistributed(formatFloat(+utils.formatUnits(balance), 3))
+      }
+
+      {
+        ERC20Contract.setProvider(provider, HexMockToken_Addr.contract);
+        await ERC20Contract.getDecimals()
+        const res = await ERC20Contract.getBalance(HexOneStaking_Addr.contract)
+        setHexNotDistributed(formatFloat(+utils.formatUnits(res), 3))
+      }
+
       hideLoading();
     }
 
@@ -134,7 +150,9 @@ export default function Staking() {
           stakeList[k]['balance'] = await PulseXPair.getBalance(address)
         }
         else {
-          stakeList[k]['tokenSymbol'] = await ERC20Contract.getSymbol();
+          const sym = await ERC20Contract.getSymbol();
+          if (sym == 'test1') stakeList[k]['tokenSymbol'] = 'HEX1'
+          else stakeList[k]['tokenSymbol'] = sym
           stakeList[k]['decimals'] = await ERC20Contract.getDecimals();
           stakeList[k]['balance'] = await ERC20Contract.getBalance(address);
         }
@@ -197,9 +215,9 @@ export default function Staking() {
     let res = null;
     const amount = row.stakingAmt['bignum'].div(utils.parseUnits("1", 18 - row.decimals));
 
-    const allowanceAmount = await ERC20Contract.allowance(address, HexOneStakingMaster_Addr.contract);
+    const allowanceAmount = await ERC20Contract.allowance(address, HexOneStaking_Addr.contract);
     if (allowanceAmount.lt(amount)) {
-      res = await ERC20Contract.approve(HexOneStakingMaster_Addr.contract, amount);
+      res = await ERC20Contract.approve(HexOneStaking_Addr.contract, amount);
       if (res.status !== "success") {
         hideLoading();
         toast.error(res.error ?? `Stake failed! ${row.tokenSymbol} Approve error!`);
@@ -291,7 +309,14 @@ export default function Staking() {
             <h3 className="title text-left mb-2">Day: {currentDay.toString()}</h3>
           </Container>
         </section>
-
+        <section>
+          <Container>
+            <div style={{ color: 'white', fontSize: '16px', paddingTop: '10px' }}>
+              <div>Total Hexit for staking(Not distributed): {hexitNotDistributed}</div>
+              <div>Total Hex for staking(Not distributed): {hexNotDistributed}</div>
+            </div>
+          </Container>
+        </section>
         <section className="section section-lg section-tables">
           <Container>
             <Row>

@@ -104,10 +104,10 @@ export default function Overview() {
     return `${profit} (${percent}%)`;
   }
 
-  const onClickWithdraw = async () => {
+  const onClickWithdraw = async (depositId) => {
     showLoading("Withdrawing...");
 
-    const res = await HexOneEscrow.distributeHexOne();
+    const res = await HexOneProtocol.claimHex(depositId);
     if (res.status !== "success") {
       hideLoading();
       toast.error(res.error ?? "Withdrawing failed!");
@@ -274,7 +274,7 @@ export default function Overview() {
                           <Button
                             id="claim"
                             className="btn btn-primary btn-sm w-btn mb-1"
-                            onClick={() => onClickClaim(r.depositId, 'claim')}
+                            onClick={() => onClickWithdraw(r.depositId)}
                             disabled={r.curHexDay.lte(r.endHexDay)}
                           >
                             Withdraw
@@ -283,7 +283,7 @@ export default function Overview() {
                             id="mintHex1"
                             className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
                             onClick={() => onClickClaim(r.depositId, 'claim')}
-                            disabled={r.borrowableAmount.lte(0)}
+                            disabled={r.curHexDay.lte(r.endHexDay)}
                           >
                             Re-Deposit
                           </Button>
@@ -298,7 +298,7 @@ export default function Overview() {
                             id="mintHex1"
                             className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
                             onClick={() => onClickReborrow(r)}
-                            disabled={r.borrowableAmount.lte(0)}
+                            disabled={getHealthRatio(r.initialHexPrice) <= 100}
                           >
                             Re-Borrow
                           </Button>

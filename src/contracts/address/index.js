@@ -29,7 +29,7 @@ import HexOneEscrow_Addr from "./pulse/HexOneEscrow.json";
 // import HexOnePriceFeedTest_Addr from "./pulse/HexOnePriceFeedTest.json";
 import HexOnePriceFeed_Addr from './pulse/HexOnePriceFeed.json'
 import HexOneProtocol_Addr from "./pulse/HexOneProtocol.json";
-import HexOneStakingMaster_Addr from "./pulse/HexOneStaking.json";
+import HexOneStaking_Addr from "./pulse/HexOneStaking.json";
 import HexOneToken_Addr from "./pulse/HexOneToken.json";
 import HexOneVault_Addr from "./pulse/HexOneVault.json";
 import PulseXFactory_Addr from './pulse/PulseXFactory.json'
@@ -58,7 +58,7 @@ export {
     HexOneEscrow_Addr,
     HexOnePriceFeed_Addr,
     HexOneProtocol_Addr,
-    HexOneStakingMaster_Addr,
+    HexOneStaking_Addr,
     HexOneToken_Addr,
     HexOneVault_Addr,
     Erc20_Tokens_Addr,
