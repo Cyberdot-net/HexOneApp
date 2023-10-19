@@ -18,7 +18,7 @@ import { Hexit_Addr, HexOneToken_Addr } from "contracts/address";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import { formatFloat } from "common/utilities";
 import { formatDecimal } from "common/utilities";
-import { HexMockToken_Addr } from "contracts/address";
+import { HexMockToken_Addr, HexOneStaking_Addr } from "contracts/address";
 
 export default function Stats() {
     const { address, provider } = useContext(WalletContext);
@@ -38,6 +38,8 @@ export default function Stats() {
     const [sacWpls, setSacWpls] = useState(0)
     const [sacPlsx, setSacPlsx] = useState(0)
     const [sacDai, setSacDai] = useState(0)
+    const [hexitNotDistributed, setHexitNotDistributed] = useState(0)
+    const [hexNotDistributed, setHexNotDistributed] = useState(0)
 
 
     // useEffect(() => {
@@ -93,20 +95,25 @@ export default function Stats() {
             console.log(sacrificeData)
             {
                 ERC20Contract.setProvider(provider, Hexit_Addr.contract);
+                await ERC20Contract.getDecimals()
                 const res = await ERC20Contract.totalSupply()
-                console.log(res)
+                const balance = await ERC20Contract.getBalance(HexOneStaking_Addr.contract)
+                setHexitSupply(formatFloat(+utils.formatUnits(res), 3))
+                setHexitNotDistributed(formatFloat(+utils.formatUnits(balance), 3))
             }
 
             {
                 ERC20Contract.setProvider(provider, HexOneToken_Addr.contract);
+                await ERC20Contract.getDecimals()
                 const res = await ERC20Contract.totalSupply()
-                console.log(res)
+                setHex1Supply(formatFloat(+utils.formatUnits(res), 3))
             }
 
             {
                 ERC20Contract.setProvider(provider, HexMockToken_Addr.contract);
-                const res = await ERC20Contract.getBalance('0x9b366950446E94A6D8D2ae81B2bb751dC91495E9')
-                console.log(res)
+                await ERC20Contract.getDecimals()
+                const res = await ERC20Contract.getBalance(HexOneStaking_Addr.contract)
+                setHexNotDistributed(formatFloat(+utils.formatUnits(res), 3))
             }
 
             {
@@ -155,9 +162,9 @@ export default function Stats() {
                     <div>Total Hex1 Supply: {hex1Supply}</div>
                     <br />
                     <div>Total Hex in vault: { }</div>
-                    <div>Total Hexit for staking(Not distributed): { }</div>
+                    <div>Total Hexit for staking(Not distributed): {hexitNotDistributed}</div>
                     <div>Total Hexit for staking(Distributed): { }</div>
-                    <div>Total Hex for staking(Not distributed): { }</div>
+                    <div>Total Hex for staking(Not distributed): {hexNotDistributed}</div>
                     <div>Total Hex for staking(Distributed): { }</div>
                 </div>
 

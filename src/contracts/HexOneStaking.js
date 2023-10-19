@@ -1,6 +1,6 @@
 import { Contract, BigNumber } from "ethers";
 import { HexOneStaking_Abi } from "./abis";
-import { HexOneStakingMaster_Addr } from "./address";
+import { HexOneStaking_Addr } from "./address";
 
 export default (function () {
 
@@ -14,7 +14,7 @@ export default (function () {
 
         setProvider: (provider) => {
             if (provider) {
-                contract = new Contract(HexOneStakingMaster_Addr.contract, HexOneStaking_Abi, provider.getSigner());
+                contract = new Contract(HexOneStaking_Addr.contract, HexOneStaking_Abi, provider.getSigner());
             }
         },
 
