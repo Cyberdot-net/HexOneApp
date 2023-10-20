@@ -295,11 +295,6 @@ export default function Staking() {
     <>
       <div className="wrapper">
         <section className="section section-lg section-titles">
-          <img
-            alt="..."
-            className="path"
-            src={require("assets/img/path1.png")}
-          />
           <Container>
             {!address && <Row gutter="10" className="pl-4 pr-4 center">
               <Col lg="8" md="10" sm="12" className="mb-4">
@@ -358,8 +353,6 @@ export default function Staking() {
                           <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals))} {r.tokenSymbol}</td>
                           <td>
                             {r.hexMultiplier > 0 && `${formatFloat(r.hexMultiplier / 1000)}x`}
-                            {r.hexMultiplier > 0 && <br />}
-                            {r.hexitMultiplier > 0 && `${formatFloat(r.hexitMultiplier / 1000)}x`}
                           </td>
                           <td className="td-actions" width="20">
                             <button

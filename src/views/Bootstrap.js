@@ -264,11 +264,6 @@ export default function Bootstrap() {
   return (
     <div className="wrapper">
       <section className="section section-lg section-titles">
-        <img
-          alt="..."
-          className="path"
-          src={require("assets/img/path1.png")}
-        />
         <Container>
           {!address && <Row gutter="10" className="pl-4 pr-4 center">
             <Col lg="8" md="10" sm="12" className="mb-4">
@@ -390,12 +385,13 @@ export default function Bootstrap() {
                 <thead>
                   <tr>
                     <th>TOTAL USD VALUE</th>
+                    <th>YOUR HEX1</th>
                     <th>POOL SHARE</th>
                     <th>START</th>
                     <th>END</th>
                     <th>COLLATERAL</th>
                     <th>EFFECTIVE</th>
-                    <th>BORROWED AMT</th>
+                    <th>TOTAL BORROWED</th>
                     <th>INITIAL HEX/DAI</th>
                     <th>CURRENT HEX/DAI</th>
                     <th>HEALTH RATIO</th>
@@ -406,12 +402,13 @@ export default function Bootstrap() {
                   {shareInfo && shareInfo.totalUSDValue?.gt(0) ?
                     <tr>
                       <td>${formatFloat(+utils.formatUnits(shareInfo.totalUSDValue))}</td>
+                      <td>{formatFloat(utils.formatUnits(shareInfo.borrowedAmount.mul(1)), 3)} HEX1</td>
                       <td>{shareInfo.shareOfPool.toString()}%</td>
                       <td>{shareInfo.startTime.toString()}</td>
                       <td>{shareInfo.endTime.toString()}</td>
                       <td>{formatFloat(+utils.formatUnits(shareInfo.hexAmount, 8))} HEX</td>
                       <td>{formatFloat(+utils.formatUnits(shareInfo.effectiveAmount, 8))} HEX</td>
-                      <td>{formatFloat(+utils.formatUnits(shareInfo.borrowedAmount))} HEX1</td>
+                      <td>{formatFloat(+utils.formatUnits(shareInfo.borrowedAmount), 3)} HEX1</td>
                       <td>${formatFloat(+utils.formatUnits(shareInfo.initUSDValue), 3)}</td>
                       <td>${formatFloat(+utils.formatUnits(hexFeed), 3)}</td>
                       <td className={+getHealthRatio(shareInfo.initUSDValue) >= 100 ? "green" : "red"}>

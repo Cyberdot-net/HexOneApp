@@ -90,11 +90,6 @@ export default function Airdrop() {
   return (
     <div className="wrapper">
       <section className="section section-lg section-titles">
-        <img
-          alt="..."
-          className="path"
-          src={require("assets/img/path1.png")}
-        />
         <Container>
           {!address && <Row gutter="10" className="pl-4 pr-4 center">
             <Col lg="8" md="10" sm="12" className="mb-4">

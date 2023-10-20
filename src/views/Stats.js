@@ -143,11 +143,6 @@ export default function Stats() {
     return (
         <div className="wrapper">
             <section className="section section-lg section-titles">
-                <img
-                    alt="..."
-                    className="path"
-                    src={require("assets/img/path1.png")}
-                />
                 <div style={{ color: 'white', fontSize: '16px', paddingTop: '50px' }}>
                     <div>Hex1 Contract Address: {HexOneToken_Addr.contract}</div>
                     <div>Hexit Contract Address: {Hexit_Addr.contract}</div>
