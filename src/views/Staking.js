@@ -295,11 +295,6 @@ export default function Staking() {
     <>
       <div className="wrapper">
         <section className="section section-lg section-titles">
-          <img
-            alt="..."
-            className="path"
-            src={require("assets/img/path1.png")}
-          />
           <Container>
             {!address && <Row gutter="10" className="pl-4 pr-4 center">
               <Col lg="8" md="10" sm="12" className="mb-4">
@@ -348,7 +343,7 @@ export default function Staking() {
                           <td>{r.tokenSymbol}</td>
                           <td>{formatFloat(+utils.formatUnits(r.stakedAmount, r.decimals))} {r.tokenSymbol}</td>
                           <td>{formatFloat(r.shareOfPool / 10)}%</td>
-                          <td>{`${formatFloat(+r.hexAPR / 1000)}%`} $HEX<br />{formatFloat(+r.hexitAPR / 1000)}% $HEXIT</td>
+                          <td>{`${formatFloat(+r.hexMultiplier / 10)}%`}</td>
                           <td>
                             {formatFloat(+utils.formatUnits(r.earnedHexAmount))} $HEX
                             <br />
@@ -358,8 +353,6 @@ export default function Staking() {
                           <td>{formatFloat(+utils.formatUnits(r.totalLockedAmount, r.decimals))} {r.tokenSymbol}</td>
                           <td>
                             {r.hexMultiplier > 0 && `${formatFloat(r.hexMultiplier / 1000)}x`}
-                            {r.hexMultiplier > 0 && <br />}
-                            {r.hexitMultiplier > 0 && `${formatFloat(r.hexitMultiplier / 1000)}x`}
                           </td>
                           <td className="td-actions" width="20">
                             <button
@@ -422,10 +415,10 @@ export default function Staking() {
                                     </Col>
                                     <Col md="6">
                                       <p>
-                                        {`${formatZeroDecimal(r.claimableHexAmount, 8)} HEX`}
+                                        {`${formatFloat(utils.formatUnits(r.claimableHexAmount, 8), 3)} HEX`}
                                       </p>
                                       <p>
-                                        {`${formatZeroDecimal(r.claimableHexitAmount)} HEXIT`}
+                                        {`${formatFloat(utils.formatUnits(r.claimableHexitAmount, 18), 3)} HEXIT`}
                                       </p>
                                     </Col>
                                   </Row>
