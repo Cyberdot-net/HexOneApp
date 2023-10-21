@@ -29,6 +29,7 @@ export default function Airdrop() {
   const [airdropStart, setAirdropStart] = useState('')
   const [airdropEnd, setAirdropEnd] = useState('')
   const [startTime, setStartTime] = useState()
+  const [endTime, setEndTime] = useState()
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
 
@@ -63,6 +64,7 @@ export default function Airdrop() {
       setAirdropStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
       setAirdropEnd(en.getUTCFullYear() + '-' + ("0" + (en.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + en.getUTCDate()).slice(-2) + ' ' + ("0" + en.getUTCHours()).slice(-2) + ':' + ("0" + en.getUTCMinutes()).slice(-2) + ' UTC +0')
       setStartTime(st)
+      setEndTime(en)
 
       if (st < new Date()) {
         const day = await HexOneBootstrap.getCurrentAirdropDay();
@@ -78,8 +80,9 @@ export default function Airdrop() {
   }, [address, provider]);
 
   const showClaim = () => {
-    if (new Date() > startTime)
+    if (new Date() > startTime && new Date() < endTime)
       setOpen(true);
+    else if (new Date() > endTime) toast.error("Airdrop has already finished.")
     else toast.error("Airdrop hasn't started yet.")
   }
 
@@ -118,7 +121,7 @@ export default function Airdrop() {
               </UncontrolledTooltip>
             </Col>
             <div style={{ width: '650px', color: 'white', fontSize: '16px' }}>
-              If you <strong>sacrificed</strong> for the bootstrap and hold <strong>$HEXIT</strong> tokens, 
+              If you <strong>sacrificed</strong> for the bootstrap and hold <strong>$HEXIT</strong> tokens,
               or if you were <strong>staking $HEX</strong> at the time of Hex One Protocol deployment, you can claim free
               <strong> $HEXIT</strong> tokens!
             </div>
