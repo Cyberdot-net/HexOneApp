@@ -671,6 +671,32 @@
   },
   {
     "inputs": [],
+    "name": "hexOneProtocol",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "hexOneToken",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "hexToken",
     "outputs": [
       {
@@ -714,6 +740,11 @@
         "components": [
           {
             "internalType": "address",
+            "name": "hexOneProtocol",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
             "name": "hexOnePriceFeed",
             "type": "address"
           },
@@ -725,6 +756,11 @@
           {
             "internalType": "address",
             "name": "hexToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "hexOneToken",
             "type": "address"
           },
           {
