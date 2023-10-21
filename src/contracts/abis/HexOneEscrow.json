@@ -50,6 +50,19 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "curPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "borrowHexOne",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "borrowedAmount",
     "outputs": [
@@ -84,6 +97,13 @@
       }
     ],
     "name": "depositCollateralToHexOneProtocol",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "distributeHexOne",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -238,6 +258,11 @@
       },
       {
         "internalType": "address",
+        "name": "_usdToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_hexOneProtocol",
         "type": "address"
       },
@@ -303,6 +328,19 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "usdToken",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]
