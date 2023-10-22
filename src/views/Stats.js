@@ -154,7 +154,7 @@ export default function Stats() {
                     <div>Total Sacrifice DAI from eth: {sacDai}</div>
                     <br />
                     <div>Total Hexit Supply: {hexitSupply}</div>
-                    <div>Total Hex1 Supply: {hex1Supply}</div>
+                    <div>Total Hex1 Supply: {totalUSD * 0.875}</div>
                     <br />
                     <div>Total Hex in vault: { }</div>
                     <div>Total Hexit for staking(Not distributed): {hexitNotDistributed}</div>
