@@ -88,10 +88,10 @@ export default function Bootstrap() {
       setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", ercDecimals["HEX"])));
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
-      console.log(shareInfo)
+
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
-      console.log(sacrificeData)
+      console.log(sacrificeData, await HexOneBootstrap.sacrificeParticipants())
       drawPieChart(sacrificeData, ercDecimals)
       const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() * 1000)
@@ -107,7 +107,7 @@ export default function Bootstrap() {
 
     // eslint-disable-next-line
   }, [address, provider]);
-  console.log(shareInfo,)
+
   const drawPieChart = async (sacrificeData, ercDecimals) => {
 
     const labels = sacrificeData.map(r => r.sacrificeTokenSymbol || "");
