@@ -281,6 +281,14 @@ export default (function () {
             const res = await contract.stakingContract()
 
             return res
+        },
+
+        sacrificeParticipants: async () => {
+            if (!contract) return { status: "failed" };
+
+            const res = await contract.getSacrificeParticipants()
+
+            return res
         }
     }
 
