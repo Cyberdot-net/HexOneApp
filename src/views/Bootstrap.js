@@ -91,7 +91,7 @@ export default function Bootstrap() {
 
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
-      console.log(sacrificeData, await HexOneBootstrap.sacrificeParticipants())
+      console.log(sacrificeData, await HexOneBootstrap.sacrificeParticipants(), await HexOneBootstrap.userRewardsForSacrifice('0xA96C769DF67c011be903C091415d1A0f01e770Aa'))
       drawPieChart(sacrificeData, ercDecimals)
       const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() * 1000)
@@ -372,6 +372,14 @@ export default function Bootstrap() {
           </Row>
         </Container>
       </section>
+      <Row gutter="10" className="pl-4 pr-4" style={{ placeContent: 'center' }}>
+        <div style={{ width: '650px', color: 'red', fontSize: '16px', textAlign: 'center' }}>
+
+          You have <strong>7 days</strong> to <strong>claim $HEXIT</strong> after the sacrifice ends to receive $HEX1.
+          If you don't claim $HEXIT, <strong>you won't receive $HEX1.</strong>
+
+        </div>
+      </Row>
       <section className="section section-lg section-tables">
         <Container>
           <Row>

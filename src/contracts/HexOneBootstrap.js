@@ -289,6 +289,14 @@ export default (function () {
             const res = await contract.getSacrificeParticipants()
 
             return res
+        },
+
+        userRewardsForSacrifice: async (address) => {
+            if (!contract) return { status: "failed" };
+
+            const res = await contract.userRewardsForSacrifice(address)
+
+            return res
         }
     }
 
