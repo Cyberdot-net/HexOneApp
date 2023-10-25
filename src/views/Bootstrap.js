@@ -65,6 +65,7 @@ export default function Bootstrap() {
     getData();
     // eslint-disable-next-line
   }, [timer]);
+  console.log(shareInfo)
   useEffect(() => {
     if (!address || !provider) return;
 
@@ -91,7 +92,7 @@ export default function Bootstrap() {
 
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
-      console.log(sacrificeData, await HexOneBootstrap.sacrificeParticipants(), await HexOneBootstrap.userRewardsForSacrifice('0xA96C769DF67c011be903C091415d1A0f01e770Aa'))
+      console.log(sacrificeData, await HexOneBootstrap.sacrificeParticipants(), await HexOneBootstrap.userRewardsForSacrifice('0xA96C769DF67c011be903C091415d1A0f01e770Aa'), await HexOneBootstrap.totalSacrificeWeight())
       drawPieChart(sacrificeData, ercDecimals)
       const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
       const en = new Date(BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() * 1000)
