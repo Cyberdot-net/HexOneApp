@@ -297,6 +297,15 @@ export default (function () {
             const res = await contract.userRewardsForSacrifice(address)
 
             return res
+        },
+
+        totalSacrificeWeight: async () => {
+
+            if (!contract) return { status: "failed" };
+
+            const res = await contract.totalSacrificeWeight(0)
+
+            return res
         }
     }
 
