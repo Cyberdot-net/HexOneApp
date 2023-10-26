@@ -92,7 +92,7 @@ export default function Bootstrap() {
 
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
-      console.log(await HexOneBootstrap.sacrificeParticipants(), await HexOneBootstrap.userRewardsForSacrifice('0xf8B1906Ed0f3De8380C020204Ff6112A1314FA4F'), await HexOneBootstrap.HEXITAmountForSacrifice())
+      console.log(await HexOneBootstrap.sacrificeParticipants(), await HexOneBootstrap.userRewardsForSacrifice('0xA96C769DF67c011be903C091415d1A0f01e770Aa'), await HexOneBootstrap.HEXITAmountForSacrifice())
       console.log(await HexOneBootstrap.sacrificeParticipants(), await HexOneBootstrap.userRewardsForSacrifice('0x76ed2D78c922963FD798b057985D5d94C16063D7'), await HexOneBootstrap.HEXITAmountForSacrifice())
       drawPieChart(sacrificeData, ercDecimals)
       const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
@@ -109,7 +109,7 @@ export default function Bootstrap() {
 
     // eslint-disable-next-line
   }, [address, provider]);
-
+  console.log(shareInfo)
   const drawPieChart = async (sacrificeData, ercDecimals) => {
 
     const labels = sacrificeData.map(r => r.sacrificeTokenSymbol || "");
@@ -413,8 +413,8 @@ export default function Bootstrap() {
                   {shareInfo && shareInfo.totalUSDValue?.gt(0) ?
                     <tr>
                       <td>${formatFloat(+utils.formatUnits(shareInfo.totalUSDValue))}</td>
-                      <td>{formatFloat(utils.formatUnits(shareInfo.borrowedAmount.mul(1)), 3)} HEX1</td>
-                      <td>{shareInfo.shareOfPool.toString()}%</td>
+                      <td>{formatFloat(utils.formatUnits(shareInfo.borrowedAmount.mul(shareInfo.shareOfPool).div(100)), 3)} HEX1</td>
+                      <td>{(shareInfo.shareOfPool).toString()}%</td>
                       <td>{shareInfo.startTime.toString()}</td>
                       <td>{shareInfo.endTime.toString()}</td>
                       <td>{formatFloat(+utils.formatUnits(shareInfo.hexAmount, 8))} HEX</td>
