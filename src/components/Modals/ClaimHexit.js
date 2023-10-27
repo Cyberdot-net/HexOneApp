@@ -20,14 +20,12 @@ import { WalletContext, LoadingContext } from "providers/Contexts";
 import { HexOneBootstrap } from "contracts";
 import { formatFloat } from "common/utilities";
 
-
 export default function ClaimHexit({ show, onClose, onClaim }) {
-
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [isApproved, setApproved] = useState(0);
   const [airdropInfo, setAirdropInfo] = useState({});
-  const [totalHexit, setTotalHexit] = useState(BigNumber.from(1))
+  const [totalHexit, setTotalHexit] = useState(BigNumber.from(1));
 
   useEffect(() => {
     if (!address || !provider) return;
@@ -37,17 +35,23 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
     const getHexData = async () => {
       showLoading();
 
-      const tmp = await HexOneBootstrap.getCurrentAirdropInfo(address)
+      const tmp = await HexOneBootstrap.getCurrentAirdropInfo(address);
       setAirdropInfo(tmp);
       setApproved(await HexOneBootstrap.checkAirdropInfo(address));
-      console.log(await HexOneBootstrap.getCurrentAirdropDay())
-      console.log(tmp, totalHexit)
+
       if (tmp.curDaySupplyHEXIT) {
-        setTotalHexit((tmp.curDaySupplyHEXIT.add(tmp.sacrificedAmount.mul(tmp.sacrificeDistRate).div(100).add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(100)))))
+        setTotalHexit(
+          tmp.curDaySupplyHEXIT.add(
+            tmp.sacrificedAmount
+              .mul(tmp.sacrificeDistRate)
+              .div(100)
+              .add(tmp.stakingShareAmount.mul(tmp.stakingDistRate).div(100))
+          )
+        );
       }
 
       hideLoading();
-    }
+    };
 
     getHexData();
 
@@ -55,9 +59,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
   }, [address, provider]);
 
   const onClickClaimHexit = async () => {
-
     if (isApproved) {
-
       showLoading("Claiming...");
 
       const res = await HexOneBootstrap.claimAirdrop();
@@ -71,9 +73,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       onClose();
 
       hideLoading();
-
     } else {
-
       showLoading("Approving...");
       const res = await HexOneBootstrap.requestAirdrop();
       if (res.status !== "success") {
@@ -85,7 +85,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
       setApproved(1);
       hideLoading();
     }
-  }
+  };
 
   return (
     <Modal
@@ -99,7 +99,10 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
           <i className="tim-icons icon-simple-remove text-white" />
         </button>
         <div className="text-muted text-center ml-auto mr-auto">
-          <h3 className="mb-0"><i className="tim-icons tim-icons-lg icon-coins mr-1" /> Claim $HEXIT</h3>
+          <h3 className="mb-0">
+            <i className="tim-icons tim-icons-lg icon-coins mr-1" /> Claim
+            $HEXIT
+          </h3>
         </div>
       </div>
       <div className="modal-body">
@@ -107,22 +110,39 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
         <Form role="form">
           <FormGroup>
             <Row className="mt-3">
-              <Label lg="3" md="5" className="text-right">Sacrifice multiplier</Label>
+              <Label lg="3" md="5" className="text-right">
+                Sacrifice multiplier
+              </Label>
               <Col lg="2" md="6" className="mb-lg-0 mb-md-3">
                 <Input
                   type="text"
                   placeholder="Sacrifice multiplier"
-                  value={airdropInfo.sacrificeDistRate ? `${formatFloat(+utils.formatUnits(airdropInfo.sacrificeDistRate, 2))}x` : '0x'}
+                  value={
+                    airdropInfo.sacrificeDistRate
+                      ? `${formatFloat(
+                          +utils.formatUnits(airdropInfo.sacrificeDistRate, 2)
+                        )}x`
+                      : "0x"
+                  }
                   readOnly
                 />
               </Col>
-              <Label lg="3" md="5" className="text-right">Total Sacrificed</Label>
+              <Label lg="3" md="5" className="text-right">
+                Total Sacrificed
+              </Label>
               <Col lg="4" md="6">
                 <InputGroup>
                   <Input
                     type="text"
                     placeholder="Total Sacrificed"
-                    value={airdropInfo.sacrificedAmount ? formatFloat(+utils.formatUnits(airdropInfo.sacrificedAmount), 5) : '0'}
+                    value={
+                      airdropInfo.sacrificedAmount
+                        ? formatFloat(
+                            +utils.formatUnits(airdropInfo.sacrificedAmount),
+                            5
+                          )
+                        : "0"
+                    }
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -134,22 +154,41 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
           </FormGroup>
           <FormGroup className="mb-3">
             <Row>
-              <Label lg="3" md="5" className="text-right">Staking multiplier</Label>
+              <Label lg="3" md="5" className="text-right">
+                Staking multiplier
+              </Label>
               <Col lg="2" md="6" className="mb-lg-0 mb-md-3">
                 <Input
                   type="text"
                   placeholder="Staking multiplier"
-                  value={airdropInfo.stakingDistRate ? `${formatFloat(+utils.formatUnits(airdropInfo.stakingDistRate, 2))}x` : '0x'}
+                  value={
+                    airdropInfo.stakingDistRate
+                      ? `${formatFloat(
+                          +utils.formatUnits(airdropInfo.stakingDistRate, 2)
+                        )}x`
+                      : "0x"
+                  }
                   readOnly
                 />
               </Col>
-              <Label lg="3" md="5" className="text-right">Hex Staking</Label>
+              <Label lg="3" md="5" className="text-right">
+                Hex Staking
+              </Label>
               <Col lg="4" md="6">
                 <InputGroup>
                   <Input
                     type="text"
                     placeholder="Hex Staking"
-                    value={airdropInfo.stakingShareAmount ? formatFloat(+utils.formatUnits(airdropInfo.stakingShareAmount, 18)) : "0"}
+                    value={
+                      airdropInfo.stakingShareAmount
+                        ? formatFloat(
+                            +utils.formatUnits(
+                              airdropInfo.stakingShareAmount,
+                              18
+                            )
+                          )
+                        : "0"
+                    }
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -163,20 +202,40 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
             <Row>
               <Col sm="3"></Col>
               <Col sm="8">
-                <span>Day: <strong className="ml-1">{formatFloat(airdropInfo.curAirdropDay)}</strong></span>
-                <span className="ml-4">Daily Points: <strong className="ml-1">{airdropInfo.curDaySupplyHEXIT ? formatFloat(+utils.formatUnits(airdropInfo.curDaySupplyHEXIT)) : "0"}</strong></span>
+                <span>
+                  Day:{" "}
+                  <strong className="ml-1">
+                    {formatFloat(airdropInfo.curAirdropDay)}
+                  </strong>
+                </span>
+                <span className="ml-4">
+                  Daily Points:{" "}
+                  <strong className="ml-1">
+                    {airdropInfo.curDaySupplyHEXIT
+                      ? formatFloat(
+                          +utils.formatUnits(airdropInfo.curDaySupplyHEXIT)
+                        )
+                      : "0"}
+                  </strong>
+                </span>
               </Col>
             </Row>
           </FormGroup>
           <FormGroup className="mb-3">
             <Row>
-              <Label sm="3" className="text-right">Total Hexit</Label>
+              <Label sm="3" className="text-right">
+                Total Hexit
+              </Label>
               <Col sm="8">
                 <InputGroup>
                   <Input
                     type="text"
                     placeholder="Total Hexit"
-                    value={airdropInfo.curDaySupplyHEXIT ? formatFloat(+utils.formatUnits(totalHexit)) : "0"}
+                    value={
+                      airdropInfo.curDaySupplyHEXIT
+                        ? formatFloat(+utils.formatUnits(totalHexit))
+                        : "0"
+                    }
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -197,10 +256,7 @@ export default function ClaimHexit({ show, onClose, onClaim }) {
             >
               {isApproved ? "Claim $HEXIT" : "Approve"}
             </Button>
-            <UncontrolledTooltip
-              placement="bottom"
-              target="borrow"
-            >
+            <UncontrolledTooltip placement="bottom" target="borrow">
               {isApproved ? "Claim $HEXIT" : "Approve HEXIT"}
             </UncontrolledTooltip>
           </div>
