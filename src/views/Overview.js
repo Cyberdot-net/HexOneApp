@@ -64,7 +64,7 @@ export default function Overview() {
     getData();
     // eslint-disable-next-line
   }, [timer]);
-
+  console.log(history, liquidates);
   useEffect(() => {
     if (!address || !provider) return;
 

@@ -17,13 +17,7 @@ import {
 import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
-import {
-  HexOnePriceFeed,
-  HexOneBootstrap,
-  ERC20Contract,
-  PulseXFactory,
-  ResultContract,
-} from "contracts";
+import { HexOnePriceFeed, HexOneBootstrap, ERC20Contract } from "contracts";
 import { HexOneBootstrap_Addr, Erc20_Tokens_Addr } from "contracts/address";
 import { ERC20 } from "contracts/Constants";
 import {
@@ -65,7 +59,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       setDuration(await HexOneBootstrap.checkSacrificeDuration());
 
       const decimals = await ERC20Contract.getDecimals();
-
+      console.log(decimals);
       setTotalHex(await ERC20Contract.getBalance(address));
       hideLoading();
     };
@@ -84,9 +78,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       const token0 = "0xefD766cCb38EaF1dfd701853BFCe31359239F305",
         token1 = Erc20_Tokens_Addr[erc20]?.contract;
 
-      ResultContract.setProvider(provider, token0);
       ERC20Contract.setProvider(provider, token1);
-      // PulseXFactory.setProvider(provider)
 
       // const decimals = await ERC20Contract.getDecimals()
       // setTotalHex(await ERC20Contract.getBalance(address));
@@ -95,6 +87,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       // const d2 = await ERC20Contract.getDecimals()
       // const r1 = await ResultContract.getBalance(pair)
       // const r2 = await ERC20Contract.getBalance(pair)
+      // console.log(token0, token1, pair, r1, r2, d1, d2, 1.0 * r1 / r2)
       // if (erc20 == 'DAI') setHexFeed(1.0)
       // else setHexFeed(1.0 * r1 / r2);
       ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
@@ -108,6 +101,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       const hexPrice = await HexOnePriceFeed.getHexTokenPrice(
         utils.parseUnits("1", 8)
       );
+      console.log(realPrice, hexPrice, realPrice.mul(10 ** 8).div(hexPrice));
       setHexFeed(
         await HexOnePriceFeed.getBaseTokenPrice(
           erc20,
@@ -145,6 +139,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       showLoading("Sacrificing...");
 
       const res = await HexOneBootstrap.sacrificeToken(erc20, amount);
+      console.log("----", amount);
       if (res.status !== "success") {
         hideLoading();
         toast.error(

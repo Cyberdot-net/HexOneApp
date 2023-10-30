@@ -33,6 +33,8 @@ import {
 import { Erc20_Tokens_Addr, Hexit_Addr } from "contracts/address";
 import { ERC20 } from "contracts/Constants";
 import { isEmpty, formatFloat } from "common/utilities";
+import { PulseXFactory } from "contracts";
+import { ResultContract } from "contracts";
 
 const backgroundColor = {
   HEX: "rgba(255, 99, 132, 0.2)",
@@ -76,7 +78,25 @@ export default function Bootstrap() {
       );
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
-
+      {
+        PulseXFactory.setProvider(provider);
+        const pair = await PulseXFactory.getPair(
+          "0xc6A531CB6366bF58F160D965be079502C071b5f1",
+          "0xefD766cCb38EaF1dfd701853BFCe31359239F305"
+        );
+        ResultContract.setProvider(
+          provider,
+          "0xc6A531CB6366bF58F160D965be079502C071b5f1"
+        );
+        const d1 = await ResultContract.getDecimals();
+        console.log(await ResultContract.getBalance(pair));
+        ResultContract.setProvider(
+          provider,
+          "0xefD766cCb38EaF1dfd701853BFCe31359239F305"
+        );
+        const d2 = await ResultContract.getDecimals();
+        console.log(await ResultContract.getBalance(pair));
+      }
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
       drawPieChart(sacrificeData, decimals);
