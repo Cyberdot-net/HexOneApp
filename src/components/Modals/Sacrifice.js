@@ -17,21 +17,27 @@ import {
 import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import { WalletContext, LoadingContext } from "providers/Contexts";
-import { HexOnePriceFeed, HexOneBootstrap, ERC20Contract, PulseXFactory, ResultContract } from "contracts";
+import { HexOnePriceFeed, HexOneBootstrap, ERC20Contract } from "contracts";
 import { HexOneBootstrap_Addr, Erc20_Tokens_Addr } from "contracts/address";
 import { ERC20 } from "contracts/Constants";
-import { formatDecimal, formatZeroDecimal, formatFloat, isEmpty } from "common/utilities";
+import {
+  formatDecimal,
+  formatZeroDecimal,
+  formatFloat,
+  isEmpty,
+} from "common/utilities";
 import { HexOneProtocol } from "contracts";
 
-
 export default function Sacrifice({ show, onClose, onSacrifice, day }) {
-
   const { address, provider } = useContext(WalletContext);
   const { showLoading, hideLoading } = useContext(LoadingContext);
   const [afterDuration, setDuration] = useState(false);
   const [hexFeed, setHexFeed] = useState(0);
   const [basePoint, setBasePoint] = useState(0);
-  const [sacrificeAmt, setSacrificeAmt] = useState({ value: "", bignum: BigNumber.from(0) });
+  const [sacrificeAmt, setSacrificeAmt] = useState({
+    value: "",
+    bignum: BigNumber.from(0),
+  });
   const [erc20, setErc20] = useState(ERC20[0].id);
   const [totalHex, setTotalHex] = useState(BigNumber.from(0));
   const [isApproved, setApproved] = useState(false);
@@ -43,7 +49,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
     HexOnePriceFeed.setProvider(provider);
     HexOneBootstrap.setProvider(provider);
-    HexOneProtocol.setProvider(provider)
+    HexOneProtocol.setProvider(provider);
     ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
 
     const getHexData = async () => {
@@ -52,11 +58,11 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       setBasePoint(await HexOneBootstrap.getBasePoint(day));
       setDuration(await HexOneBootstrap.checkSacrificeDuration());
 
-      const decimals = await ERC20Contract.getDecimals()
-      console.log(decimals)
+      const decimals = await ERC20Contract.getDecimals();
+      console.log(decimals);
       setTotalHex(await ERC20Contract.getBalance(address));
       hideLoading();
-    }
+    };
 
     getHexData();
 
@@ -69,11 +75,10 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
     const getHexData = async () => {
       showLoading();
       //token0 = DAI from pulse
-      const token0 = '0xefD766cCb38EaF1dfd701853BFCe31359239F305', token1 = Erc20_Tokens_Addr[erc20]?.contract
+      const token0 = "0xefD766cCb38EaF1dfd701853BFCe31359239F305",
+        token1 = Erc20_Tokens_Addr[erc20]?.contract;
 
-      ResultContract.setProvider(provider, token0)
       ERC20Contract.setProvider(provider, token1);
-      // PulseXFactory.setProvider(provider)
 
       // const decimals = await ERC20Contract.getDecimals()
       // setTotalHex(await ERC20Contract.getBalance(address));
@@ -88,39 +93,58 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       ERC20Contract.setProvider(provider, Erc20_Tokens_Addr[erc20]?.contract);
       const decimals = await ERC20Contract.getDecimals();
       setTotalHex(await ERC20Contract.getBalance(address));
-      let realPrice = await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals));
-      realPrice = realPrice.div(8)
-      const hexPrice = await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", 8))
-      setHexFeed(await HexOnePriceFeed.getBaseTokenPrice(erc20, utils.parseUnits("1", decimals)));
+      let realPrice = await HexOnePriceFeed.getBaseTokenPrice(
+        erc20,
+        utils.parseUnits("1", decimals)
+      );
+      realPrice = realPrice.div(8);
+      const hexPrice = await HexOnePriceFeed.getHexTokenPrice(
+        utils.parseUnits("1", 8)
+      );
+      console.log(realPrice, hexPrice, realPrice.mul(10 ** 8).div(hexPrice));
+      setHexFeed(
+        await HexOnePriceFeed.getBaseTokenPrice(
+          erc20,
+          utils.parseUnits("1", decimals)
+        )
+      );
       hideLoading();
-    }
+    };
 
     getHexData();
 
     // eslint-disable-next-line
   }, [erc20]);
   const changeSacrificeAmt = (e) => {
-    setSacrificeAmt({ value: e.target.value, bignum: utils.parseEther(e.target.value || "0") });
-  }
+    setSacrificeAmt({
+      value: e.target.value,
+      bignum: utils.parseEther(e.target.value || "0"),
+    });
+  };
   const setMaxAmount = () => {
     setSacrificeAmt({ value: formatDecimal(totalHex), bignum: totalHex });
-  }
+  };
 
   const onClickSacrifice = async () => {
-    if (isEmpty(sacrificeAmt['bignum']) || sacrificeAmt['bignum'].gt(totalHex)) return;
+    if (isEmpty(sacrificeAmt["bignum"]) || sacrificeAmt["bignum"].gt(totalHex))
+      return;
 
     const decimals = await ERC20Contract.getDecimals();
 
-    const amount = sacrificeAmt['bignum'].div(utils.parseUnits("1", 18 - decimals));
+    const amount = sacrificeAmt["bignum"].div(
+      utils.parseUnits("1", 18 - decimals)
+    );
 
     if (isApproved) {
-
       showLoading("Sacrificing...");
 
       const res = await HexOneBootstrap.sacrificeToken(erc20, amount);
+      console.log("----", amount);
       if (res.status !== "success") {
         hideLoading();
-        toast.error(res.error ?? "Sacrifice failed! Sacrifice Hex Token error!");
+        toast.error(
+          res.error ?? "Sacrifice failed! Sacrifice Hex Token error!"
+        );
         return;
       }
 
@@ -134,12 +158,17 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
 
       toast.success("Sacrifice success!");
     } else {
-
       showLoading("Approving...");
 
-      const allowanceAmount = await ERC20Contract.allowance(address, HexOneBootstrap_Addr.contract);
+      const allowanceAmount = await ERC20Contract.allowance(
+        address,
+        HexOneBootstrap_Addr.contract
+      );
       if (allowanceAmount.lt(amount)) {
-        const res = await ERC20Contract.approve(HexOneBootstrap_Addr.contract, amount);
+        const res = await ERC20Contract.approve(
+          HexOneBootstrap_Addr.contract,
+          amount
+        );
         if (res.status !== "success") {
           hideLoading();
           toast.error(res.error ?? "Borrow failed! HEX Approve error!");
@@ -153,7 +182,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
       toast.success("Approve success!");
     }
     // onClose();
-  }
+  };
 
   return (
     <Modal
@@ -167,7 +196,9 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
           <i className="tim-icons icon-simple-remove text-white" />
         </button>
         <div className="text-muted text-center ml-auto mr-auto">
-          <h3 className="mb-0"><i className="tim-icons tim-icons-lg icon-coins mr-1" /> Sacrifice</h3>
+          <h3 className="mb-0">
+            <i className="tim-icons tim-icons-lg icon-coins mr-1" /> Sacrifice
+          </h3>
         </div>
       </div>
       <div className="modal-body">
@@ -175,34 +206,53 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
         <Form role="form">
           <FormGroup className="mb-3 mt-3">
             <Row>
-              <Label sm="3" className="text-right">ERC20</Label>
+              <Label sm="3" className="text-right">
+                ERC20
+              </Label>
               <Col sm="8">
                 <Input
                   type="select"
                   name="select"
                   value={erc20}
-                  onChange={e => setErc20(e.target.value)}
+                  onChange={(e) => setErc20(e.target.value)}
                 >
-                  {ERC20.map(r =>
-                    <option key={r.id} value={r.id}>{r.name}{r.multipler && ` (${r.multipler}x)`}</option>
-                  )}
+                  {ERC20.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                      {r.multipler && ` (${r.multipler}x)`}
+                    </option>
+                  ))}
                 </Input>
               </Col>
             </Row>
           </FormGroup>
-          <FormGroup className={"mb-3 " + (sacrificeAmt['bignum'].gt(totalHex) && " has-danger")}>
+          <FormGroup
+            className={
+              "mb-3 " + (sacrificeAmt["bignum"].gt(totalHex) && " has-danger")
+            }
+          >
             <Row>
-              <Label sm="3" className="text-right">Sacrifice Amount</Label>
+              <Label sm="3" className="text-right">
+                Sacrifice Amount
+              </Label>
               <Col sm="8">
                 <InputGroup>
                   <Input
                     type="text"
-                    placeholder={`Sacrifice Amount in ${ERC20.find(r => r.id === erc20).symbol} (${formatZeroDecimal(totalHex)} ${ERC20.find(r => r.id === erc20).symbol} available)`}
+                    placeholder={`Sacrifice Amount in ${
+                      ERC20.find((r) => r.id === erc20).symbol
+                    } (${formatZeroDecimal(totalHex)} ${
+                      ERC20.find((r) => r.id === erc20).symbol
+                    } available)`}
                     value={sacrificeAmt.value}
                     onChange={changeSacrificeAmt}
                     autoFocus
                   />
-                  <InputGroupAddon addonType="append" className="cursor-pointer" onClick={setMaxAmount}>
+                  <InputGroupAddon
+                    addonType="append"
+                    className="cursor-pointer"
+                    onClick={setMaxAmount}
+                  >
                     <InputGroupText>MAX</InputGroupText>
                   </InputGroupAddon>
                 </InputGroup>
@@ -211,14 +261,23 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
           </FormGroup>
           <FormGroup className="mb-4">
             <Row>
-              <Label sm="3" className="text-right">Total Value USD</Label>
+              <Label sm="3" className="text-right">
+                Total Value USD
+              </Label>
               <Col sm="8">
                 <InputGroup>
                   <Input
                     type="text"
                     placeholder="Total Value USD"
                     //value={(sacrificeAmt.value * hexFeed)}
-                    value={formatFloat(+utils.formatUnits(sacrificeAmt['bignum'].mul(hexFeed).div(utils.parseUnits("1"))), 10)}
+                    value={formatFloat(
+                      +utils.formatUnits(
+                        sacrificeAmt["bignum"]
+                          .mul(hexFeed)
+                          .div(utils.parseUnits("1"))
+                      ),
+                      10
+                    )}
                     readOnly
                   />
                   <InputGroupAddon addonType="append">
@@ -232,8 +291,15 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
             <Row>
               <Col sm="3"></Col>
               <Col sm="8">
-                <span>Day: <strong className="ml-1">{+day}</strong></span>
-                <span className="ml-4">Base Point: <strong className="ml-1">{formatFloat(+utils.formatUnits(basePoint))}</strong></span>
+                <span>
+                  Day: <strong className="ml-1">{+day}</strong>
+                </span>
+                <span className="ml-4">
+                  Base Point:{" "}
+                  <strong className="ml-1">
+                    {formatFloat(+utils.formatUnits(basePoint))}
+                  </strong>
+                </span>
               </Col>
             </Row>
           </FormGroup>
@@ -248,10 +314,7 @@ export default function Sacrifice({ show, onClose, onSacrifice, day }) {
             >
               {isApproved ? "Sacrifice" : "Approve"}
             </Button>
-            <UncontrolledTooltip
-              placement="bottom"
-              target="borrow"
-            >
+            <UncontrolledTooltip placement="bottom" target="borrow">
               {isApproved ? "Sacrifice tokens" : "Approve tokens"}
             </UncontrolledTooltip>
           </div>

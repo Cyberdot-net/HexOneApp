@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useMediaQuery } from 'react-responsive';
+import { useMediaQuery } from "react-responsive";
 import { toast } from "react-hot-toast";
 import {
   Modal,
@@ -11,25 +11,38 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { Pie } from "react-chartjs-2";
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import ChartDataOutLabels from 'chartjs-plugin-piechart-outlabels';
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import ChartDataOutLabels from "chartjs-plugin-piechart-outlabels";
 import { BigNumber, utils } from "ethers";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import SacrificeModal from "components/Modals/Sacrifice";
-import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
-import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap, HexOneEscrow, ERC20Contract } from "contracts";
+import {
+  WalletContext,
+  LoadingContext,
+  TimerContext,
+} from "providers/Contexts";
+import {
+  HexOneVault,
+  HexContract,
+  HexOneProtocol,
+  HexOnePriceFeed,
+  HexOneBootstrap,
+  HexOneEscrow,
+  ERC20Contract,
+} from "contracts";
 import { Erc20_Tokens_Addr, Hexit_Addr } from "contracts/address";
 import { ERC20 } from "contracts/Constants";
 import { isEmpty, formatFloat } from "common/utilities";
-
+import { PulseXFactory } from "contracts";
+import { ResultContract } from "contracts";
 
 const backgroundColor = {
-  "HEX": 'rgba(255, 99, 132, 0.2)',
-  "USDC": 'rgba(54, 162, 235, 0.2)',
-  "ETH": 'rgba(255, 206, 86, 0.2)',
-  "DAI": 'rgba(75, 192, 192, 0.2)',
-  "UNI": 'rgba(153, 102, 255, 0.2)',
-  "": 'rgba(255, 159, 64, 0.2)'
+  HEX: "rgba(255, 99, 132, 0.2)",
+  USDC: "rgba(54, 162, 235, 0.2)",
+  ETH: "rgba(255, 206, 86, 0.2)",
+  DAI: "rgba(75, 192, 192, 0.2)",
+  UNI: "rgba(153, 102, 255, 0.2)",
+  "": "rgba(255, 159, 64, 0.2)",
 };
 
 export default function Bootstrap() {
@@ -44,28 +57,56 @@ export default function Bootstrap() {
   const [shareInfo, setShareInfo] = useState(null);
   const [chartData, setChartData] = useState(null);
   const [result, showResult] = useState(false);
-  const [sacrificeStart, setSacrificeStart] = useState('')
-  const [sacrificeEnd, setSacrificeEnd] = useState('')
-  const [endTime, setEndTime] = useState('')
+  const [sacrificeStart, setSacrificeStart] = useState("");
+  const [sacrificeEnd, setSacrificeEnd] = useState("");
+  const [endTime, setEndTime] = useState("");
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
   useEffect(() => {
-    if (!timer || !HexOneBootstrap.connected() || Object.keys(decimals).length === 0) return;
+    if (
+      !timer ||
+      !HexOneBootstrap.connected() ||
+      Object.keys(decimals).length === 0
+    )
+      return;
 
     const getData = async () => {
-      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals["HEX"])));
+      setHexFeed(
+        await HexOnePriceFeed.getHexTokenPrice(
+          utils.parseUnits("1", decimals["HEX"])
+        )
+      );
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
-
+      {
+        PulseXFactory.setProvider(provider);
+        const pair = await PulseXFactory.getPair(
+          "0xc6A531CB6366bF58F160D965be079502C071b5f1",
+          "0xefD766cCb38EaF1dfd701853BFCe31359239F305"
+        );
+        ResultContract.setProvider(
+          provider,
+          "0xc6A531CB6366bF58F160D965be079502C071b5f1"
+        );
+        const d1 = await ResultContract.getDecimals();
+        console.log(await ResultContract.getBalance(pair));
+        ResultContract.setProvider(
+          provider,
+          "0xefD766cCb38EaF1dfd701853BFCe31359239F305"
+        );
+        const d2 = await ResultContract.getDecimals();
+        console.log(await ResultContract.getBalance(pair));
+      }
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
-      drawPieChart(sacrificeData, decimals)
-    }
+      drawPieChart(sacrificeData, decimals);
+      console.log(await HexOnePriceFeed.getHexTokenPrice(1));
+    };
 
     getData();
     // eslint-disable-next-line
   }, [timer]);
-
+  console.log(utils.formatEther(hexFeed));
   useEffect(() => {
     if (!address || !provider) return;
 
@@ -86,45 +127,88 @@ export default function Bootstrap() {
       }
       setDecimals(ercDecimals);
 
-      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", ercDecimals["HEX"])));
+      setHexFeed(
+        await HexOnePriceFeed.getHexTokenPrice(
+          utils.parseUnits("1", ercDecimals["HEX"])
+        )
+      );
       setCurrentDay(await HexOneBootstrap.getCurrentSacrificeDay());
       setShareInfo(await HexOneEscrow.getOverview(address));
 
       const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
       setSacrificeList(sacrificeData);
-      console.log(await HexOneBootstrap.sacrificeParticipants(), await HexOneBootstrap.userRewardsForSacrifice('0xA96C769DF67c011be903C091415d1A0f01e770Aa'), await HexOneBootstrap.HEXITAmountForSacrifice())
-      console.log(await HexOneBootstrap.sacrificeParticipants(), await HexOneBootstrap.userRewardsForSacrifice('0x76ed2D78c922963FD798b057985D5d94C16063D7'), await HexOneBootstrap.HEXITAmountForSacrifice())
-      drawPieChart(sacrificeData, ercDecimals)
-      const st = new Date(BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() * 1000)
-      const en = new Date(BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() * 1000)
 
-      setEndTime(en)
-      setSacrificeStart(st.getUTCFullYear() + '-' + ("0" + (st.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + st.getUTCDate()).slice(-2) + ' ' + ("0" + st.getUTCHours()).slice(-2) + ':' + ("0" + st.getUTCMinutes()).slice(-2) + ' UTC +0')
-      setSacrificeEnd(en.getUTCFullYear() + '-' + ("0" + (en.getUTCMonth() + 1)).slice(-2) + '-' + ("0" + en.getUTCDate()).slice(-2) + ' ' + ("0" + en.getUTCHours()).slice(-2) + ':' + ("0" + en.getUTCMinutes()).slice(-2) + ' UTC +0')
+      drawPieChart(sacrificeData, ercDecimals);
+      const st = new Date(
+        BigNumber.from(await HexOneBootstrap.sacrificeStartTime()).toNumber() *
+          1000
+      );
+      const en = new Date(
+        BigNumber.from(await HexOneBootstrap.sacrificeEndTime()).toNumber() *
+          1000
+      );
 
+      setEndTime(en);
+      setSacrificeStart(
+        st.getUTCFullYear() +
+          "-" +
+          ("0" + (st.getUTCMonth() + 1)).slice(-2) +
+          "-" +
+          ("0" + st.getUTCDate()).slice(-2) +
+          " " +
+          ("0" + st.getUTCHours()).slice(-2) +
+          ":" +
+          ("0" + st.getUTCMinutes()).slice(-2) +
+          " UTC +0"
+      );
+      setSacrificeEnd(
+        en.getUTCFullYear() +
+          "-" +
+          ("0" + (en.getUTCMonth() + 1)).slice(-2) +
+          "-" +
+          ("0" + en.getUTCDate()).slice(-2) +
+          " " +
+          ("0" + en.getUTCHours()).slice(-2) +
+          ":" +
+          ("0" + en.getUTCMinutes()).slice(-2) +
+          " UTC +0"
+      );
+
+      console.log(
+        await HexOneVault.getHistory(
+          "0x76ed2D78c922963FD798b057985D5d94C16063D7"
+        )
+      );
+
+      console.log(await HexOnePriceFeed.getHexTokenPrice(10 ** 8));
       hideLoading();
-    }
+    };
 
     getData();
 
     // eslint-disable-next-line
   }, [address, provider]);
-  console.log(shareInfo)
-  const drawPieChart = async (sacrificeData, ercDecimals) => {
 
-    const labels = sacrificeData.map(r => r.sacrificeTokenSymbol || "");
+  const drawPieChart = async (sacrificeData, ercDecimals) => {
+    const labels = sacrificeData.map((r) => r.sacrificeTokenSymbol || "");
     // const data = sacrificeData.map(r => +utils.formatUnits(r.sacrificedAmount, ercDecimals[r.sacrificeTokenSymbol] || 0));
-    const data = sacrificeData.map(r => +utils.formatUnits(r.usdValue, ercDecimals['WPLS'] || 0));
-    const backgroundColors = labels.map(r => r in backgroundColor ? backgroundColor[r] : backgroundColor[""]);
-    const t_labels = [], t_data = [], t_colors = [];
+    const data = sacrificeData.map(
+      (r) => +utils.formatUnits(r.usdValue, ercDecimals["WPLS"] || 0)
+    );
+    const backgroundColors = labels.map((r) =>
+      r in backgroundColor ? backgroundColor[r] : backgroundColor[""]
+    );
+    const t_labels = [],
+      t_data = [],
+      t_colors = [];
     for (let i = 0; i < data.length; i++) {
-      const index = t_labels.indexOf(labels[i])
+      const index = t_labels.indexOf(labels[i]);
       if (index == -1) {
-        t_labels.push(labels[i])
-        t_data.push(data[i])
-        t_colors.push(backgroundColors[i])
+        t_labels.push(labels[i]);
+        t_data.push(data[i]);
+        t_colors.push(backgroundColors[i]);
       } else {
-        t_data[index] += data[i]
+        t_data[index] += data[i];
       }
     }
     if (data.length > 0) {
@@ -132,10 +216,10 @@ export default function Bootstrap() {
         labels: t_labels,
         datasets: [
           {
-            label: 'Sacrificed AMT',
+            label: "Sacrificed AMT",
             data: t_data,
             backgroundColor: t_colors,
-            borderColor: t_data.map(r => 'rgba(255, 255, 255, 0.3)'),
+            borderColor: t_data.map((r) => "rgba(255, 255, 255, 0.3)"),
             borderWidth: 2,
           },
         ],
@@ -143,13 +227,13 @@ export default function Bootstrap() {
     } else {
       setChartData(null);
     }
-  }
+  };
 
   const getSacrificeList = async () => {
     const sacrificeData = await HexOneBootstrap.getSacrificeList(address);
     setSacrificeList(sacrificeData);
     drawPieChart(sacrificeData, decimals);
-  }
+  };
 
   const getHealthRatio = (initialFeed) => {
     if (isEmpty(initialFeed)) return 0;
@@ -158,7 +242,7 @@ export default function Bootstrap() {
     const originalPrice = +utils.formatUnits(initialFeed);
 
     return formatFloat(Math.round((currentPrice / originalPrice) * 100));
-  }
+  };
 
   // const getTotalHexit = (row) => {
   //   return formatFloat(+utils.formatUnits(row.sacrificedAmount.mul(utils.parseUnits("1", 15 - (decimals[row.sacrificeTokenSymbol] || 0))).mul(row.multiplier).mul(row.supplyAmount).div(utils.parseUnits("1"))));
@@ -166,11 +250,11 @@ export default function Bootstrap() {
 
   const onClickSacrifice = async () => {
     if (endTime < new Date()) {
-      toast.error('Sacrifice already ended!')
-      return
+      toast.error("Sacrifice already ended!");
+      return;
     }
-    setOpen(true)
-  }
+    setOpen(true);
+  };
   const onClickClaim = async (sacrificeId) => {
     showLoading("Claiming $HEXIT...");
 
@@ -185,7 +269,7 @@ export default function Bootstrap() {
     hideLoading();
 
     toast.success("Claim $HEXIT success!");
-  }
+  };
 
   const onReDeposit = async () => {
     showLoading("Re-Depositing Hex1...");
@@ -202,28 +286,28 @@ export default function Bootstrap() {
     hideLoading();
 
     showResult(true);
-  }
+  };
 
   const onClickReborrow = async () => {
     if (!address || !provider) return;
-    showLoading("Reborrowing...")
-    const res = await HexOneEscrow.borrowHexOne(hexFeed)
-    if (res.status !== 'succes') {
-      hideLoading()
-      toast.error(res.error ?? "Reborrow Failed!")
+    showLoading("Reborrowing...");
+    const res = await HexOneEscrow.borrowHexOne(hexFeed);
+    if (res.status !== "succes") {
+      hideLoading();
+      toast.error(res.error ?? "Reborrow Failed!");
       return;
     }
-    hideLoading()
-  }
+    hideLoading();
+  };
 
   const doSacrifice = async () => {
     await getSacrificeList();
-  }
+  };
 
   const onClickAddHexitToken = async () => {
     if (!address || !provider) return;
 
-    if (typeof window.ethereum === 'undefined') {
+    if (typeof window.ethereum === "undefined") {
       toast.error("<b>No MetaMask! - </b>Please, install MetaMask");
       return;
     }
@@ -233,9 +317,9 @@ export default function Bootstrap() {
     // Add hexit to MetaMask
     try {
       const wasAdded = await window.ethereum.request({
-        method: 'wallet_watchAsset',
+        method: "wallet_watchAsset",
         params: {
-          type: 'ERC20',
+          type: "ERC20",
           options: {
             address: Hexit_Addr.contract,
             symbol: "HEXIT",
@@ -250,7 +334,6 @@ export default function Bootstrap() {
       } else {
         toast.error("Failed to add hexit to MetaMask");
       }
-
     } catch (error) {
       hideLoading();
 
@@ -262,21 +345,31 @@ export default function Bootstrap() {
 
       return;
     }
-  }
+  };
 
   return (
     <div className="wrapper">
       <section className="section section-lg section-titles">
         <Container>
-          {!address && <Row gutter="10" className="pl-4 pr-4 center">
-            <Col lg="8" md="10" sm="12" className="mb-4">
-              <MetaMaskAlert isOpen={!address} />
-            </Col>
-          </Row>}
-          <h4 className="title text-left">Sacrifice Start Date: {sacrificeStart}</h4>
-          <h4 className="title text-left">Sacrifice End Date: {sacrificeEnd}</h4>
+          {!address && (
+            <Row gutter="10" className="pl-4 pr-4 center">
+              <Col lg="8" md="10" sm="12" className="mb-4">
+                <MetaMaskAlert isOpen={!address} />
+              </Col>
+            </Row>
+          )}
+          <h4 className="title text-left">
+            Sacrifice Start Date: {sacrificeStart}
+          </h4>
+          <h4 className="title text-left">
+            Sacrifice End Date: {sacrificeEnd}
+          </h4>
           <h3 className="title text-left mb-2">Day: {currentDay.toString()}</h3>
-          <Row gutter="10" className="pl-4 pr-4" style={{ placeContent: 'center' }}>
+          <Row
+            gutter="10"
+            className="pl-4 pr-4"
+            style={{ placeContent: "center" }}
+          >
             <Col lg="12" className="mb-4">
               {
                 <Button
@@ -288,24 +381,22 @@ export default function Bootstrap() {
                   Sacrifice
                 </Button>
               }
-              <UncontrolledTooltip
-                placement="bottom"
-                target="sacrifice"
-              >
+              <UncontrolledTooltip placement="bottom" target="sacrifice">
                 Sacrifice tokens
               </UncontrolledTooltip>
             </Col>
-            <div style={{ width: '650px', color: 'white', fontSize: '16px' }}>When you sacrifice you are bootstrapping the Hex One Protocol.
-              You will receive <strong>75%</strong> of the USD value sacrificed in <strong>$HEX1</strong>, and the remaining <strong>25%</strong> go into the liquidity pool <strong>(HEX1/DAI)</strong>. You also receive an aidrop of <strong>$HEXIT</strong>.</div>
+            <div style={{ width: "650px", color: "white", fontSize: "16px" }}>
+              When you sacrifice you are bootstrapping the Hex One Protocol. You
+              will receive <strong>75%</strong> of the USD value sacrificed in{" "}
+              <strong>$HEX1</strong>, and the remaining <strong>25%</strong> go
+              into the liquidity pool <strong>(HEX1/DAI)</strong>. You also
+              receive an aidrop of <strong>$HEXIT</strong>.
+            </div>
           </Row>
         </Container>
       </section>
       <section className="section section-lg section-tables">
-        <img
-          alt="..."
-          className="path"
-          src={require("assets/img/path2.png")}
-        />
+        <img alt="..." className="path" src={require("assets/img/path2.png")} />
         <Container>
           <Row>
             <Col md="4">
@@ -320,27 +411,44 @@ export default function Bootstrap() {
                   <tr>
                     <th className="text-center">ShareId</th>
                     <th>Day</th>
-                    <th>Base {isMobile && <br />}Points</th>
                     <th>ERC20</th>
-                    <th>Bonus</th>
+                    <th>Base {isMobile && <br />}Points</th>
                     <th>Sacrificed {isMobile && <br />}Amt</th>
-                    <th>Total {isMobile && <br />}Hexit</th>
                     <th>USD {isMobile && <br />}Value</th>
+                    <th>Bonus</th>
+                    <th>Total {isMobile && <br />}Hexit</th>
                     <th className="text-center"></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sacrificeList.length > 0 ?
+                  {sacrificeList.length > 0 ? (
                     sacrificeList.map((r, idx) => (
                       <tr key={idx}>
-                        <td className="text-center">{r.sacrificeId.toString()}</td>
+                        <td className="text-center">
+                          {r.sacrificeId.toString()}
+                        </td>
                         <td className="text-center">{r.day.toString()}</td>
-                        <td>{formatFloat(+utils.formatUnits(r.supplyAmount))}</td>
                         <td>{r.sacrificeTokenSymbol}</td>
-                        <td>{utils.formatUnits(r.multiplier, 3).toString()}x</td>
-                        <td>{formatFloat(+utils.formatUnits(r.sacrificedAmount, decimals[r.sacrificeTokenSymbol] || 0))}</td>
-                        <td>{formatFloat(+utils.formatUnits(r.totalHexitAmount))}</td>
-                        <td>${formatFloat(+utils.formatUnits(r.usdValue), 5)}</td>
+                        <td>
+                          {formatFloat(+utils.formatUnits(r.supplyAmount))}
+                        </td>
+                        <td>
+                          {formatFloat(
+                            +utils.formatUnits(
+                              r.sacrificedAmount,
+                              decimals[r.sacrificeTokenSymbol] || 0
+                            )
+                          )}
+                        </td>
+                        <td>
+                          ${formatFloat(+utils.formatUnits(r.usdValue), 5)}
+                        </td>
+                        <td>
+                          {utils.formatUnits(r.multiplier, 3).toString()}x
+                        </td>
+                        <td>
+                          {formatFloat(+utils.formatUnits(r.totalHexitAmount))}
+                        </td>
                         <td className="td-actions" width="100">
                           <Button
                             id="claim"
@@ -348,7 +456,9 @@ export default function Bootstrap() {
                             onClick={() => onClickClaim(r.sacrificeId)}
                             disabled={r.claimed || r.day.gte(currentDay)}
                           >
-                            Claim<br />$HEXIT
+                            Claim
+                            <br />
+                            $HEXIT
                           </Button>
                           <UncontrolledTooltip
                             placement="bottom"
@@ -358,28 +468,34 @@ export default function Bootstrap() {
                           </UncontrolledTooltip>
                         </td>
                       </tr>
-                    )) : <tr>
+                    ))
+                  ) : (
+                    <tr>
                       <td colSpan={12} className="text-center">
-                        <Alert
-                          className="alert-with-icon"
-                          color="default"
-                        >
+                        <Alert className="alert-with-icon" color="default">
                           <span>There are no matching entries</span>
                         </Alert>
                       </td>
-                    </tr>}
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </Col>
           </Row>
         </Container>
       </section>
-      <Row gutter="10" className="pl-4 pr-4" style={{ placeContent: 'center' }}>
-        <div style={{ width: '650px', color: 'red', fontSize: '16px', textAlign: 'center' }}>
-
-          You have <strong>7 days</strong> to <strong>claim $HEXIT</strong> after the sacrifice ends to receive $HEX1.
-          If you don't claim $HEXIT, <strong>you won't receive $HEX1.</strong>
-
+      <Row gutter="10" className="pl-4 pr-4" style={{ placeContent: "center" }}>
+        <div
+          style={{
+            width: "650px",
+            color: "red",
+            fontSize: "16px",
+            textAlign: "center",
+          }}
+        >
+          You have <strong>7 days</strong> to <strong>claim $HEXIT</strong>{" "}
+          after the sacrifice ends to receive $HEX1. If you don't claim $HEXIT,{" "}
+          <strong>you won't receive $HEX1.</strong>
         </div>
       </Row>
       <section className="section section-lg section-tables">
@@ -410,35 +526,85 @@ export default function Bootstrap() {
                   </tr>
                 </thead>
                 <tbody>
-                  {shareInfo && shareInfo.totalUSDValue?.gt(0) ?
+                  {shareInfo && shareInfo.totalUSDValue?.gt(0) ? (
                     <tr>
-                      <td>${formatFloat(+utils.formatUnits(shareInfo.totalUSDValue))}</td>
-                      <td>{formatFloat(utils.formatUnits(shareInfo.borrowedAmount.mul(shareInfo.shareOfPool).div(100)), 3)} HEX1</td>
-                      <td>{(shareInfo.shareOfPool).toString()}%</td>
+                      <td>
+                        $
+                        {formatFloat(
+                          +utils.formatUnits(shareInfo.totalUSDValue)
+                        )}
+                      </td>
+                      <td>
+                        {formatFloat(
+                          utils.formatUnits(
+                            shareInfo.borrowedAmount
+                              .mul(shareInfo.shareOfPool)
+                              .div(100)
+                          ),
+                          3
+                        )}{" "}
+                        HEX1
+                      </td>
+                      <td>{shareInfo.shareOfPool.toString()}%</td>
                       <td>{shareInfo.startTime.toString()}</td>
                       <td>{shareInfo.endTime.toString()}</td>
-                      <td>{formatFloat(+utils.formatUnits(shareInfo.hexAmount, 8))} HEX</td>
-                      <td>{formatFloat(+utils.formatUnits(shareInfo.effectiveAmount, 8))} HEX</td>
-                      <td>{formatFloat(+utils.formatUnits(shareInfo.borrowedAmount), 3)} HEX1</td>
-                      <td>${formatFloat(+utils.formatUnits(shareInfo.initUSDValue), 3)}</td>
+                      <td>
+                        {formatFloat(
+                          +utils.formatUnits(shareInfo.hexAmount, 8)
+                        )}{" "}
+                        HEX
+                      </td>
+                      <td>
+                        {formatFloat(
+                          +utils.formatUnits(shareInfo.effectiveAmount, 8)
+                        )}{" "}
+                        HEX
+                      </td>
+                      <td>
+                        {formatFloat(
+                          +utils.formatUnits(shareInfo.borrowedAmount),
+                          3
+                        )}{" "}
+                        HEX1
+                      </td>
+                      <td>
+                        $
+                        {formatFloat(
+                          +utils.formatUnits(shareInfo.initUSDValue),
+                          3
+                        )}
+                      </td>
                       <td>${formatFloat(+utils.formatUnits(hexFeed), 3)}</td>
-                      <td className={+getHealthRatio(shareInfo.initUSDValue) >= 100 ? "green" : "red"}>
+                      <td
+                        className={
+                          +getHealthRatio(shareInfo.initUSDValue) >= 100
+                            ? "green"
+                            : "red"
+                        }
+                      >
                         {getHealthRatio(shareInfo.initUSDValue)}%
                       </td>
                       <td className="td-actions">
                         <Button
                           id="claim"
                           className="btn btn-primary btn-sm w-btn mb-1"
-                          disabled={shareInfo.borrowedAmount.lte(0) || shareInfo.endTime.gt(shareInfo.curDay)}
+                          disabled={
+                            shareInfo.borrowedAmount.lte(0) ||
+                            shareInfo.endTime.gt(shareInfo.curDay)
+                          }
                           onClick={() => onReDeposit()}
                         >
                           Re-Deposit
                         </Button>
                         <Button
                           id="mintHex1"
-                          className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
+                          className={`btn btn-success btn-sm w-btn mb-1 ${
+                            isMobile ? "" : "ml-1"
+                          }`}
                           onClick={() => onClickReborrow()}
-                          disabled={getHealthRatio(shareInfo.initUSDValue) < 101}
+                          disabled={
+                            getHealthRatio(shareInfo.initUSDValue) < 101
+                          }
                         >
                           Re-Borrow
                         </Button>
@@ -449,16 +615,16 @@ export default function Bootstrap() {
                           Claim Hex1
                         </UncontrolledTooltip> */}
                       </td>
-                    </tr> : <tr>
+                    </tr>
+                  ) : (
+                    <tr>
                       <td colSpan={12} className="text-center">
-                        <Alert
-                          className="alert-with-icon"
-                          color="default"
-                        >
+                        <Alert className="alert-with-icon" color="default">
                           <span>There are no matching entries</span>
                         </Alert>
                       </td>
-                    </tr>}
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </Col>
@@ -470,12 +636,12 @@ export default function Bootstrap() {
           <Row>
             <Col md="4">
               <hr className="line-info" />
-              <h2>Analysis</h2>
+              <h2>Your Sacrifice Distribution Chart</h2>
             </Col>
           </Row>
           <Row className="center">
             <Col lg="8" md="12">
-              {chartData ?
+              {chartData ? (
                 <Pie
                   data={chartData}
                   plugins={[ChartDataLabels, ChartDataOutLabels]}
@@ -491,51 +657,60 @@ export default function Bootstrap() {
                     plugins: {
                       datalabels: {
                         color: "rgba(255, 255, 255, 0.8)",
-                        textAlign: 'center',
+                        textAlign: "center",
                         opacity: 0.8,
                         formatter: function (value, context) {
-                          const sum = chartData.datasets[0]?.data?.reduce((s, o) => s + o, 0);
-                          const label = context.chart.data.labels[context.dataIndex];
+                          const sum = chartData.datasets[0]?.data?.reduce(
+                            (s, o) => s + o,
+                            0
+                          );
+                          const label =
+                            context.chart.data.labels[context.dataIndex];
                           if (sum) {
-                            return [label, `${sum ? Math.round(value / sum * 100) : 0}%`];
+                            return [
+                              label,
+                              `${sum ? Math.round((value / sum) * 100) : 0}%`,
+                            ];
                           } else {
                             return "";
                           }
-                        }
+                        },
                       },
                       outlabels: {
                         font: { size: 15 },
                         stretch: 20,
                         text: (context) => {
-                          const label = context.chart.data.labels[context.dataIndex];
+                          const label =
+                            context.chart.data.labels[context.dataIndex];
                           const value = context.dataset.data[context.dataIndex];
                           return `${label} ${value}`;
-                        }
-                      }
-                    }
+                        },
+                      },
+                    },
                   }}
-                /> :
-                <h3 className="text-center">
-                  No Analysis Data
-                </h3>
-              }
+                />
+              ) : (
+                <h3 className="text-center">No Analysis Data</h3>
+              )}
             </Col>
           </Row>
         </Container>
       </section>
-      {isOpen && <SacrificeModal
-        show={isOpen}
-        day={currentDay}
-        onSacrifice={doSacrifice}
-        onClose={() => setOpen(false)}
-      />}
-      <Modal
-        isOpen={result}
-        toggle={() => showResult(false)}
-        backdrop="static"
-      >
+      {isOpen && (
+        <SacrificeModal
+          show={isOpen}
+          day={currentDay}
+          onSacrifice={doSacrifice}
+          onClose={() => setOpen(false)}
+        />
+      )}
+      <Modal isOpen={result} toggle={() => showResult(false)} backdrop="static">
         <div className="modal-header justify-content-center">
-          <button className="close" onClick={() => showResult(false)} style={{ padding: "10px", top: "10px", right: "16px" }}>
+          <button
+            className="close"
+            onClick={() => showResult(false)}
+            style={{ padding: "10px", top: "10px", right: "16px" }}
+          >
             <i className="tim-icons icon-simple-remove" />
           </button>
           <h4 className="title title-up">Claim Hexone success!</h4>

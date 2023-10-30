@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useMediaQuery } from 'react-responsive';
+import { useMediaQuery } from "react-responsive";
 import { toast } from "react-hot-toast";
 import {
   Button,
@@ -14,8 +14,18 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { BigNumber, utils } from "ethers";
-import { WalletContext, LoadingContext, TimerContext } from "providers/Contexts";
-import { HexOneVault, HexContract, HexOneProtocol, HexOnePriceFeed, HexOneBootstrap } from "contracts";
+import {
+  WalletContext,
+  LoadingContext,
+  TimerContext,
+} from "providers/Contexts";
+import {
+  HexOneVault,
+  HexContract,
+  HexOneProtocol,
+  HexOnePriceFeed,
+  HexOneBootstrap,
+} from "contracts";
 import { ITEMS_PER_PAGE } from "contracts/Constants";
 import MetaMaskAlert from "components/Common/MetaMaskAlert";
 import Pagination from "components/Common/Pagination";
@@ -38,28 +48,30 @@ export default function Overview() {
   const [page, setPage] = useState(1);
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
-
   useEffect(() => {
     if (!timer || !HexOnePriceFeed.connected() || !hexDecimals) return;
 
     const getData = async () => {
-      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", hexDecimals)));
+      setHexFeed(
+        await HexOnePriceFeed.getHexTokenPrice(
+          utils.parseUnits("1", hexDecimals)
+        )
+      );
       setHistory(await HexOneVault.getHistory(address));
       setLiquidates(await HexOneVault.getLiquidableDeposits());
-    }
+    };
 
     getData();
     // eslint-disable-next-line
   }, [timer]);
-
-
+  console.log(history, liquidates);
   useEffect(() => {
     if (!address || !provider) return;
 
     HexContract.setProvider(provider);
     HexOnePriceFeed.setProvider(provider);
     HexOneVault.setProvider(provider);
-    HexOneBootstrap.setProvider(provider)
+    HexOneBootstrap.setProvider(provider);
     HexOneProtocol.setProvider(provider);
 
     const getData = async () => {
@@ -67,7 +79,9 @@ export default function Overview() {
 
       const decimals = await HexContract.getDecimals();
       setHexDecimals(decimals);
-      setHexFeed(await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals)));
+      setHexFeed(
+        await HexOnePriceFeed.getHexTokenPrice(utils.parseUnits("1", decimals))
+      );
       setHistory(await HexOneVault.getHistory(address));
       setLiquidates(await HexOneVault.getLiquidableDeposits());
       // const network = await provider.getNetwork();
@@ -75,7 +89,7 @@ export default function Overview() {
       setIsTestNet(false);
 
       hideLoading();
-    }
+    };
 
     getData();
 
@@ -85,8 +99,8 @@ export default function Overview() {
   const getHistory = async () => {
     setHistory(await HexOneVault.getHistory(address));
     setLiquidates(await HexOneVault.getLiquidableDeposits());
-  }
-  console.log(history)
+  };
+
   const getHealthRatio = (initialFeed) => {
     if (isEmpty(initialFeed)) return 0;
 
@@ -94,15 +108,19 @@ export default function Overview() {
     const originalPrice = +utils.formatUnits(initialFeed);
 
     return formatFloat(Math.round((currentPrice / originalPrice) * 100));
-  }
+  };
 
   const getProfitLoss = (row) => {
-
-    const profit = formatFloat(+(utils.formatUnits(row.currentUSDValue.sub(row.initUSDValue))));
-    const percent = formatFloat(+(row.currentUSDValue.div(row.initUSDValue).mul(100)), 0);
+    const profit = formatFloat(
+      +utils.formatUnits(row.currentUSDValue.sub(row.initUSDValue))
+    );
+    const percent = formatFloat(
+      +row.currentUSDValue.div(row.initUSDValue).mul(100),
+      0
+    );
 
     return `${profit} (${percent}%)`;
-  }
+  };
 
   const onClickWithdraw = async (depositId) => {
     showLoading("Withdrawing...");
@@ -115,28 +133,32 @@ export default function Overview() {
     }
 
     hideLoading();
-  }
+  };
   const onClickClaim = async (depositId, type) => {
-    showLoading(type === 'liquidate' ? "Liquidating..." : "Claiming...");
+    showLoading(type === "liquidate" ? "Liquidating..." : "Claiming...");
 
     const res = await HexOneProtocol.claimCollateral(depositId);
     if (res.status !== "success") {
       hideLoading();
-      toast.error(res.error ?? (type === 'liquidate' ? "Liquidate failed!" : "Claim failed!"));
+      toast.error(
+        res.error ??
+          (type === "liquidate" ? "Liquidate failed!" : "Claim failed!")
+      );
       return;
     }
 
     getHistory();
     hideLoading();
-    toast.success(type === 'liquidate' ? "Liquidate success!" : "Claim success!");
-  }
+    toast.success(
+      type === "liquidate" ? "Liquidate success!" : "Claim success!"
+    );
+  };
 
   const onClickReborrow = (row) => {
     setReborrow({ show: true, data: { ...row, currentFeed: hexFeed } });
-  }
+  };
 
   const doMintHex = async () => {
-
     showLoading("Minting...");
 
     let res = await HexContract.mint();
@@ -148,60 +170,62 @@ export default function Overview() {
 
     hideLoading();
     toast.success("Mint hex success!");
-  }
+  };
 
   const doBorrow = async () => {
     getHistory();
-  }
+  };
 
   const doReborrow = () => {
     getHistory();
-  }
+  };
 
   const onClickBorrow = () => {
     const func = async () => {
-      const cur = new Date()
-      const airdropEndTime = await HexOneBootstrap.airdropEndTime()
-      if (cur.getTime() > airdropEndTime * 1000) setBorrowOpen(true)
-      else toast.error("Can't Borrow until Aidrop ends")
-    }
-    func()
-  }
+      const cur = new Date();
+      const airdropEndTime = await HexOneBootstrap.airdropEndTime();
+      if (cur.getTime() > airdropEndTime * 1000) setBorrowOpen(true);
+      else toast.error("Can't Borrow until Aidrop ends");
+    };
+    func();
+  };
   return (
     <div className="wrapper">
       <section className="section section-lg section-titles">
         <Container>
-          {!address && <Row gutter="10" className="pl-4 pr-4 center">
-            <Col lg="8" md="10" sm="12" className="mb-4">
-              <MetaMaskAlert isOpen={!address} />
-            </Col>
-          </Row>}
+          {!address && (
+            <Row gutter="10" className="pl-4 pr-4 center">
+              <Col lg="8" md="10" sm="12" className="mb-4">
+                <MetaMaskAlert isOpen={!address} />
+              </Col>
+            </Row>
+          )}
           <Row gutter="10" className="pl-4 pr-4">
             <Col lg="12" className="mb-4">
-              {isTestNet && <Button
-                className="btn-simple mr-4"
-                color="info btn-lg"
-                id="mint"
-                onClick={() => doMintHex()}>
-                MINT TESTNET HEX
-              </Button>}
-              {isTestNet && <UncontrolledTooltip
-                placement="bottom"
-                target="mint"
-              >
-                Mint TestNet Hex
-              </UncontrolledTooltip>}
+              {isTestNet && (
+                <Button
+                  className="btn-simple mr-4"
+                  color="info btn-lg"
+                  id="mint"
+                  onClick={() => doMintHex()}
+                >
+                  MINT TESTNET HEX
+                </Button>
+              )}
+              {isTestNet && (
+                <UncontrolledTooltip placement="bottom" target="mint">
+                  Mint TestNet Hex
+                </UncontrolledTooltip>
+              )}
               <Button
                 className="btn-simple grow"
                 color="info btn-lg"
                 id="borrow"
-                onClick={onClickBorrow}>
+                onClick={onClickBorrow}
+              >
                 BORROW
               </Button>
-              <UncontrolledTooltip
-                placement="bottom"
-                target="borrow"
-              >
+              <UncontrolledTooltip placement="bottom" target="borrow">
                 Borrow HEX1 by depositing HEX (T-shares)
               </UncontrolledTooltip>
             </Col>
@@ -211,19 +235,20 @@ export default function Overview() {
               <ListGroup>
                 <ListGroupItem>Stake HEX and Mint $HEX1</ListGroupItem>
                 <ListGroupItem>Borrow 100% against your T-shares</ListGroupItem>
-                <ListGroupItem>Each $HEX1 = 1 dollar value of collateralized HEX (T-share)</ListGroupItem>
-                <ListGroupItem>*a 5% fee applies to each deposit. The fee is distributed to stakers.</ListGroupItem>
+                <ListGroupItem>
+                  Each $HEX1 = 1 dollar value of collateralized HEX (T-share)
+                </ListGroupItem>
+                <ListGroupItem>
+                  *a 5% fee applies to each deposit. The fee is distributed to
+                  stakers.
+                </ListGroupItem>
               </ListGroup>
             </Col>
           </Row>
         </Container>
       </section>
       <section className="section section-lg section-tables">
-        <img
-          alt="..."
-          className="path"
-          src={require("assets/img/path2.png")}
-        />
+        <img alt="..." className="path" src={require("assets/img/path2.png")} />
         <Container>
           <Row>
             <Col md="4">
@@ -243,78 +268,120 @@ export default function Overview() {
                     <th>Collateral</th>
                     <th>Effective</th>
                     <th>Borrowed {isMobile && <br />}Amt</th>
-                    <th>Initial {isMobile && <br />}HexPrice</th>
-                    <th>Current {isMobile && <br />}HexPrice</th>
+                    <th>Initial {isMobile && <br />}Hex Price</th>
+                    <th>Current {isMobile && <br />}Hex Price</th>
                     <th>Health {isMobile && <br />}Ratio</th>
                     <th className="text-center" width="125"></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {history.length > 0 ?
-                    history.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE).map((r, idx) => (
-                      <tr key={idx}>
-                        <td className="text-center">{r.depositId.toString()}</td>
-                        <td className="text-center">{r.lockedHexDay.toString()}</td>
-                        <td className="text-center">{r.endHexDay.toString()}</td>
-                        <td className="text-center">{r.curHexDay.toString()}</td>
-                        <td>{formatFloat(+utils.formatUnits(r.depositAmount, hexDecimals))} HEX</td>
-                        <td>{formatFloat(+utils.formatUnits(r.effectiveAmount, hexDecimals))} HEX</td>
-                        <td>{formatFloat(+utils.formatUnits(r.mintAmount))} HEX1</td>
-                        <td>${formatFloat(+utils.formatUnits(r.initialHexPrice), 3)}</td>
-                        <td>${formatFloat(+utils.formatUnits(hexFeed), 3)}</td>
-                        <td className={+getHealthRatio(r.initialHexPrice) >= 100 ? "green" : "red"}>
-                          {getHealthRatio(r.initialHexPrice)}%
-                        </td>
-                        <td className="td-actions">
-                          <Button
-                            id="claim"
-                            className="btn btn-primary btn-sm w-btn mb-1"
-                            onClick={() => onClickWithdraw(r.depositId)}
-                            disabled={r.curHexDay.lte(r.endHexDay)}
+                  {history.length > 0 ? (
+                    history
+                      .slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE)
+                      .map((r, idx) => (
+                        <tr key={idx}>
+                          <td className="text-center">
+                            {r.depositId.toString()}
+                          </td>
+                          <td className="text-center">
+                            {r.lockedHexDay.toString()}
+                          </td>
+                          <td className="text-center">
+                            {r.endHexDay.toString()}
+                          </td>
+                          <td className="text-center">
+                            {r.curHexDay.toString()}
+                          </td>
+                          <td>
+                            {formatFloat(
+                              +utils.formatUnits(r.depositAmount, hexDecimals)
+                            )}{" "}
+                            HEX
+                          </td>
+                          <td>
+                            {formatFloat(
+                              +utils.formatUnits(r.effectiveAmount, hexDecimals)
+                            )}{" "}
+                            HEX
+                          </td>
+                          <td>
+                            {formatFloat(+utils.formatUnits(r.mintAmount))} HEX1
+                          </td>
+                          <td>
+                            $
+                            {formatFloat(
+                              +utils.formatUnits(r.initialHexPrice),
+                              3
+                            )}
+                          </td>
+                          <td>
+                            ${formatFloat(+utils.formatUnits(hexFeed), 3)}
+                          </td>
+                          <td
+                            className={
+                              +getHealthRatio(r.initialHexPrice) >= 100
+                                ? "green"
+                                : "red"
+                            }
                           >
-                            Withdraw
-                          </Button>
-                          <Button
-                            id="mintHex1"
-                            className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
-                            onClick={() => onClickClaim(r.depositId, 'claim')}
-                            disabled={r.curHexDay.lte(r.endHexDay)}
-                          >
-                            Re-Deposit
-                          </Button>
-                          <UncontrolledTooltip
-                            placement="bottom"
-                            target="claim"
-                          >
-                            Re-Deposit HEX by burning HEX1
-                          </UncontrolledTooltip>
-                          {isMobile && <br />}
-                          <Button
-                            id="mintHex1"
-                            className={`btn btn-success btn-sm w-btn mb-1 ${isMobile ? "" : "ml-1"}`}
-                            onClick={() => onClickReborrow(r)}
-                            disabled={getHealthRatio(r.initialHexPrice) <= 100}
-                          >
-                            Re-Borrow
-                          </Button>
-                          <UncontrolledTooltip
-                            placement="bottom"
-                            target="mintHex1"
-                          >
-                            Mint more $HEX1 without adding any collateral
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                    )) : <tr>
+                            {getHealthRatio(r.initialHexPrice)}%
+                          </td>
+                          <td className="td-actions">
+                            <Button
+                              id="claim"
+                              className="btn btn-primary btn-sm w-btn mb-1"
+                              onClick={() => onClickWithdraw(r.depositId)}
+                              disabled={r.curHexDay.lte(r.endHexDay)}
+                            >
+                              Withdraw
+                            </Button>
+                            <Button
+                              id="mintHex1"
+                              className={`btn btn-success btn-sm w-btn mb-1 ${
+                                isMobile ? "" : "ml-1"
+                              }`}
+                              onClick={() => onClickClaim(r.depositId, "claim")}
+                              disabled={r.curHexDay.lte(r.endHexDay)}
+                            >
+                              Re-Deposit
+                            </Button>
+                            <UncontrolledTooltip
+                              placement="bottom"
+                              target="claim"
+                            >
+                              Re-Deposit HEX by burning HEX1
+                            </UncontrolledTooltip>
+                            {isMobile && <br />}
+                            <Button
+                              id="mintHex1"
+                              className={`btn btn-success btn-sm w-btn mb-1 ${
+                                isMobile ? "" : "ml-1"
+                              }`}
+                              onClick={() => onClickReborrow(r)}
+                              disabled={
+                                getHealthRatio(r.initialHexPrice) <= 100
+                              }
+                            >
+                              Re-Borrow
+                            </Button>
+                            <UncontrolledTooltip
+                              placement="bottom"
+                              target="mintHex1"
+                            >
+                              Mint more $HEX1 without adding any collateral
+                            </UncontrolledTooltip>
+                          </td>
+                        </tr>
+                      ))
+                  ) : (
+                    <tr>
                       <td colSpan={12} className="text-center">
-                        <Alert
-                          className="alert-with-icon"
-                          color="default"
-                        >
+                        <Alert className="alert-with-icon" color="default">
                           <span>There are no matching entries</span>
                         </Alert>
                       </td>
-                    </tr>}
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </Col>
@@ -324,7 +391,7 @@ export default function Overview() {
                 page={page}
                 count={history.length}
                 perPage={ITEMS_PER_PAGE}
-                onChange={p => setPage(p)}
+                onChange={(p) => setPage(p)}
               />
             </Col>
           </Row>
@@ -341,11 +408,9 @@ export default function Overview() {
                   <Row>
                     <ListGroup>
                       <ListGroupItem>
-                        Claim your collateral (HEX)
+                        Claim your collateral + yield (HEX)
                       </ListGroupItem>
-                      <ListGroupItem>
-                        by repaying the loan (HEX1)
-                      </ListGroupItem>
+                      <ListGroupItem>by repaying the loan (HEX1)</ListGroupItem>
                     </ListGroup>
                   </Row>
                 </CardBody>
@@ -363,11 +428,9 @@ export default function Overview() {
                   <Row>
                     <ListGroup>
                       <ListGroupItem>
-                        Re-Deposit your collateral (HEX)
+                        Re-Deposit your collateral + yield (HEX)
                       </ListGroupItem>
-                      <ListGroupItem>
-                        by repaying the loan (HEX1)
-                      </ListGroupItem>
+                      <ListGroupItem>by repaying the loan (HEX1)</ListGroupItem>
                     </ListGroup>
                   </Row>
                 </CardBody>
@@ -411,11 +474,13 @@ export default function Overview() {
                   <tr>
                     <th className="text-center">StakeId</th>
                     <th className="text-center">End</th>
-                    <th className="text-center">Current {isMobile && <br />}Day</th>
+                    <th className="text-center">
+                      Current {isMobile && <br />}Day
+                    </th>
                     <th>Grace</th>
                     <th>Effective {isMobile && <br />}Hex</th>
                     <th>Borrowed {isMobile && <br />}$HEX1</th>
-                    <th>Current {isMobile && <br />}HexPrice</th>
+                    <th>Current {isMobile && <br />}Hex Price</th>
                     <th>Total {isMobile && <br />}Hex</th>
                     <th>Current {isMobile && <br />}Value</th>
                     <th>Profit/Loss</th>
@@ -423,47 +488,79 @@ export default function Overview() {
                   </tr>
                 </thead>
                 <tbody>
-                  {liquidates.length > 0 ? liquidates.map((r, idx) => (
-                    <tr key={idx}>
-                      <td className="text-center">{r.depositId.toString()}</td>
-                      <td className="text-center">{r.endDay.toString()}</td>
-                      <td className="text-center">{r.curHexDay.toString()}</td>
-                      <td className={r.graceDay <= 5 ? "green" : (r.graceDay <= 7 ? "yellow" : "red")}>{r.graceDay}</td>
-                      <td>{formatFloat(+utils.formatUnits(r.effectiveHex, hexDecimals))} HEX</td>
-                      <td>{formatFloat(+utils.formatUnits(r.borrowedHexOne))} HEX1</td>
-                      <td>${formatFloat(+utils.formatUnits(hexFeed))}</td>
-                      <td>{formatFloat(+utils.formatUnits(r.effectiveHex, hexDecimals))} HEX</td>
-                      <td>${formatFloat(+utils.formatUnits(r.currentValue))}</td>
-                      <td>{getProfitLoss(r)}</td>
-                      <td className="td-actions">
-                        <Button
-                          id="liquidate"
-                          className="btn btn-success btn-sm"
-                          onClick={() => onClickClaim(r.depositId, 'liquidate')}
-                          disabled={!r.liquidable}
+                  {liquidates.length > 0 ? (
+                    liquidates.map((r, idx) => (
+                      <tr key={idx}>
+                        <td className="text-center">
+                          {r.depositId.toString()}
+                        </td>
+                        <td className="text-center">{r.endDay.toString()}</td>
+                        <td className="text-center">
+                          {r.curHexDay.toString()}
+                        </td>
+                        <td
+                          className={
+                            r.graceDay <= 5
+                              ? "green"
+                              : r.graceDay <= 7
+                              ? "yellow"
+                              : "red"
+                          }
                         >
-                          Liquidate
-                        </Button>
-                        <UncontrolledTooltip
-                          placement="bottom"
-                          target="liquidate"
-                        >
-                          Liquidate the position by paying the debt ($HEX1)
-                          and the fee (ETH) to claim and receive the T-shares
-                          (HEX)
-                        </UncontrolledTooltip>
+                          {r.graceDay}
+                        </td>
+                        <td>
+                          {formatFloat(
+                            +utils.formatUnits(r.effectiveHex, hexDecimals)
+                          )}{" "}
+                          HEX
+                        </td>
+                        <td>
+                          {formatFloat(+utils.formatUnits(r.borrowedHexOne))}{" "}
+                          HEX1
+                        </td>
+                        <td>${formatFloat(+utils.formatUnits(hexFeed))}</td>
+                        <td>
+                          {formatFloat(
+                            +utils.formatUnits(r.effectiveHex, hexDecimals)
+                          )}{" "}
+                          HEX
+                        </td>
+                        <td>
+                          ${formatFloat(+utils.formatUnits(r.currentValue))}
+                        </td>
+                        <td>{getProfitLoss(r)}</td>
+                        <td className="td-actions">
+                          <Button
+                            id="liquidate"
+                            className="btn btn-success btn-sm"
+                            onClick={() =>
+                              onClickClaim(r.depositId, "liquidate")
+                            }
+                            disabled={!r.liquidable}
+                          >
+                            Liquidate
+                          </Button>
+                          <UncontrolledTooltip
+                            placement="bottom"
+                            target="liquidate"
+                          >
+                            Liquidate the position by paying the debt ($HEX1)
+                            and the fee (ETH) to claim and receive the T-shares
+                            (HEX)
+                          </UncontrolledTooltip>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={11} className="text-center">
+                        <Alert className="alert-with-icon" color="default">
+                          <span>There are no matching entries</span>
+                        </Alert>
                       </td>
                     </tr>
-                  )) : <tr>
-                    <td colSpan={11} className="text-center">
-                      <Alert
-                        className="alert-with-icon"
-                        color="default"
-                      >
-                        <span>There are no matching entries</span>
-                      </Alert>
-                    </td>
-                  </tr>}
+                  )}
                 </tbody>
               </table>
             </Col>
@@ -490,17 +587,21 @@ export default function Overview() {
           </Row>
         </Container>
       </section>
-      {isBorrowOpen && <BorrowModal
-        show={isBorrowOpen}
-        onBorrow={doBorrow}
-        onClose={() => setBorrowOpen(false)}
-      />}
-      {reborrow.show && <ReborrowModal
-        show={reborrow.show}
-        data={reborrow.data}
-        onReborrow={doReborrow}
-        onClose={() => setReborrow({ show: false, data: {} })}
-      />}
+      {isBorrowOpen && (
+        <BorrowModal
+          show={isBorrowOpen}
+          onBorrow={doBorrow}
+          onClose={() => setBorrowOpen(false)}
+        />
+      )}
+      {reborrow.show && (
+        <ReborrowModal
+          show={reborrow.show}
+          data={reborrow.data}
+          onReborrow={doReborrow}
+          onClose={() => setReborrow({ show: false, data: {} })}
+        />
+      )}
     </div>
   );
 }
